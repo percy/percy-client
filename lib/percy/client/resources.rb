@@ -1,5 +1,6 @@
 module Percy
   class Client
-    VERSION = '0.0.1'
+    module Resources
+    end
   end
 end
