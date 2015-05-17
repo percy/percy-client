@@ -1,7 +1,7 @@
 RSpec.describe Percy::Client::LocalGit do
   describe '#current_local_repo' do
     it 'returns the current local repo name' do
-      expect(Percy.current_local_repo).to eq('percy-io/percy-client')
+      expect(Percy.current_local_repo).to eq('percy/percy-client')
     end
   end
   describe '#current_local_commit' do
