@@ -12,7 +12,8 @@ module Percy
             # Mimic the behavior that we get with proxy requests with HTTPS.
             raise Faraday::Error::ConnectionFailed, %{407 "Proxy Authentication Required "}
           when CLIENT_ERROR_STATUS_RANGE
-            raise Faraday::Error::ClientError, "Got #{env.status}: #{env.body}"
+            raise Percy::Client::ClientError.new(
+              env, "Got #{env.status} (#{env.method.upcase} #{env.url}):\n#{env.body}")
           end
         end
       end

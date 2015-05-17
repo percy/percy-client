@@ -14,6 +14,15 @@ module Percy
     include Percy::Client::Snapshots
     include Percy::Client::Resources
 
+    class Error < Exception; end
+    class ClientError < Error
+      attr_accessor :env
+      def initialize(env, *args)
+        @env = env
+        super(*args)
+      end
+    end
+
     API_BASE_URL = ENV['PERCY_API'] || 'https://percy.io'
     API_VERSION = ENV['PERCY_API_VERSION'] || 'v1'
 

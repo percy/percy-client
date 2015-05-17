@@ -1,3 +1,6 @@
+require 'base64'
+require 'digest'
+
 module Percy
   class Client
 
@@ -27,6 +30,25 @@ module Percy
     end
 
     module Resources
+      def upload_resource(build_id, content)
+        sha = Digest::SHA256.hexdigest(content)
+        data = {
+          'data' => {
+            'type' => 'resources',
+            'attributes' => {
+              'id' => sha,
+              'base64-content' => Base64.strict_encode64(content),
+            },
+          },
+        }
+        begin
+          post("#{full_base}/builds/#{build_id}/resources/", data)
+        rescue Percy::Client::ClientError => e
+          raise e if e.env.status != 409
+          STDERR.puts "[percy] Warning: unnecessary resource reuploaded with SHA-256: #{sha}"
+        end
+        true
+      end
     end
   end
 end

@@ -2,8 +2,7 @@ module Percy
   class Client
     module Snapshots
       def create_snapshot(build_id, resources, options = {})
-        raise ArgumentError if !resources.responds_to?(:each)
-
+        raise ArgumentError.new('resources must be an iterable') if !resources.respond_to?(:each)
         name = options[:name]
         data = {
           'data' => {
