@@ -3,6 +3,7 @@ require 'percy/client/connection'
 require 'percy/client/local_git'
 require 'percy/client/version'
 require 'percy/client/builds'
+require 'percy/client/snapshots'
 require 'percy/client/resources'
 
 module Percy
@@ -10,6 +11,7 @@ module Percy
     include Percy::Client::Connection
     include Percy::Client::LocalGit
     include Percy::Client::Builds
+    include Percy::Client::Snapshots
     include Percy::Client::Resources
 
     API_BASE_URL = ENV['PERCY_API'] || 'https://percy.io'

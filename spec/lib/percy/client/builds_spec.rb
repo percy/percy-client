@@ -7,7 +7,6 @@ RSpec.describe Percy::Client::Builds, :vcr do
       expect(build['data']['id']).to be
       expect(build['data']['type']).to eq('builds')
       expect(build['data']['attributes']['state']).to eq('pending')
-      expect(build['data']['meta']['sha-hints']).to be
     end
   end
   describe '#finalize_build' do
