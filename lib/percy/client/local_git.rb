@@ -42,7 +42,7 @@ module Percy
         if origin_url == ''
           raise Percy::Client::LocalGit::NoLocalRepo.new('No local git repository found.')
         end
-        match = origin_url.match(Regexp.new('[:/]([^/]+\/.+)\.git'))
+        match = origin_url.match(Regexp.new('[:/]([^/]+\/[^/]+)\.git'))
         match[1]
       end
     end
