@@ -10,12 +10,17 @@ module Percy
       attr_accessor :resource_url
       attr_accessor :is_root
       attr_accessor :mimetype
+      attr_accessor :content
 
       def initialize(sha, resource_url, options = {})
         @sha = sha
         @resource_url = resource_url
         @is_root = options[:is_root]
         @mimetype = options[:mimetype]
+
+        # For user convenience of temporarily storing content with other data, but the actual data
+        # is never included when serialized.
+        @content = options[:content]
       end
 
       def serialize
