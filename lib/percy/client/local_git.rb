@@ -3,12 +3,11 @@ module Percy
     module LocalGit
       GIT_FORMAT_LINES = [
         'COMMIT_SHA:%H',
-        'AUTHOR_DATE:%ai',
         'AUTHOR_NAME:%an',
         'AUTHOR_EMAIL:%ae',
         'COMMITTER_NAME:%an',
         'COMMITTER_EMAIL:%ae',
-        'COMMITTER_DATE:%ai',
+        'COMMITTED_DATE:%ai',
         # Note: order is important, this must come last because the regex is a multiline match.
         'COMMIT_MESSAGE:%B'
       ].freeze
@@ -16,7 +15,7 @@ module Percy
       class Error < Exception; end
       class NoLocalRepo < Exception; end
 
-      def current_local_commit
+      def self.commit
         commit = ENV['PERCY_COMMIT'] || 'HEAD'
         branch = ENV['PERCY_BRANCH'] || `git rev-parse --abbrev-ref HEAD`.strip
         if branch == ''
@@ -28,7 +27,7 @@ module Percy
         data = {
           sha: output.match(/COMMIT_SHA:(.*)/)[1],
           branch: branch,
-          committed_at: output.match(/AUTHOR_DATE:(.*)/)[1],
+          committed_at: output.match(/COMMITTED_DATE:(.*)/)[1],
           author_name: output.match(/AUTHOR_NAME:(.*)/)[1],
           author_email: output.match(/AUTHOR_EMAIL:(.*)/)[1],
           committer_name: output.match(/COMMITTER_NAME:(.*)/)[1],
@@ -37,7 +36,7 @@ module Percy
         }
       end
 
-      def current_local_repo
+      def self.repo
         origin_url = `git config --get remote.origin.url`
         if origin_url == ''
           raise Percy::Client::LocalGit::NoLocalRepo.new('No local git repository found.')

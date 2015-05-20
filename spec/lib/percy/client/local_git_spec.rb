@@ -1,12 +1,12 @@
 RSpec.describe Percy::Client::LocalGit do
-  describe '#current_local_repo' do
+  describe '#repo' do
     it 'returns the current local repo name' do
-      expect(Percy.current_local_repo).to eq('percy/percy-client')
+      expect(Percy::Client::LocalGit.repo).to eq('percy/percy-client')
     end
   end
-  describe '#current_local_commit' do
+  describe '#commit' do
     it 'returns current local commit data' do
-      commit = Percy.current_local_commit
+      commit = Percy::Client::LocalGit.commit
       expect(commit[:author_email]).to match(/.+@.+\..+/)
       expect(commit[:author_name]).to_not be_empty
       expect(commit[:branch]).to_not be_empty

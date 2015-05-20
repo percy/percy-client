@@ -10,7 +10,6 @@ require 'percy/client/resources'
 module Percy
   class Client
     include Percy::Client::Connection
-    include Percy::Client::LocalGit
     include Percy::Client::Builds
     include Percy::Client::Snapshots
     include Percy::Client::Resources

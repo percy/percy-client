@@ -7,6 +7,7 @@ module Percy
 
     attr_accessor :access_token
     attr_accessor :api_url
+    attr_accessor :repo
 
     # List of configurable keys for {Percy::Client}
     # @return [Array] Option keys.
@@ -14,6 +15,7 @@ module Percy
       @keys ||= [
         :access_token,
         :api_url,
+        :repo,
       ]
     end
 
@@ -23,6 +25,10 @@ module Percy
 
     def api_url
       @api_url ||= ENV['PERCY_API'] || 'https://percy.io/api/v1'
+    end
+
+    def repo
+      @repo ||= ENV['PERCY_REPO'] || Percy::Client::LocalGit.repo
     end
   end
 end
