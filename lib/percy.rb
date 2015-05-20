@@ -1,21 +1,20 @@
 require 'percy/client'
 
 module Percy
-  class << self
-    attr_accessor :access_token
+  def self.config
+    @config ||= Percy::Config.new
   end
 
-  def self.options
-    {
-      access_token: access_token,
-    }
+  def self.reset
+    @config = nil
+    @client = nil
   end
 
   # API client based on configured options.
   #
   # @return [Percy::Client] API client.
   def self.client
-    @client = Percy::Client.new(options) unless defined?(@client)
+    @client = Percy::Client.new(config: config) if !defined?(@client) || !@client
     @client
   end
 

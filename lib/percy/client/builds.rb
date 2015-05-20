@@ -19,11 +19,11 @@ module Percy
             },
           }
         }
-        post("#{full_base}/repos/#{repo_slug}/builds/", data)
+        post("#{config.api_url}/repos/#{repo_slug}/builds/", data)
       end
 
       def finalize_build(build_id)
-        post("#{full_base}/builds/#{build_id}/finalize", {})
+        post("#{config.api_url}/builds/#{build_id}/finalize", {})
       end
     end
   end

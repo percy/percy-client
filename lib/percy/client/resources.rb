@@ -47,7 +47,7 @@ module Percy
           },
         }
         begin
-          post("#{full_base}/builds/#{build_id}/resources/", data)
+          post("#{config.api_url}/builds/#{build_id}/resources/", data)
         rescue Percy::Client::ClientError => e
           raise e if e.env.status != 409
           STDERR.puts "[percy] Warning: unnecessary resource reuploaded with SHA-256: #{sha}"

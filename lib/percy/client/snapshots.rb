@@ -15,7 +15,7 @@ module Percy
             },
           },
         }
-        post("#{full_base}/builds/#{build_id}/snapshots/", data)
+        post("#{config.api_url}/builds/#{build_id}/snapshots/", data)
       end
     end
   end
