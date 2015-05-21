@@ -32,6 +32,12 @@ module Percy
           'is-root' => is_root,
         }
       end
+
+      def inspect
+        content_msg = content.nil? ? '' : "content.length: #{content.length}"
+        "<Resource #{sha} #{resource_url} is_root:#{!!is_root} #{mimetype} #{content_msg}>"
+      end
+      alias_method :to_s, :inspect
     end
 
     module Resources
