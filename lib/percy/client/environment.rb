@@ -1,6 +1,6 @@
 module Percy
   class Client
-    module LocalGit
+    module Environment
       GIT_FORMAT_LINES = [
         'COMMIT_SHA:%H',
         'AUTHOR_NAME:%an',
@@ -15,11 +15,16 @@ module Percy
       class Error < Exception; end
       class NoLocalRepo < Exception; end
 
+      def self.current_ci
+        return :travis if ENV['TRAVIS_BUILD_ID']
+        return :jenkins if ENV['JENKINS_URL']
+      end
+
       def self.commit
         commit = ENV['PERCY_COMMIT'] || 'HEAD'
         branch = ENV['PERCY_BRANCH'] || `git rev-parse --abbrev-ref HEAD`.strip
         if branch == ''
-          raise Percy::Client::LocalGit::NoLocalRepo.new('No local git repository found.')
+          raise Percy::Client::Environment::NoLocalRepo.new('No local git repository found.')
         end
 
         format = GIT_FORMAT_LINES.join('%n')  # "git show" format uses %n for newlines.
@@ -39,10 +44,22 @@ module Percy
       def self.repo
         origin_url = `git config --get remote.origin.url`
         if origin_url == ''
-          raise Percy::Client::LocalGit::NoLocalRepo.new('No local git repository found.')
+          raise Percy::Client::Environment::NoLocalRepo.new('No local git repository found.')
         end
         match = origin_url.match(Regexp.new('[:/]([^/]+\/[^/]+)\.git'))
         match[1]
+      end
+
+      def self.pull_request_number
+        return ENV['PERCY_PULL_REQUEST'] if ENV['PERCY_PULL_REQUEST']
+
+        case current_ci
+        when :jenkins
+          # GitHub Pull Request Builder plugin.
+          ENV['ghprbPullId']
+        when :travis
+          ENV['TRAVIS_PULL_REQUEST'] if ENV['TRAVIS_PULL_REQUEST'] != 'false'
+        end
       end
     end
   end

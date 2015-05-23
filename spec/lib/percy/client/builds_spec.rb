@@ -1,5 +1,7 @@
 RSpec.describe Percy::Client::Builds, :vcr do
   describe '#create_build' do
+    before(:each) { ENV['PERCY_PULL_REQUEST'] = '123' }
+    after(:each) { ENV['PERCY_PULL_REQUEST'] = nil }
     it 'creates a build' do
       build = Percy.create_build('fotinakis/percy-examples')
       expect(build).to be
@@ -7,6 +9,8 @@ RSpec.describe Percy::Client::Builds, :vcr do
       expect(build['data']['id']).to be
       expect(build['data']['type']).to eq('builds')
       expect(build['data']['attributes']['state']).to eq('pending')
+      expect(build['data']['attributes']['is-pull-request']).to be_truthy
+      expect(build['data']['attributes']['pull-request-number']).to eq(123)
     end
   end
   describe '#finalize_build' do

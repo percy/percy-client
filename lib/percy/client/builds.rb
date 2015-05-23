@@ -2,7 +2,9 @@ module Percy
   class Client
     module Builds
       def create_build(repo, options = {})
-        commit_data = options[:commit_data] || Percy::Client::LocalGit.commit
+        pull_request_number = options[:pull_request_number] ||
+          Percy::Client::Environment.pull_request_number
+        commit_data = options[:commit_data] || Percy::Client::Environment.commit
         data = {
           'data' => {
             'type' => 'builds',
@@ -15,7 +17,7 @@ module Percy
               'commit-committer-name' => commit_data[:committer_name],
               'commit-committer-email' => commit_data[:committer_email],
               'commit-message' => commit_data[:message],
-              'pull-request-number' => nil,
+              'pull-request-number' => pull_request_number,
             },
           }
         }

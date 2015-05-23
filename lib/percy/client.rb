@@ -1,7 +1,7 @@
 require 'json'
 require 'percy/config'
+require 'percy/client/environment'
 require 'percy/client/connection'
-require 'percy/client/local_git'
 require 'percy/client/version'
 require 'percy/client/builds'
 require 'percy/client/snapshots'
