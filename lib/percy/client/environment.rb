@@ -13,22 +13,30 @@ module Percy
       ].freeze
 
       class Error < Exception; end
-      class NoLocalRepo < Exception; end
+      class RepoNotFoundError < Exception; end
+      class BranchNotFoundError < Exception; end
 
       def self.current_ci
         return :travis if ENV['TRAVIS_BUILD_ID']
-        return :jenkins if ENV['JENKINS_URL']
+        return :jenkins if ENV['JENKINS_URL'] && ENV['ghprbPullId']  # Pull Request Builder plugin.
+      end
+
+      def self.commit_sha
+        return ENV['PERCY_COMMIT'] if ENV['PERCY_COMMIT']
+
+        case current_ci
+        when :jenkins
+          ENV['ghprbActualCommit']
+        when :travis
+          ENV['TRAVIS_COMMIT']
+        else
+          'HEAD'
+        end
       end
 
       def self.commit
-        commit = ENV['PERCY_COMMIT'] || 'HEAD'
-        branch = ENV['PERCY_BRANCH'] || `git rev-parse --abbrev-ref HEAD`.strip
-        if branch == ''
-          raise Percy::Client::Environment::NoLocalRepo.new('No local git repository found.')
-        end
-
         format = GIT_FORMAT_LINES.join('%n')  # "git show" format uses %n for newlines.
-        output = `git show --quiet #{commit} --format="#{format}"`.strip
+        output = `git show --quiet #{commit_sha} --format="#{format}"`.strip
         data = {
           sha: output.match(/COMMIT_SHA:(.*)/)[1],
           branch: branch,
@@ -41,13 +49,39 @@ module Percy
         }
       end
 
-      def self.repo
-        origin_url = `git config --get remote.origin.url`
-        if origin_url == ''
-          raise Percy::Client::Environment::NoLocalRepo.new('No local git repository found.')
+      # The name of the target branch that the build will be compared against.
+      def self.branch
+        return ENV['PERCY_BRANCH'] if ENV['PERCY_BRANCH']
+
+        result = case current_ci
+        when :jenkins
+          ENV['ghprbTargetBranch']
+        when :travis
+          ENV['TRAVIS_BRANCH']
+        else
+          # Discover from current git repo branch name.
+          `git rev-parse --abbrev-ref HEAD`.strip
         end
-        match = origin_url.match(Regexp.new('[:/]([^/]+\/[^/]+)\.git'))
-        match[1]
+        if result == ''
+          raise Percy::Client::Environment::BranchNotFoundError.new('No target branch found.')
+        end
+        result
+      end
+
+      def self.repo
+        return ENV['PERCY_REPO_SLUG'] if ENV['PERCY_REPO_SLUG']
+
+        case current_ci
+        when :travis
+          ENV['TRAVIS_REPO_SLUG']
+        else
+          origin_url = `git config --get remote.origin.url`
+          if origin_url == ''
+            raise Percy::Client::Environment::RepoNotFoundError.new('No local git repository found.')
+          end
+          match = origin_url.match(Regexp.new('[:/]([^/]+\/[^/]+)\.git'))
+          match[1]
+        end
       end
 
       def self.pull_request_number
