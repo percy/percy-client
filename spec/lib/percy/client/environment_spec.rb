@@ -10,13 +10,23 @@ RSpec.describe Percy::Client::Environment do
     # Unset Travis vars.
     ENV['TRAVIS_BUILD_ID'] = nil
     ENV['TRAVIS_COMMIT'] = nil
+    ENV['TRAVIS_BRANCH'] = nil
     ENV['TRAVIS_PULL_REQUEST'] = nil
     ENV['TRAVIS_REPO_SLUG'] = nil
 
     # Unset Jenkins vars.
     ENV['JENKINS_URL'] = nil
     ENV['ghprbPullId'] = nil
+    ENV['ghprbActualCommit'] = nil
     ENV['ghprbTargetBranch'] = nil
+
+    # Unset Circle CI vars.
+    ENV['CIRCLECI'] = nil
+    ENV['CIRCLE_SHA1'] = nil
+    ENV['CIRCLE_BRANCH'] = nil
+    ENV['CIRCLE_PROJECT_USERNAME'] = nil
+    ENV['CIRCLE_PROJECT_REPONAME'] = nil
+    ENV['CI_PULL_REQUESTS'] = nil
   end
   after(:each) { ENV['TRAVIS_BUILD_ID'] = @original_env }
 
@@ -104,16 +114,23 @@ RSpec.describe Percy::Client::Environment do
       ENV['TRAVIS_BUILD_ID'] = '1234'
       ENV['TRAVIS_PULL_REQUEST'] = '256'
       ENV['TRAVIS_REPO_SLUG'] = 'travis/repo-slug'
+      ENV['TRAVIS_COMMIT'] = 'travis-commit-sha'
+      ENV['TRAVIS_BRANCH'] = 'travis-branch'
     end
 
-    describe '#repo' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment.repo).to eq('travis/repo-slug')
-      end
-    end
     describe '#current_ci' do
       it 'is :travis' do
         expect(Percy::Client::Environment.current_ci).to eq(:travis)
+      end
+    end
+    describe '#branch' do
+      it 'reads from the CI environment' do
+        expect(Percy::Client::Environment.branch).to eq('travis-branch')
+      end
+    end
+    describe '#commit_sha' do
+      it 'reads from the CI environment' do
+        expect(Percy::Client::Environment.commit_sha).to eq('travis-commit-sha')
       end
     end
     describe '#pull_request_number' do
@@ -124,6 +141,43 @@ RSpec.describe Percy::Client::Environment do
     describe '#repo' do
       it 'reads from the CI environment' do
         expect(Percy::Client::Environment.repo).to eq('travis/repo-slug')
+      end
+    end
+  end
+  context 'in Circle CI' do
+    before(:each) do
+      ENV['CIRCLECI'] = 'true'
+      ENV['CIRCLE_BRANCH'] = 'circle-branch'
+      ENV['CIRCLE_SHA1'] = 'circle-commit-sha'
+      ENV['CIRCLE_PROJECT_USERNAME'] = 'circle'
+      ENV['CIRCLE_PROJECT_REPONAME'] = 'repo-name'
+      ENV['CI_PULL_REQUESTS'] = '123,234'
+    end
+
+    describe '#current_ci' do
+      it 'is :circle' do
+        expect(Percy::Client::Environment.current_ci).to eq(:circle)
+      end
+    end
+    describe '#branch' do
+      it 'reads from the CI environment' do
+        expect(Percy::Client::Environment.branch).to eq('circle-branch')
+      end
+    end
+    describe '#commit_sha' do
+      it 'reads from the CI environment' do
+        expect(Percy::Client::Environment.commit_sha).to eq('circle-commit-sha')
+      end
+    end
+
+    describe '#pull_request_number' do
+      it 'reads from the CI environment' do
+        expect(Percy::Client::Environment.pull_request_number).to eq('123')
+      end
+    end
+    describe '#repo' do
+      it 'reads from the CI environment' do
+        expect(Percy::Client::Environment.repo).to eq('circle/repo-name')
       end
     end
   end

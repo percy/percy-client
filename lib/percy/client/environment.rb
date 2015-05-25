@@ -19,6 +19,7 @@ module Percy
       def self.current_ci
         return :travis if ENV['TRAVIS_BUILD_ID']
         return :jenkins if ENV['JENKINS_URL'] && ENV['ghprbPullId']  # Pull Request Builder plugin.
+        return :circle if ENV['CIRCLECI']
       end
 
       def self.commit_sha
@@ -29,6 +30,8 @@ module Percy
           ENV['ghprbActualCommit']
         when :travis
           ENV['TRAVIS_COMMIT']
+        when :circle
+          ENV['CIRCLE_SHA1']
         else
           'HEAD'
         end
@@ -58,6 +61,8 @@ module Percy
           ENV['ghprbTargetBranch']
         when :travis
           ENV['TRAVIS_BRANCH']
+        when :circle
+          ENV['CIRCLE_BRANCH']
         else
           # Discover from current git repo branch name.
           `git rev-parse --abbrev-ref HEAD`.strip
@@ -74,6 +79,8 @@ module Percy
         case current_ci
         when :travis
           ENV['TRAVIS_REPO_SLUG']
+        when :circle
+          "#{ENV['CIRCLE_PROJECT_USERNAME']}/#{ENV['CIRCLE_PROJECT_REPONAME']}"
         else
           origin_url = `git config --get remote.origin.url`
           if origin_url == ''
@@ -93,6 +100,10 @@ module Percy
           ENV['ghprbPullId']
         when :travis
           ENV['TRAVIS_PULL_REQUEST'] if ENV['TRAVIS_PULL_REQUEST'] != 'false'
+        when :circle
+          if ENV['CI_PULL_REQUESTS'] && ENV['CI_PULL_REQUESTS'] != ''
+            ENV['CI_PULL_REQUESTS'].split(',')[0]
+          end
         end
       end
     end
