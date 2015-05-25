@@ -6,7 +6,7 @@ RSpec.describe Percy::Client::Resources, :vcr do
 
   describe 'Percy::Client::Resource' do
     it 'can be initialized with minimal data' do
-      resource = Percy::Client::Resource.new(sha, '/foo.html')
+      resource = Percy::Client::Resource.new('/foo.html', sha: sha)
       expect(resource.serialize).to eq({
         'type' => 'resources',
         'id' => sha,
@@ -16,7 +16,13 @@ RSpec.describe Percy::Client::Resources, :vcr do
       })
     end
     it 'can be initialized with all data' do
-      resource = Percy::Client::Resource.new(sha, '/foo.html', is_root: true, mimetype: 'text/html')
+      resource = Percy::Client::Resource.new(
+        '/foo.html',
+        sha: sha,
+        is_root: true,
+        mimetype: 'text/html',
+        content: content,
+      )
       expect(resource.serialize).to eq({
         'type' => 'resources',
         'id' => sha,
@@ -25,11 +31,14 @@ RSpec.describe Percy::Client::Resources, :vcr do
         'is-root' => true,
       })
     end
+    it 'errors if not given sha or content' do
+      expect { Percy::Client::Resource.new('/foo.html') }.to raise_error(ArgumentError)
+    end
   end
   describe '#upload_resource' do
     it 'returns true with success' do
       build = Percy.create_build('fotinakis/percy-examples')
-      resources = [Percy::Client::Resource.new(sha, '/foo/test.html', is_root: true)]
+      resources = [Percy::Client::Resource.new('/foo/test.html', sha: sha, is_root: true)]
       Percy.create_snapshot(build['data']['id'], resources, name: 'homepage')
 
       # Verify that upload_resource hides conflict errors, though they are output to stderr.

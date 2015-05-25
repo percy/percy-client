@@ -12,9 +12,15 @@ module Percy
       attr_accessor :mimetype
       attr_accessor :content
 
-      def initialize(sha, resource_url, options = {})
-        @sha = sha
+      def initialize(resource_url, options = {})
         @resource_url = resource_url
+
+        if !options[:sha] && !options[:content]
+          raise ArgumentError, 'Either "sha" or "content" must be given.'
+        end
+        @sha = options[:sha] || Digest::SHA256.hexdigest(options[:content])
+        @content = options[:content]
+
         @is_root = options[:is_root]
         @mimetype = options[:mimetype]
 
