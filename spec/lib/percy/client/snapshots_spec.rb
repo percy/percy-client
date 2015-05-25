@@ -6,8 +6,8 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
     it 'creates a build' do
       build = Percy.create_build('fotinakis/percy-examples')
       resources = []
-      resources << Percy::Client::Resource.new(sha, '/foo/test.html', is_root: true)
-      resources << Percy::Client::Resource.new(sha, '/css/test.css')
+      resources << Percy::Client::Resource.new('/foo/test.html', sha: sha, is_root: true)
+      resources << Percy::Client::Resource.new('/css/test.css', sha: sha)
       snapshot = Percy.create_snapshot(build['data']['id'], resources, name: 'homepage')
 
       expect(snapshot['data']).to be

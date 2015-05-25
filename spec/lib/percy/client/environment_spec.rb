@@ -1,12 +1,5 @@
 RSpec.describe Percy::Client::Environment do
-  before(:each) do
-    @original_env = {
-      'TRAVIS_BUILD_ID' => ENV['TRAVIS_BUILD_ID'],
-      'TRAVIS_COMMIT' => ENV['TRAVIS_COMMIT'],
-      'TRAVIS_BRANCH' => ENV['TRAVIS_BRANCH'],
-      'TRAVIS_PULL_REQUEST' => ENV['TRAVIS_PULL_REQUEST'],
-      'TRAVIS_REPO_SLUG' => ENV['TRAVIS_REPO_SLUG'],
-    }
+  def clear_env_vars
     # Unset Percy vars.
     ENV['PERCY_COMMIT'] = nil
     ENV['PERCY_BRANCH'] = nil
@@ -34,7 +27,19 @@ RSpec.describe Percy::Client::Environment do
     ENV['CIRCLE_PROJECT_REPONAME'] = nil
     ENV['CI_PULL_REQUESTS'] = nil
   end
+
+  before(:each) do
+    @original_env = {
+      'TRAVIS_BUILD_ID' => ENV['TRAVIS_BUILD_ID'],
+      'TRAVIS_COMMIT' => ENV['TRAVIS_COMMIT'],
+      'TRAVIS_BRANCH' => ENV['TRAVIS_BRANCH'],
+      'TRAVIS_PULL_REQUEST' => ENV['TRAVIS_PULL_REQUEST'],
+      'TRAVIS_REPO_SLUG' => ENV['TRAVIS_REPO_SLUG'],
+    }
+    clear_env_vars
+  end
   after(:each) do
+    clear_env_vars
     ENV['TRAVIS_BUILD_ID'] = @original_env['TRAVIS_BUILD_ID']
     ENV['TRAVIS_COMMIT'] = @original_env['TRAVIS_COMMIT']
     ENV['TRAVIS_BRANCH'] = @original_env['TRAVIS_BRANCH']
