@@ -28,7 +28,7 @@ module Percy
     end
 
     def repo
-      @repo ||= ENV['PERCY_REPO'] || Percy::Client::Environment.repo
+      @repo ||= Percy::Client::Environment.repo
     end
   end
 end
