@@ -20,6 +20,7 @@ module Percy
         return :travis if ENV['TRAVIS_BUILD_ID']
         return :jenkins if ENV['JENKINS_URL'] && ENV['ghprbPullId']  # Pull Request Builder plugin.
         return :circle if ENV['CIRCLECI']
+        return :codeship if ENV['CI_NAME'] && ENV['CI_NAME'] == 'codeship'
       end
 
       def self.commit_sha
@@ -32,6 +33,8 @@ module Percy
           ENV['TRAVIS_COMMIT']
         when :circle
           ENV['CIRCLE_SHA1']
+        when :codeship
+          ENV['CI_COMMIT_ID']
         else
           'HEAD'
         end
@@ -63,6 +66,8 @@ module Percy
           ENV['TRAVIS_BRANCH']
         when :circle
           ENV['CIRCLE_BRANCH']
+        when :codeship
+          ENV['CI_BRANCH']
         else
           # Discover from current git repo branch name.
           `git rev-parse --abbrev-ref HEAD`.strip
@@ -104,6 +109,8 @@ module Percy
           if ENV['CI_PULL_REQUESTS'] && ENV['CI_PULL_REQUESTS'] != ''
             ENV['CI_PULL_REQUESTS'].split(',')[0]
           end
+        when :codeship
+          # Unfortunately, codeship always returns 'false' for CI_PULL_REQUEST. For now, return nil.
         end
       end
     end

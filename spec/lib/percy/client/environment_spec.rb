@@ -26,6 +26,12 @@ RSpec.describe Percy::Client::Environment do
     ENV['CIRCLE_PROJECT_USERNAME'] = nil
     ENV['CIRCLE_PROJECT_REPONAME'] = nil
     ENV['CI_PULL_REQUESTS'] = nil
+
+    # Unset Codeship vars.
+    ENV['CI_NAME'] = nil
+    ENV['CI_BRANCH'] = nil
+    ENV['CI_PULL_REQUEST'] = nil
+    ENV['CI_COMMIT_ID'] = nil
   end
 
   before(:each) do
@@ -195,6 +201,40 @@ RSpec.describe Percy::Client::Environment do
     describe '#repo' do
       it 'reads from the CI environment' do
         expect(Percy::Client::Environment.repo).to eq('circle/repo-name')
+      end
+    end
+  end
+  context 'in Codeship' do
+    before(:each) do
+      ENV['CI_NAME'] = 'codeship'
+      ENV['CI_BRANCH'] = 'codeship-branch'
+      ENV['CI_PULL_REQUEST'] = 'false'  # This is always false on Codeship, unfortunately.
+      ENV['CI_COMMIT_ID'] = 'codeship-commit-sha'
+    end
+
+    describe '#current_ci' do
+      it 'is :codeship' do
+        expect(Percy::Client::Environment.current_ci).to eq(:codeship)
+      end
+    end
+    describe '#branch' do
+      it 'reads from the CI environment' do
+        expect(Percy::Client::Environment.branch).to eq('codeship-branch')
+      end
+    end
+    describe '#commit_sha' do
+      it 'reads from the CI environment' do
+        expect(Percy::Client::Environment.commit_sha).to eq('codeship-commit-sha')
+      end
+    end
+    describe '#pull_request_number' do
+      it 'reads from the CI environment' do
+        expect(Percy::Client::Environment.pull_request_number).to be_nil
+      end
+    end
+    describe '#repo' do
+      it 'returns the current local repo name' do
+        expect(Percy::Client::Environment.repo).to eq('percy/percy-client')
       end
     end
   end
