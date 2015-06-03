@@ -10,9 +10,11 @@ RSpec.describe Percy::Client::Resources, :vcr do
       expect(resource.serialize).to eq({
         'type' => 'resources',
         'id' => sha,
-        'resource-url' => '/foo.html',
-        'mimetype' => nil,
-        'is-root' => nil,
+        'attributes' => {
+          'resource-url' => '/foo.html',
+          'mimetype' => nil,
+          'is-root' => nil,
+        },
       })
     end
     it 'can be initialized with all data' do
@@ -26,9 +28,11 @@ RSpec.describe Percy::Client::Resources, :vcr do
       expect(resource.serialize).to eq({
         'type' => 'resources',
         'id' => sha,
-        'resource-url' => '/foo.html',
-        'mimetype' => 'text/html',
-        'is-root' => true,
+        'attributes' => {
+          'resource-url' => '/foo.html',
+          'mimetype' => 'text/html',
+          'is-root' => true,
+        },
       })
     end
     it 'errors if not given sha or content' do

@@ -10,8 +10,10 @@ module Percy
             'attributes' => {
               'name' => name,
             },
-            'links' => {
-              'resources' => resources.map { |r| r.serialize },
+            'relationships' => {
+              'resources' => {
+                'data' => resources.map { |r| r.serialize },
+              },
             },
           },
         }

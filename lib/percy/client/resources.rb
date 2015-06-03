@@ -33,9 +33,11 @@ module Percy
         {
           'type' => 'resources',
           'id' => sha,
-          'resource-url' => resource_url,
-          'mimetype' => mimetype,
-          'is-root' => is_root,
+          'attributes' => {
+            'resource-url' => resource_url,
+            'mimetype' => mimetype,
+            'is-root' => is_root,
+          },
         }
       end
 

@@ -5,16 +5,16 @@ http_interactions:
     uri: http://localhost:3000/api/v1/repos/fotinakis/percy-examples/builds/
     body:
       encoding: UTF-8
-      string: '{"data":{"type":"builds","attributes":{"commit-sha":"85e1b2fc5e80c462bb281d4a9b72b3d86e9f5e8f","commit-branch":"master","commit-committed-at":"2015-05-16
-        19:39:41 -0700","commit-author-name":"<COMMIT_AUTHOR_NAME>","commit-author-email":"<COMMIT_AUTHOR_EMAIL>","commit-committer-name":"<COMMIT_AUTHOR_NAME>","commit-committer-email":"<COMMIT_AUTHOR_EMAIL>","commit-message":"Checkpoint
-        some initial resources and snapshots work.","pull-request-number":null}}}'
+      string: '{"data":{"type":"builds","attributes":{"commit-sha":"dcee2857b1e0eeb9e0edef4cd7e2146dc5cf78e2","commit-branch":"master","commit-committed-at":"2015-06-02
+        09:33:15 -0700","commit-author-name":"<COMMIT_AUTHOR_NAME>","commit-author-email":"<COMMIT_AUTHOR_EMAIL>","commit-committer-name":"<COMMIT_AUTHOR_NAME>","commit-committer-email":"<COMMIT_AUTHOR_EMAIL>","commit-message":"Bump
+        version.","pull-request-number":null}}}'
     headers:
       User-Agent:
       - Faraday v0.9.1
       Accept:
       - "*/*"
       Date:
-      - Sun, 17 May 2015 04:14:20 GMT
+      - Wed, 03 Jun 2015 17:55:09 GMT
       Content-Type:
       - application/vnd.api+json
       Authorization:
@@ -43,27 +43,26 @@ http_interactions:
       Content-Type:
       - application/json; charset=utf-8
       X-Request-Id:
-      - 40572082-2a68-4b7c-9685-640511064ef9
+      - bad56fef-536f-49c7-8ea7-4c9774f95263
       X-Runtime:
-      - '0.022852'
+      - '0.019091'
       Server:
       - WEBrick/1.3.1 (Ruby/2.1.5/2014-11-13)
       Date:
-      - Sun, 17 May 2015 04:14:20 GMT
+      - Wed, 03 Jun 2015 17:55:09 GMT
       Content-Length:
-      - '2402'
+      - '1532'
       Connection:
       - Keep-Alive
     body:
       encoding: UTF-8
-      string: '{"data":{"id":"13","type":"builds","attributes":{"state":"pending","is-pull-request":false,"pull-request-number":0,"pull-request-title":null,"approved-at":null,"created-at":"2015-05-17T04:14:20.214Z","updated-at":"2015-05-17T04:14:20.214Z"},"links":{"self":"/api/v1/builds/13","commit":{"self":"/api/v1/builds/13/links/commit","related":"/api/v1/builds/13/commit","linkage":{"type":"commits","id":"1"}},"repo":{"self":"/api/v1/builds/13/links/repo","related":"/api/v1/builds/13/repo"},"base-build":{"self":"/api/v1/builds/13/links/base-build","related":"/api/v1/builds/13/base-build","linkage":{"type":"builds","id":"8"}},"approved-by":{"self":"/api/v1/builds/13/links/approved-by","related":"/api/v1/builds/13/approved-by"},"snapshots":{"self":"/api/v1/builds/13/links/snapshots","related":"/api/v1/builds/13/snapshots"},"comparisons":{"self":"/api/v1/builds/13/links/comparisons","related":"/api/v1/builds/13/comparisons"}},"meta":{"finalize-link":"/api/v1/builds/13/finalize","approve-link":"/api/v1/builds/13/approve"}},"included":[{"id":"1","type":"commits","attributes":{"sha":"85e1b2fc5e80c462bb281d4a9b72b3d86e9f5e8f","branch":"master","message":"Checkpoint
-        some initial resources and snapshots work.","committed-at":"2015-05-16 19:39:41
-        -0700","author-name":"<COMMIT_AUTHOR_NAME>","committer-name":"<COMMIT_AUTHOR_NAME>","created-at":"2015-05-17T04:02:54.000Z","updated-at":"2015-05-17T04:02:54.000Z"},"links":{"self":"/api/v1/commits/1"}},{"id":"8","type":"builds","attributes":{"state":"finished","is-pull-request":false,"pull-request-number":0,"pull-request-title":null,"approved-at":null,"created-at":"2015-05-17T04:12:48.000Z","updated-at":"2015-05-17T04:12:48.000Z"},"links":{"self":"/api/v1/builds/8","commit":{"self":"/api/v1/builds/8/links/commit","related":"/api/v1/builds/8/commit","linkage":{"type":"commits","id":"1"}},"repo":{"self":"/api/v1/builds/8/links/repo","related":"/api/v1/builds/8/repo"},"base-build":{"self":"/api/v1/builds/8/links/base-build","related":"/api/v1/builds/8/base-build"},"approved-by":{"self":"/api/v1/builds/8/links/approved-by","related":"/api/v1/builds/8/approved-by"},"snapshots":{"self":"/api/v1/builds/8/links/snapshots","related":"/api/v1/builds/8/snapshots"},"comparisons":{"self":"/api/v1/builds/8/links/comparisons","related":"/api/v1/builds/8/comparisons"}},"meta":{"finalize-link":"/api/v1/builds/8/finalize","approve-link":"/api/v1/builds/8/approve"}}]}'
+      string: '{"data":{"id":"31432","type":"builds","attributes":{"build-number":4,"state":"pending","is-pull-request":false,"pull-request-number":0,"pull-request-title":null,"approved-at":null,"created-at":"2015-06-03T17:55:09.898Z","updated-at":"2015-06-03T17:55:09.898Z"},"links":{"self":"/api/v1/builds/31432"},"relationships":{"commit":{"links":{"self":"/api/v1/builds/31432/links/commit","related":"/api/v1/builds/31432/commit"},"data":{"type":"commits","id":"3"}},"repo":{"links":{"self":"/api/v1/builds/31432/links/repo","related":"/api/v1/builds/31432/repo"}},"base-build":{"links":{"self":"/api/v1/builds/31432/links/base-build","related":"/api/v1/builds/31432/base-build"},"data":null},"approved-by":{"links":{"self":"/api/v1/builds/31432/links/approved-by","related":"/api/v1/builds/31432/approved-by"}},"snapshots":{"links":{"self":"/api/v1/builds/31432/links/snapshots","related":"/api/v1/builds/31432/snapshots"}},"comparisons":{"links":{"self":"/api/v1/builds/31432/links/comparisons","related":"/api/v1/builds/31432/comparisons"}}},"meta":{"finalize-link":"/api/v1/builds/31432/finalize","approve-link":"/api/v1/builds/31432/approve"}},"included":[{"id":"3","type":"commits","attributes":{"sha":"dcee2857b1e0eeb9e0edef4cd7e2146dc5cf78e2","branch":"master","message":"Bump
+        version.","committed-at":"2015-06-02 09:33:15 -0700","author-name":"<COMMIT_AUTHOR_NAME>","committer-name":"<COMMIT_AUTHOR_NAME>","created-at":"2015-06-03T17:55:08.000Z","updated-at":"2015-06-03T17:55:08.000Z"},"links":{"self":"/api/v1/commits/3"},"relationships":{}}]}'
     http_version: 
-  recorded_at: Sun, 17 May 2015 04:14:20 GMT
+  recorded_at: Wed, 03 Jun 2015 17:55:09 GMT
 - request:
     method: post
-    uri: http://localhost:3000/api/v1/builds/13/finalize
+    uri: http://localhost:3000/api/v1/builds/31432/finalize
     body:
       encoding: UTF-8
       string: "{}"
@@ -73,7 +72,7 @@ http_interactions:
       Accept:
       - "*/*"
       Date:
-      - Sun, 17 May 2015 04:14:20 GMT
+      - Wed, 03 Jun 2015 17:55:09 GMT
       Content-Type:
       - application/vnd.api+json
       Authorization:
@@ -102,13 +101,13 @@ http_interactions:
       Content-Type:
       - application/json; charset=utf-8
       X-Request-Id:
-      - 72260d7c-effc-4a03-aad2-93ca69d03220
+      - 36d2b625-821f-4d62-8491-17c7572d7dfe
       X-Runtime:
-      - '0.012948'
+      - '0.013637'
       Server:
       - WEBrick/1.3.1 (Ruby/2.1.5/2014-11-13)
       Date:
-      - Sun, 17 May 2015 04:14:20 GMT
+      - Wed, 03 Jun 2015 17:55:09 GMT
       Content-Length:
       - '16'
       Connection:
@@ -117,5 +116,5 @@ http_interactions:
       encoding: UTF-8
       string: '{"success":true}'
     http_version: 
-  recorded_at: Sun, 17 May 2015 04:14:20 GMT
+  recorded_at: Wed, 03 Jun 2015 17:55:09 GMT
 recorded_with: VCR 2.9.3

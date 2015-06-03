@@ -14,7 +14,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
       expect(snapshot['data']['id']).to be
       expect(snapshot['data']['type']).to eq('snapshots')
       expect(snapshot['data']['attributes']['name']).to eq('homepage')
-      expect(snapshot['data']['links']['missing-resources']).to be
+      expect(snapshot['data']['relationships']['missing-resources']).to be
     end
     it 'fails if no resources are given' do
       build = Percy.create_build('fotinakis/percy-examples')
