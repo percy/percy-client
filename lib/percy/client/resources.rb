@@ -11,6 +11,7 @@ module Percy
       attr_accessor :is_root
       attr_accessor :mimetype
       attr_accessor :content
+      attr_accessor :path
 
       def initialize(resource_url, options = {})
         @resource_url = resource_url
@@ -24,9 +25,10 @@ module Percy
         @is_root = options[:is_root]
         @mimetype = options[:mimetype]
 
-        # For user convenience of temporarily storing content with other data, but the actual data
-        # is never included when serialized.
+        # For optional convenience of temporarily storing the local content and path with this
+        # object. These are never included when serialized.
         @content = options[:content]
+        @path = options[:path]
       end
 
       def serialize
