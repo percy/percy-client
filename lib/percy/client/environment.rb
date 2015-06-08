@@ -107,7 +107,7 @@ module Percy
           ENV['TRAVIS_PULL_REQUEST'] if ENV['TRAVIS_PULL_REQUEST'] != 'false'
         when :circle
           if ENV['CI_PULL_REQUESTS'] && ENV['CI_PULL_REQUESTS'] != ''
-            ENV['CI_PULL_REQUESTS'].split(',')[0]
+            ENV['CI_PULL_REQUESTS'].split('/')[-1]
           end
         when :codeship
           # Unfortunately, codeship always returns 'false' for CI_PULL_REQUEST. For now, return nil.

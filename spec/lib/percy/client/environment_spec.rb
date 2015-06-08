@@ -174,7 +174,7 @@ RSpec.describe Percy::Client::Environment do
       ENV['CIRCLE_SHA1'] = 'circle-commit-sha'
       ENV['CIRCLE_PROJECT_USERNAME'] = 'circle'
       ENV['CIRCLE_PROJECT_REPONAME'] = 'repo-name'
-      ENV['CI_PULL_REQUESTS'] = '123,234'
+      ENV['CI_PULL_REQUESTS'] = 'https://github.com/owner/repo-name/pull/123'
     end
 
     describe '#current_ci' do
