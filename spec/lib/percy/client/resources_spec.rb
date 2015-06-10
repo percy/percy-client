@@ -1,7 +1,7 @@
 require 'digest'
 
 RSpec.describe Percy::Client::Resources, :vcr do
-  let(:content) { "hello world! #{__FILE__}" }
+  let(:content) { "hello world! #{described_class.name}" }
   let(:sha) { Digest::SHA256.hexdigest(content) }
 
   describe 'Percy::Client::Resource' do

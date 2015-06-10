@@ -1,5 +1,5 @@
 RSpec.describe Percy::Client::Builds, :vcr do
-  let(:content) { "hello world! #{__FILE__}" }
+  let(:content) { "hello world! #{described_class.name}" }
   let(:sha) { Digest::SHA256.hexdigest(content) }
 
   describe '#create_build' do
@@ -31,7 +31,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
       expect(build['data']['attributes']['pull-request-number']).to eq(123)
       expect(build['data']['relationships']['missing-resources']).to be
       expect(build['data']['relationships']['missing-resources']['data']).to be
-      expect(build['data']['relationships']['missing-resources']['data'][0]['id']).to eq(sha)
+      expect(build['data']['relationships']['missing-resources']['data'].length).to eq(1)
     end
   end
   describe '#finalize_build' do
