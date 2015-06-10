@@ -2,7 +2,10 @@ module Percy
   class Client
     module Snapshots
       def create_snapshot(build_id, resources, options = {})
-        raise ArgumentError.new('resources must be an iterable') if !resources.respond_to?(:each)
+        if !resources.respond_to?(:each)
+          raise ArgumentError.new(
+            'resources argument must be an iterable of Percy::Client::Resource objects')
+        end
         name = options[:name]
         data = {
           'data' => {

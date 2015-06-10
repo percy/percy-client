@@ -1,5 +1,5 @@
 RSpec.describe Percy::Client::Snapshots, :vcr do
-  let(:content) { 'hello world!' }
+  let(:content) { "hello world! #{__FILE__}" }
   let(:sha) { Digest::SHA256.hexdigest(content) }
 
   describe '#create_snapshot' do

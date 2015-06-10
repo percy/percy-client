@@ -5,16 +5,16 @@ http_interactions:
     uri: http://localhost:3000/api/v1/repos/fotinakis/percy-examples/builds/
     body:
       encoding: UTF-8
-      string: '{"data":{"type":"builds","attributes":{"commit-sha":"dcee2857b1e0eeb9e0edef4cd7e2146dc5cf78e2","commit-branch":"master","commit-committed-at":"2015-06-02
-        09:33:15 -0700","commit-author-name":"<COMMIT_AUTHOR_NAME>","commit-author-email":"<COMMIT_AUTHOR_EMAIL>","commit-committer-name":"<COMMIT_AUTHOR_NAME>","commit-committer-email":"<COMMIT_AUTHOR_EMAIL>","commit-message":"Bump
-        version.","pull-request-number":null}}}'
+      string: '{"data":{"type":"builds","attributes":{"commit-sha":"65478abc7f79b22365c261076cb44478714c4751","commit-branch":"master","commit-committed-at":"2015-06-08
+        16:33:11 -0700","commit-author-name":"<COMMIT_AUTHOR_NAME>","commit-author-email":"<COMMIT_AUTHOR_EMAIL>","commit-committer-name":"<COMMIT_AUTHOR_NAME>","commit-committer-email":"<COMMIT_AUTHOR_EMAIL>","commit-message":"Bump
+        client version.","pull-request-number":null}}}'
     headers:
       User-Agent:
       - Faraday v0.9.1
       Accept:
       - "*/*"
       Date:
-      - Wed, 03 Jun 2015 17:55:09 GMT
+      - Wed, 10 Jun 2015 05:47:48 GMT
       Content-Type:
       - application/vnd.api+json
       Authorization:
@@ -22,8 +22,14 @@ http_interactions:
   response:
     status:
       code: 201
-      message: 'Created '
+      message: Created
     headers:
+      Date:
+      - Wed, 10 Jun 2015 05:47:48 GMT
+      Status:
+      - 201 Created
+      Connection:
+      - close
       X-Frame-Options:
       - SAMEORIGIN
       X-Xss-Protection:
@@ -43,36 +49,30 @@ http_interactions:
       Content-Type:
       - application/json; charset=utf-8
       X-Request-Id:
-      - 9daaf4dc-dd4d-42a4-a38b-9fefae046293
+      - 7366b3ff-cf23-4afc-8a03-57c7145faa15
       X-Runtime:
-      - '0.015386'
-      Server:
-      - WEBrick/1.3.1 (Ruby/2.1.5/2014-11-13)
-      Date:
-      - Wed, 03 Jun 2015 17:55:09 GMT
-      Content-Length:
-      - '1532'
-      Connection:
-      - Keep-Alive
+      - '0.067419'
+      Transfer-Encoding:
+      - chunked
     body:
       encoding: UTF-8
-      string: '{"data":{"id":"31431","type":"builds","attributes":{"build-number":3,"state":"pending","is-pull-request":false,"pull-request-number":0,"pull-request-title":null,"approved-at":null,"created-at":"2015-06-03T17:55:09.065Z","updated-at":"2015-06-03T17:55:09.065Z"},"links":{"self":"/api/v1/builds/31431"},"relationships":{"commit":{"links":{"self":"/api/v1/builds/31431/links/commit","related":"/api/v1/builds/31431/commit"},"data":{"type":"commits","id":"3"}},"repo":{"links":{"self":"/api/v1/builds/31431/links/repo","related":"/api/v1/builds/31431/repo"}},"base-build":{"links":{"self":"/api/v1/builds/31431/links/base-build","related":"/api/v1/builds/31431/base-build"},"data":null},"approved-by":{"links":{"self":"/api/v1/builds/31431/links/approved-by","related":"/api/v1/builds/31431/approved-by"}},"snapshots":{"links":{"self":"/api/v1/builds/31431/links/snapshots","related":"/api/v1/builds/31431/snapshots"}},"comparisons":{"links":{"self":"/api/v1/builds/31431/links/comparisons","related":"/api/v1/builds/31431/comparisons"}}},"meta":{"finalize-link":"/api/v1/builds/31431/finalize","approve-link":"/api/v1/builds/31431/approve"}},"included":[{"id":"3","type":"commits","attributes":{"sha":"dcee2857b1e0eeb9e0edef4cd7e2146dc5cf78e2","branch":"master","message":"Bump
-        version.","committed-at":"2015-06-02 09:33:15 -0700","author-name":"<COMMIT_AUTHOR_NAME>","committer-name":"<COMMIT_AUTHOR_NAME>","created-at":"2015-06-03T17:55:08.000Z","updated-at":"2015-06-03T17:55:08.000Z"},"links":{"self":"/api/v1/commits/3"},"relationships":{}}]}'
+      string: '{"data":{"id":"31424","type":"builds","attributes":{"build-number":4,"state":"pending","is-pull-request":false,"pull-request-number":0,"pull-request-title":null,"approved-at":null,"created-at":"2015-06-10T05:47:48.210Z","updated-at":"2015-06-10T05:47:48.210Z"},"links":{"self":"/api/v1/builds/31424"},"relationships":{"commit":{"links":{"self":"/api/v1/builds/31424/relationships/commit","related":"/api/v1/builds/31424/commit"},"data":{"type":"commits","id":"2"}},"repo":{"links":{"self":"/api/v1/builds/31424/relationships/repo","related":"/api/v1/builds/31424/repo"}},"base-build":{"links":{"self":"/api/v1/builds/31424/relationships/base-build","related":"/api/v1/builds/31424/base-build"},"data":{"type":"builds","id":"31421"}},"approved-by":{"links":{"self":"/api/v1/builds/31424/relationships/approved-by","related":"/api/v1/builds/31424/approved-by"}},"snapshots":{"links":{"self":"/api/v1/builds/31424/relationships/snapshots","related":"/api/v1/builds/31424/snapshots"}},"comparisons":{"links":{"self":"/api/v1/builds/31424/relationships/comparisons","related":"/api/v1/builds/31424/comparisons"}},"missing-resources":{"links":{"self":"/api/v1/builds/31424/relationships/missing-resources","related":"/api/v1/builds/31424/missing-resources"}}},"meta":{"finalize-link":"/api/v1/builds/31424/finalize","approve-link":"/api/v1/builds/31424/approve"}},"included":[{"id":"2","type":"commits","attributes":{"sha":"65478abc7f79b22365c261076cb44478714c4751","branch":"master","message":"Bump
+        client version.","committed-at":"2015-06-08 16:33:11 -0700","author-name":"<COMMIT_AUTHOR_NAME>","committer-name":"<COMMIT_AUTHOR_NAME>","created-at":"2015-06-10T05:47:46.000Z","updated-at":"2015-06-10T05:47:46.000Z"},"links":{"self":"/api/v1/commits/2"}},{"id":"31421","type":"builds","attributes":{"build-number":1,"state":"finished","is-pull-request":false,"pull-request-number":0,"pull-request-title":null,"approved-at":null,"created-at":"2015-06-10T05:47:46.000Z","updated-at":"2015-06-10T05:47:47.000Z"},"links":{"self":"/api/v1/builds/31421"},"relationships":{"commit":{"links":{"self":"/api/v1/builds/31421/relationships/commit","related":"/api/v1/builds/31421/commit"},"data":{"type":"commits","id":"2"}},"repo":{"links":{"self":"/api/v1/builds/31421/relationships/repo","related":"/api/v1/builds/31421/repo"}},"base-build":{"links":{"self":"/api/v1/builds/31421/relationships/base-build","related":"/api/v1/builds/31421/base-build"}},"approved-by":{"links":{"self":"/api/v1/builds/31421/relationships/approved-by","related":"/api/v1/builds/31421/approved-by"}},"snapshots":{"links":{"self":"/api/v1/builds/31421/relationships/snapshots","related":"/api/v1/builds/31421/snapshots"}},"comparisons":{"links":{"self":"/api/v1/builds/31421/relationships/comparisons","related":"/api/v1/builds/31421/comparisons"}},"missing-resources":{"links":{"self":"/api/v1/builds/31421/relationships/missing-resources","related":"/api/v1/builds/31421/missing-resources"}}},"meta":{"finalize-link":"/api/v1/builds/31421/finalize","approve-link":"/api/v1/builds/31421/approve"}}]}'
     http_version: 
-  recorded_at: Wed, 03 Jun 2015 17:55:09 GMT
+  recorded_at: Wed, 10 Jun 2015 05:47:48 GMT
 - request:
     method: post
-    uri: http://localhost:3000/api/v1/builds/31431/snapshots/
+    uri: http://localhost:3000/api/v1/builds/31424/snapshots/
     body:
       encoding: UTF-8
-      string: '{"data":{"type":"snapshots","attributes":{"name":"homepage"},"relationships":{"resources":{"data":[{"type":"resources","id":"7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab5e3df163be08e6ca9","attributes":{"resource-url":"/foo/test.html","mimetype":null,"is-root":true}}]}}}}'
+      string: '{"data":{"type":"snapshots","attributes":{"name":"homepage"},"relationships":{"resources":{"data":[{"type":"resources","id":"b53960b166ed18f5ef9c65e387ce43f31b3e233b2732dd9e8e143058a7271369","attributes":{"resource-url":"/foo/test.html","mimetype":null,"is-root":true}}]}}}}'
     headers:
       User-Agent:
       - Faraday v0.9.1
       Accept:
       - "*/*"
       Date:
-      - Wed, 03 Jun 2015 17:55:09 GMT
+      - Wed, 10 Jun 2015 05:47:48 GMT
       Content-Type:
       - application/vnd.api+json
       Authorization:
@@ -80,8 +80,14 @@ http_interactions:
   response:
     status:
       code: 201
-      message: 'Created '
+      message: Created
     headers:
+      Date:
+      - Wed, 10 Jun 2015 05:47:48 GMT
+      Status:
+      - 201 Created
+      Connection:
+      - close
       X-Frame-Options:
       - SAMEORIGIN
       X-Xss-Protection:
@@ -101,35 +107,29 @@ http_interactions:
       Content-Type:
       - application/json; charset=utf-8
       X-Request-Id:
-      - 0f0ade8f-0d47-4eb7-97e8-c1de8f117907
+      - 07ca2efe-71bc-4770-a2e7-b422be5e9e3b
       X-Runtime:
-      - '0.028199'
-      Server:
-      - WEBrick/1.3.1 (Ruby/2.1.5/2014-11-13)
-      Date:
-      - Wed, 03 Jun 2015 17:55:09 GMT
-      Content-Length:
-      - '1574'
-      Connection:
-      - Keep-Alive
+      - '0.024594'
+      Transfer-Encoding:
+      - chunked
     body:
       encoding: UTF-8
-      string: '{"data":{"id":"29","type":"snapshots","attributes":{"name":"homepage","created-at":"2015-06-03T17:55:09.085Z","updated-at":"2015-06-03T17:55:09.085Z","finished-processing-at":null},"links":{"self":"/api/v1/snapshots/29"},"relationships":{"build":{"links":{"self":"/api/v1/snapshots/29/links/build","related":"/api/v1/snapshots/29/build"}},"screenshots":{"links":{"self":"/api/v1/snapshots/29/links/screenshots","related":"/api/v1/snapshots/29/screenshots"}},"resources":{"links":{"self":"/api/v1/snapshots/29/links/resources","related":"/api/v1/snapshots/29/resources"},"data":[{"type":"resources","id":"7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab5e3df163be08e6ca9"}]},"missing-resources":{"links":{"self":"/api/v1/snapshots/29/links/missing-resources","related":"/api/v1/snapshots/29/missing-resources"},"data":[{"type":"resources","id":"7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab5e3df163be08e6ca9"}]}}},"included":[{"id":"7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab5e3df163be08e6ca9","type":"resources","attributes":{"is-root":true,"resource-url":"http://localhost/foo/test.html","mimetype":"text/html","uploaded-at":null,"created-at":"2015-06-03T17:55:09.000Z","updated-at":"2015-06-03T17:55:09.000Z"},"links":{"self":"/api/v1/resources/7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab5e3df163be08e6ca9"},"relationships":{"snapshot":{"links":{"self":"/api/v1/resources/7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab5e3df163be08e6ca9/links/snapshot","related":"/api/v1/resources/7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab5e3df163be08e6ca9/snapshot"}}}}]}'
+      string: '{"data":{"id":"3","type":"snapshots","attributes":{"name":"homepage","created-at":"2015-06-10T05:47:48.251Z","updated-at":"2015-06-10T05:47:48.251Z","finished-processing-at":null},"links":{"self":"/api/v1/snapshots/3"},"relationships":{"build":{"links":{"self":"/api/v1/snapshots/3/relationships/build","related":"/api/v1/snapshots/3/build"}},"screenshots":{"links":{"self":"/api/v1/snapshots/3/relationships/screenshots","related":"/api/v1/snapshots/3/screenshots"}},"missing-resources":{"links":{"self":"/api/v1/snapshots/3/relationships/missing-resources","related":"/api/v1/snapshots/3/missing-resources"},"data":[{"type":"resources","id":"b53960b166ed18f5ef9c65e387ce43f31b3e233b2732dd9e8e143058a7271369"}]}}},"included":[{"id":"b53960b166ed18f5ef9c65e387ce43f31b3e233b2732dd9e8e143058a7271369","type":"resources","attributes":{},"links":{"self":"/api/v1/resources/b53960b166ed18f5ef9c65e387ce43f31b3e233b2732dd9e8e143058a7271369"}}]}'
     http_version: 
-  recorded_at: Wed, 03 Jun 2015 17:55:09 GMT
+  recorded_at: Wed, 10 Jun 2015 05:47:48 GMT
 - request:
     method: post
-    uri: http://localhost:3000/api/v1/builds/31431/resources/
+    uri: http://localhost:3000/api/v1/builds/31424/resources/
     body:
       encoding: UTF-8
-      string: '{"data":{"type":"resources","attributes":{"id":"7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab5e3df163be08e6ca9","base64-content":"aGVsbG8gd29ybGQh"}}}'
+      string: '{"data":{"type":"resources","attributes":{"id":"b53960b166ed18f5ef9c65e387ce43f31b3e233b2732dd9e8e143058a7271369","base64-content":"aGVsbG8gd29ybGQhIC9Vc2Vycy9mb3RpbmFraXMvc3JjL3BlcmN5LWNsaWVudC9zcGVjL2xpYi9wZXJjeS9jbGllbnQvcmVzb3VyY2VzX3NwZWMucmI="}}}'
     headers:
       User-Agent:
       - Faraday v0.9.1
       Accept:
       - "*/*"
       Date:
-      - Wed, 03 Jun 2015 17:55:09 GMT
+      - Wed, 10 Jun 2015 05:47:48 GMT
       Content-Type:
       - application/vnd.api+json
       Authorization:
@@ -137,8 +137,14 @@ http_interactions:
   response:
     status:
       code: 201
-      message: 'Created '
+      message: Created
     headers:
+      Date:
+      - Wed, 10 Jun 2015 05:47:49 GMT
+      Status:
+      - 201 Created
+      Connection:
+      - close
       X-Frame-Options:
       - SAMEORIGIN
       X-Xss-Protection:
@@ -158,35 +164,29 @@ http_interactions:
       Content-Type:
       - application/json; charset=utf-8
       X-Request-Id:
-      - fabf556e-c36a-4982-bae8-4d3e0eb6f279
+      - 40daddeb-0add-4f2a-8d14-758b43be8589
       X-Runtime:
-      - '0.623360'
-      Server:
-      - WEBrick/1.3.1 (Ruby/2.1.5/2014-11-13)
-      Date:
-      - Wed, 03 Jun 2015 17:55:09 GMT
-      Content-Length:
-      - '16'
-      Connection:
-      - Keep-Alive
+      - '1.314255'
+      Transfer-Encoding:
+      - chunked
     body:
       encoding: UTF-8
       string: '{"success":true}'
     http_version: 
-  recorded_at: Wed, 03 Jun 2015 17:55:09 GMT
+  recorded_at: Wed, 10 Jun 2015 05:47:49 GMT
 - request:
     method: post
-    uri: http://localhost:3000/api/v1/builds/31431/resources/
+    uri: http://localhost:3000/api/v1/builds/31424/resources/
     body:
       encoding: UTF-8
-      string: '{"data":{"type":"resources","attributes":{"id":"7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab5e3df163be08e6ca9","base64-content":"aGVsbG8gd29ybGQh"}}}'
+      string: '{"data":{"type":"resources","attributes":{"id":"b53960b166ed18f5ef9c65e387ce43f31b3e233b2732dd9e8e143058a7271369","base64-content":"aGVsbG8gd29ybGQhIC9Vc2Vycy9mb3RpbmFraXMvc3JjL3BlcmN5LWNsaWVudC9zcGVjL2xpYi9wZXJjeS9jbGllbnQvcmVzb3VyY2VzX3NwZWMucmI="}}}'
     headers:
       User-Agent:
       - Faraday v0.9.1
       Accept:
       - "*/*"
       Date:
-      - Wed, 03 Jun 2015 17:55:09 GMT
+      - Wed, 10 Jun 2015 05:47:49 GMT
       Content-Type:
       - application/vnd.api+json
       Authorization:
@@ -194,8 +194,14 @@ http_interactions:
   response:
     status:
       code: 409
-      message: 'Conflict '
+      message: Conflict
     headers:
+      Date:
+      - Wed, 10 Jun 2015 05:47:49 GMT
+      Status:
+      - 409 Conflict
+      Connection:
+      - close
       X-Frame-Options:
       - SAMEORIGIN
       X-Xss-Protection:
@@ -215,22 +221,16 @@ http_interactions:
       Content-Type:
       - application/json; charset=utf-8
       X-Request-Id:
-      - 7a0a279e-f6bf-4e7a-9c23-a89c18676b6e
+      - 30a89483-bcda-4254-9fec-a8ad52c0cace
       X-Runtime:
-      - '0.007378'
-      Server:
-      - WEBrick/1.3.1 (Ruby/2.1.5/2014-11-13)
-      Date:
-      - Wed, 03 Jun 2015 17:55:09 GMT
-      Content-Length:
-      - '165'
-      Connection:
-      - Keep-Alive
+      - '0.028442'
+      Transfer-Encoding:
+      - chunked
     body:
       encoding: UTF-8
       string: '{"errors":[{"status":"conflict","detail":"Upload failed, resource with
-        SHA-256 ''7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab5e3df163be08e6ca9''
+        SHA-256 ''b53960b166ed18f5ef9c65e387ce43f31b3e233b2732dd9e8e143058a7271369''
         already exists."}]}'
     http_version: 
-  recorded_at: Wed, 03 Jun 2015 17:55:09 GMT
+  recorded_at: Wed, 10 Jun 2015 05:47:49 GMT
 recorded_with: VCR 2.9.3
