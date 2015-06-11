@@ -3,7 +3,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
   let(:sha) { Digest::SHA256.hexdigest(content) }
 
   describe '#create_snapshot' do
-    it 'creates a build' do
+    it 'creates a snapshot' do
       build = Percy.create_build('fotinakis/percy-examples')
       resources = []
       resources << Percy::Client::Resource.new('/foo/test.html', sha: sha, is_root: true)
@@ -21,6 +21,18 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
       expect do
         Percy.create_snapshot(build['data']['id'], [])
       end.to raise_error(Percy::Client::ClientError)
+    end
+  end
+  describe '#finalize_snapshot' do
+    it 'finalizes a snapshot' do
+      build = Percy.create_build('fotinakis/percy-examples')
+      resources = []
+      resources << Percy::Client::Resource.new('/foo/test.html', sha: sha, is_root: true)
+      resources << Percy::Client::Resource.new('/css/test.css', sha: sha)
+      snapshot = Percy.create_snapshot(build['data']['id'], resources, name: 'homepage')
+
+      result = Percy.finalize_snapshot(snapshot['data']['id'])
+      expect(result).to eq({'success' => true})
     end
   end
 end

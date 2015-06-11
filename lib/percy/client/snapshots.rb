@@ -22,6 +22,10 @@ module Percy
         }
         post("#{config.api_url}/builds/#{build_id}/snapshots/", data)
       end
+
+      def finalize_snapshot(snapshot_id)
+        post("#{config.api_url}/snapshots/#{snapshot_id}/finalize", {})
+      end
     end
   end
 end
