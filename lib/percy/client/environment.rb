@@ -87,11 +87,16 @@ module Percy
         when :circle
           "#{ENV['CIRCLE_PROJECT_USERNAME']}/#{ENV['CIRCLE_PROJECT_REPONAME']}"
         else
-          origin_url = `git config --get remote.origin.url`
+          origin_url = _get_origin_url.strip
           if origin_url == ''
             raise Percy::Client::Environment::RepoNotFoundError.new('No local git repository found.')
           end
-          match = origin_url.match(Regexp.new('[:/]([^/]+\/[^/]+)\.git'))
+          match = origin_url.match(Regexp.new('[:/]([^/]+\/[^/]+?)(\.git)?\Z'))
+          if !match
+            raise Percy::Client::Environment::RepoNotFoundError.new(
+              "Could not determine repository name from URL: #{origin_url.inspect}\n" +
+              "You can manually set PERCY_REPO to fix this.")
+          end
           match[1]
         end
       end
@@ -113,6 +118,12 @@ module Percy
           # Unfortunately, codeship always returns 'false' for CI_PULL_REQUEST. For now, return nil.
         end
       end
+
+      # @private
+      def self._get_origin_url
+        `git config --get remote.origin.url`
+      end
+      class << self; private :_get_origin_url; end
     end
   end
 end

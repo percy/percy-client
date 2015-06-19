@@ -96,6 +96,37 @@ RSpec.describe Percy::Client::Environment do
         ENV['PERCY_REPO_SLUG'] = 'percy/slug'
         expect(Percy::Client::Environment.repo).to eq('percy/slug')
       end
+      it 'handles git ssh urls' do
+        expect(Percy::Client::Environment).to receive(:_get_origin_url)
+          .once.and_return('git@github.com:org-name/repo-name.git')
+        expect(Percy::Client::Environment.repo).to eq('org-name/repo-name')
+
+        expect(Percy::Client::Environment).to receive(:_get_origin_url)
+          .once.and_return('git@github.com:org-name/repo-name.org.git')
+        expect(Percy::Client::Environment.repo).to eq('org-name/repo-name.org')
+
+        expect(Percy::Client::Environment).to receive(:_get_origin_url)
+          .once.and_return('git@custom-local-hostname:org-name/repo-name.org')
+        expect(Percy::Client::Environment.repo).to eq('org-name/repo-name.org')
+      end
+      it 'handles git https urls' do
+        expect(Percy::Client::Environment).to receive(:_get_origin_url)
+          .once.and_return('https://github.com/org-name/repo-name.git')
+        expect(Percy::Client::Environment.repo).to eq('org-name/repo-name')
+
+        expect(Percy::Client::Environment).to receive(:_get_origin_url)
+          .once.and_return('https://github.com/org-name/repo-name.org.git')
+        expect(Percy::Client::Environment.repo).to eq('org-name/repo-name.org')
+
+        expect(Percy::Client::Environment).to receive(:_get_origin_url)
+          .once.and_return("https://github.com/org-name/repo-name.org\n")
+        expect(Percy::Client::Environment.repo).to eq('org-name/repo-name.org')
+      end
+      it 'errors if unable to parse local repo name' do
+        expect(Percy::Client::Environment).to receive(:_get_origin_url).once.and_return('foo')
+        expect { Percy::Client::Environment.repo }.to raise_error(
+          Percy::Client::Environment::RepoNotFoundError)
+      end
     end
   end
   context 'in Jenkins CI' do
