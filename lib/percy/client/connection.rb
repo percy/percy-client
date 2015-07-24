@@ -12,7 +12,6 @@ module Percy
           # Turn off SSLv2 and SSLv3 to force TLS because CloudFlare smartly blocks SSLv2 and SSLv3.
           @client.ssl_config.options |= OpenSSL::SSL::OP_NO_SSLv2
           @client.ssl_config.options |= OpenSSL::SSL::OP_NO_SSLv3
-          @client.ssl_config.ssl_version = :TLSv1
           @client
         end
       end
