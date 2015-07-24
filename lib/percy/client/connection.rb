@@ -1,3 +1,4 @@
+require 'openssl'
 require 'uri'
 require 'faraday'
 
@@ -8,6 +9,8 @@ module Percy
         def client
           @client ||= ::HTTPClient.new
           @client.cookie_manager = nil
+          # Turn off SSLv3 due to force TLS because CloudFlare smartly blocks SSLv3.
+          @client.ssl_config.options |= OpenSSL::SSL::OP_NO_SSLv3
           @client
         end
       end
