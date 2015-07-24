@@ -9,7 +9,8 @@ module Percy
         def client
           @client ||= ::HTTPClient.new
           @client.cookie_manager = nil
-          # Turn off SSLv3 due to force TLS because CloudFlare smartly blocks SSLv3.
+          # Turn off SSLv2 and SSLv3 to force TLS because CloudFlare smartly blocks SSLv2 and SSLv3.
+          @client.ssl_config.options |= OpenSSL::SSL::OP_NO_SSLv2
           @client.ssl_config.options |= OpenSSL::SSL::OP_NO_SSLv3
           @client
         end
