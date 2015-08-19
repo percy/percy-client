@@ -68,13 +68,13 @@ RSpec.describe Percy::Client::Environment do
         expect(Percy::Client::Environment.branch).to eq('test-branch')
       end
     end
-    describe '#commit_sha' do
+    describe '#_commit_sha' do
       it 'reads from the current local repo' do
-        expect(Percy::Client::Environment.commit_sha).to eq('HEAD')
+        expect(Percy::Client::Environment._commit_sha).to eq('HEAD')
       end
       it 'can be overridden with PERCY_COMMIT' do
         ENV['PERCY_COMMIT'] = 'test-commit'
-        expect(Percy::Client::Environment.commit_sha).to eq('test-commit')
+        expect(Percy::Client::Environment._commit_sha).to eq('test-commit')
       end
     end
     describe '#pull_request_number' do
@@ -147,9 +147,9 @@ RSpec.describe Percy::Client::Environment do
         expect(Percy::Client::Environment.branch).to eq('jenkins-target-branch')
       end
     end
-    describe '#commit_sha' do
+    describe '#_commit_sha' do
       it 'reads from the CI environment' do
-        expect(Percy::Client::Environment.commit_sha).to eq('jenkins-actual-commit')
+        expect(Percy::Client::Environment._commit_sha).to eq('jenkins-actual-commit')
       end
     end
     describe '#pull_request_number' do
@@ -182,9 +182,9 @@ RSpec.describe Percy::Client::Environment do
         expect(Percy::Client::Environment.branch).to eq('travis-branch')
       end
     end
-    describe '#commit_sha' do
+    describe '#_commit_sha' do
       it 'reads from the CI environment' do
-        expect(Percy::Client::Environment.commit_sha).to eq('travis-commit-sha')
+        expect(Percy::Client::Environment._commit_sha).to eq('travis-commit-sha')
       end
     end
     describe '#pull_request_number' do
@@ -218,9 +218,9 @@ RSpec.describe Percy::Client::Environment do
         expect(Percy::Client::Environment.branch).to eq('circle-branch')
       end
     end
-    describe '#commit_sha' do
+    describe '#_commit_sha' do
       it 'reads from the CI environment' do
-        expect(Percy::Client::Environment.commit_sha).to eq('circle-commit-sha')
+        expect(Percy::Client::Environment._commit_sha).to eq('circle-commit-sha')
       end
     end
 
@@ -253,9 +253,9 @@ RSpec.describe Percy::Client::Environment do
         expect(Percy::Client::Environment.branch).to eq('codeship-branch')
       end
     end
-    describe '#commit_sha' do
+    describe '#_commit_sha' do
       it 'reads from the CI environment' do
-        expect(Percy::Client::Environment.commit_sha).to eq('codeship-commit-sha')
+        expect(Percy::Client::Environment._commit_sha).to eq('codeship-commit-sha')
       end
     end
     describe '#pull_request_number' do
@@ -282,6 +282,13 @@ RSpec.describe Percy::Client::Environment do
         expect(commit[:message]).to_not be_empty
         expect(commit[:sha]).to_not be_empty
         expect(commit[:sha].length).to eq(40)
+      end
+      it 'returns only branch if commit data cannot be found' do
+        expect(Percy::Client::Environment).to receive(:_raw_commit_output).twice.and_return(nil)
+
+        commit = Percy::Client::Environment.commit
+        expect(commit.length).to eq(1)
+        expect(commit[:branch]).to be
       end
     end
   end

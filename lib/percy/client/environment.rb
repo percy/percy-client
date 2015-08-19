@@ -23,7 +23,27 @@ module Percy
         return :codeship if ENV['CI_NAME'] && ENV['CI_NAME'] == 'codeship'
       end
 
-      def self.commit_sha
+      # @return [Hash] All commit data from the current commit. Might be empty if commit data could
+      # not be found.
+      def self.commit
+        output = _raw_commit_output(_commit_sha)
+        output = _raw_commit_output('HEAD') if !output
+        return {branch: branch} if !output
+
+        data = {
+          sha: output.match(/COMMIT_SHA:(.*)/)[1],
+          branch: branch,
+          committed_at: output.match(/COMMITTED_DATE:(.*)/)[1],
+          author_name: output.match(/AUTHOR_NAME:(.*)/)[1],
+          author_email: output.match(/AUTHOR_EMAIL:(.*)/)[1],
+          committer_name: output.match(/COMMITTER_NAME:(.*)/)[1],
+          committer_email: output.match(/COMMITTER_EMAIL:(.*)/)[1],
+          message: output.match(/COMMIT_MESSAGE:(.*)/m)[1],
+        }
+      end
+
+      # @private
+      def self._commit_sha
         return ENV['PERCY_COMMIT'] if ENV['PERCY_COMMIT']
 
         case current_ci
@@ -40,19 +60,12 @@ module Percy
         end
       end
 
-      def self.commit
+      # @private
+      def self._raw_commit_output(commit_sha)
         format = GIT_FORMAT_LINES.join('%n')  # "git show" format uses %n for newlines.
         output = `git show --quiet #{commit_sha} --format="#{format}"`.strip
-        data = {
-          sha: output.match(/COMMIT_SHA:(.*)/)[1],
-          branch: branch,
-          committed_at: output.match(/COMMITTED_DATE:(.*)/)[1],
-          author_name: output.match(/AUTHOR_NAME:(.*)/)[1],
-          author_email: output.match(/AUTHOR_EMAIL:(.*)/)[1],
-          committer_name: output.match(/COMMITTER_NAME:(.*)/)[1],
-          committer_email: output.match(/COMMITTER_EMAIL:(.*)/)[1],
-          message: output.match(/COMMIT_MESSAGE:(.*)/m)[1],
-        }
+        return if $?.to_i != 0
+        output
       end
 
       # The name of the target branch that the build will be compared against.

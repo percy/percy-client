@@ -11,8 +11,8 @@ module Percy
           'data' => {
             'type' => 'builds',
             'attributes' => {
+              'branch' => commit_data[:branch],
               'commit-sha' => commit_data[:sha],
-              'commit-branch' => commit_data[:branch],
               'commit-committed-at' => commit_data[:committed_at],
               'commit-author-name' => commit_data[:author_name],
               'commit-author-email' => commit_data[:author_email],
