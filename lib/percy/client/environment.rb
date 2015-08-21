@@ -108,7 +108,9 @@ module Percy
         else
           origin_url = _get_origin_url.strip
           if origin_url == ''
-            raise Percy::Client::Environment::RepoNotFoundError.new('No local git repository found.')
+            raise Percy::Client::Environment::RepoNotFoundError.new(
+              'No local git repository found. ' +
+              'You can manually set PERCY_REPO to fix this.')
           end
           match = origin_url.match(Regexp.new('[:/]([^/]+\/[^/]+?)(\.git)?\Z'))
           if !match
