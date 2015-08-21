@@ -14,7 +14,6 @@ module Percy
 
       class Error < Exception; end
       class RepoNotFoundError < Exception; end
-      class BranchNotFoundError < Exception; end
 
       def self.current_ci
         return :travis if ENV['TRAVIS_BUILD_ID']
@@ -86,7 +85,8 @@ module Percy
           `git rev-parse --abbrev-ref HEAD`.strip
         end
         if result == ''
-          raise Percy::Client::Environment::BranchNotFoundError.new('No target branch found.')
+          STDERR.puts '[percy] Warning: not in a git repo, setting PERCY_BRANCH to "master".'
+          result = 'master'
         end
         result
       end
