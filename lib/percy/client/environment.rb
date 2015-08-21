@@ -62,7 +62,7 @@ module Percy
       # @private
       def self._raw_commit_output(commit_sha)
         format = GIT_FORMAT_LINES.join('%n')  # "git show" format uses %n for newlines.
-        output = `git show --quiet #{commit_sha} --format="#{format}"`.strip
+        output = `git show --quiet #{commit_sha} --format="#{format}" 2> /dev/null`.strip
         return if $?.to_i != 0
         output
       end
@@ -93,7 +93,7 @@ module Percy
       # @private
       def self._raw_branch_output
         # Discover from local git repo branch name.
-        `git rev-parse --abbrev-ref HEAD`.strip
+        `git rev-parse --abbrev-ref HEAD 2> /dev/null`.strip
       end
       class << self; private :_raw_branch_output; end
 
@@ -110,13 +110,13 @@ module Percy
           if origin_url == ''
             raise Percy::Client::Environment::RepoNotFoundError.new(
               'No local git repository found. ' +
-              'You can manually set PERCY_REPO to fix this.')
+              'You can manually set PERCY_REPO_SLUG to fix this.')
           end
           match = origin_url.match(Regexp.new('[:/]([^/]+\/[^/]+?)(\.git)?\Z'))
           if !match
             raise Percy::Client::Environment::RepoNotFoundError.new(
               "Could not determine repository name from URL: #{origin_url.inspect}\n" +
-              "You can manually set PERCY_REPO to fix this.")
+              "You can manually set PERCY_REPO_SLUG to fix this.")
           end
           match[1]
         end
