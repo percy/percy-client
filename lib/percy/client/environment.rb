@@ -81,8 +81,7 @@ module Percy
         when :codeship
           ENV['CI_BRANCH']
         else
-          # Discover from current git repo branch name.
-          `git rev-parse --abbrev-ref HEAD`.strip
+          _raw_branch_output
         end
         if result == ''
           STDERR.puts '[percy] Warning: not in a git repo, setting PERCY_BRANCH to "master".'
@@ -90,6 +89,13 @@ module Percy
         end
         result
       end
+
+      # @private
+      def self._raw_branch_output
+        # Discover from local git repo branch name.
+        `git rev-parse --abbrev-ref HEAD`.strip
+      end
+      class << self; private :_raw_branch_output; end
 
       def self.repo
         return ENV['PERCY_REPO_SLUG'] if ENV['PERCY_REPO_SLUG']
