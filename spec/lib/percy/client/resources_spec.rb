@@ -19,7 +19,7 @@ RSpec.describe Percy::Client::Resources, :vcr do
     end
     it 'can be initialized with all data' do
       resource = Percy::Client::Resource.new(
-        '/foo.html',
+        '/foo new.html',
         sha: sha,
         is_root: true,
         mimetype: 'text/html',
@@ -29,7 +29,7 @@ RSpec.describe Percy::Client::Resources, :vcr do
         'type' => 'resources',
         'id' => sha,
         'attributes' => {
-          'resource-url' => '/foo.html',
+          'resource-url' => '/foo%20new.html',
           'mimetype' => 'text/html',
           'is-root' => true,
         },
