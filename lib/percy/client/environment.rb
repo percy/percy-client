@@ -25,19 +25,29 @@ module Percy
       # @return [Hash] All commit data from the current commit. Might be empty if commit data could
       # not be found.
       def self.commit
-        output = _raw_commit_output(_commit_sha)
+        output = _raw_commit_output(_commit_sha) if _commit_sha
         output = _raw_commit_output('HEAD') if !output
-        return {branch: branch} if !output
 
+        # Use the specified SHA or, if not given, the parsed SHA at HEAD.
+        commit_sha = _commit_sha || output && output.match(/COMMIT_SHA:(.*)/)[1]
+
+        # If not running in a git repo, allow nils for certain commit attributes.
+        extract_or_nil = lambda { |regex| (output && output.match(regex) || [])[1] }
         data = {
-          sha: output.match(/COMMIT_SHA:(.*)/)[1],
+          # The only required attribute:
           branch: branch,
-          committed_at: output.match(/COMMITTED_DATE:(.*)/)[1],
-          author_name: output.match(/AUTHOR_NAME:(.*)/)[1],
-          author_email: output.match(/AUTHOR_EMAIL:(.*)/)[1],
-          committer_name: output.match(/COMMITTER_NAME:(.*)/)[1],
-          committer_email: output.match(/COMMITTER_EMAIL:(.*)/)[1],
-          message: output.match(/COMMIT_MESSAGE:(.*)/m)[1],
+          # An optional but important attribute:
+          sha: commit_sha,
+
+          # Optional attributes:
+          message: extract_or_nil.call(/COMMIT_MESSAGE:(.*)/m),
+          committed_at: extract_or_nil.call(/COMMITTED_DATE:(.*)/),
+          # These GIT_ environment vars are from the Jenkins Git Plugin, but could be
+          # used generically. This behavior may change in the future.
+          author_name: extract_or_nil.call(/AUTHOR_NAME:(.*)/) || ENV['GIT_AUTHOR_NAME'],
+          author_email: extract_or_nil.call(/AUTHOR_EMAIL:(.*)/)  || ENV['GIT_AUTHOR_EMAIL'],
+          committer_name: extract_or_nil.call(/COMMITTER_NAME:(.*)/) || ENV['GIT_COMMITTER_NAME'],
+          committer_email: extract_or_nil.call(/COMMITTER_EMAIL:(.*)/) || ENV['GIT_COMMITTER_EMAIL'],
         }
       end
 
@@ -47,15 +57,14 @@ module Percy
 
         case current_ci
         when :jenkins
-          ENV['ghprbActualCommit']
+          # Pull Request Builder Plugin OR Git Plugin.
+          ENV['ghprbActualCommit'] || ENV['GIT_COMMIT']
         when :travis
           ENV['TRAVIS_COMMIT']
         when :circle
           ENV['CIRCLE_SHA1']
         when :codeship
           ENV['CI_COMMIT_ID']
-        else
-          'HEAD'
         end
       end
 

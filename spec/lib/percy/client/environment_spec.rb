@@ -73,8 +73,8 @@ RSpec.describe Percy::Client::Environment do
       end
     end
     describe '#_commit_sha' do
-      it 'reads from the current local repo' do
-        expect(Percy::Client::Environment._commit_sha).to eq('HEAD')
+      it 'returns nil if no environment info can be found' do
+        expect(Percy::Client::Environment._commit_sha).to be_nil
       end
       it 'can be overridden with PERCY_COMMIT' do
         ENV['PERCY_COMMIT'] = 'test-commit'
@@ -277,22 +277,30 @@ RSpec.describe Percy::Client::Environment do
     describe '#commit' do
       it 'returns current local commit data' do
         commit = Percy::Client::Environment.commit
+        expect(commit[:branch]).to_not be_empty
+        expect(commit[:sha]).to_not be_empty
+        expect(commit[:sha].length).to eq(40)
+
         expect(commit[:author_email]).to match(/.+@.+\..+/)
         expect(commit[:author_name]).to_not be_empty
-        expect(commit[:branch]).to_not be_empty
         expect(commit[:committed_at]).to_not be_empty
         expect(commit[:committer_email]).to_not be_empty
         expect(commit[:committer_name]).to_not be_empty
         expect(commit[:message]).to_not be_empty
-        expect(commit[:sha]).to_not be_empty
-        expect(commit[:sha].length).to eq(40)
       end
       it 'returns only branch if commit data cannot be found' do
-        expect(Percy::Client::Environment).to receive(:_raw_commit_output).twice.and_return(nil)
+        expect(Percy::Client::Environment).to receive(:_raw_commit_output).once.and_return(nil)
 
         commit = Percy::Client::Environment.commit
-        expect(commit.length).to eq(1)
         expect(commit[:branch]).to be
+        expect(commit[:sha]).to be_nil
+
+        expect(commit[:author_email]).to be_nil
+        expect(commit[:author_name]).to be_nil
+        expect(commit[:committed_at]).to be_nil
+        expect(commit[:committer_email]).to be_nil
+        expect(commit[:committer_name]).to be_nil
+        expect(commit[:message]).to be_nil
       end
     end
   end
