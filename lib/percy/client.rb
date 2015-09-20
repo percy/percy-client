@@ -15,10 +15,19 @@ module Percy
     include Percy::Client::Resources
 
     class Error < Exception; end
-    class ClientError < Error
-      attr_accessor :env
-      def initialize(env, *args)
-        @env = env
+    class TimeoutError < Error; end
+    class ConnectionFailed < Error; end
+    class HttpError < Error
+      attr_reader :status
+      attr_reader :method
+      attr_reader :url
+      attr_reader :body
+
+      def initialize(status, method, url, body, *args)
+        @status = status
+        @method = method
+        @url = url
+        @body = body
         super(*args)
       end
     end

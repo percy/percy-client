@@ -9,7 +9,6 @@ module Percy
         def client
           @client ||= ::HTTPClient.new
           @client.cookie_manager = nil
-          # Turn off SSLv2 and SSLv3 to force TLS because CloudFlare smartly blocks SSLv2 and SSLv3.
           @client.ssl_config.options |= OpenSSL::SSL::OP_NO_SSLv2
           @client.ssl_config.options |= OpenSSL::SSL::OP_NO_SSLv3
           @client
@@ -21,12 +20,10 @@ module Percy
 
         def on_complete(env)
           case env[:status]
-          when 407
-            # Mimic the behavior that we get with proxy requests with HTTPS.
-            raise Faraday::Error::ConnectionFailed, %{407 "Proxy Authentication Required "}
           when CLIENT_ERROR_STATUS_RANGE
-            raise Percy::Client::ClientError.new(
-              env, "Got #{env.status} (#{env.method.upcase} #{env.url}):\n#{env.body}")
+            raise Percy::Client::HttpError.new(
+              env.status, env.method.upcase, env.url, env.body,
+              "Got #{env.status} (#{env.method.upcase} #{env.url}):\n#{env.body}")
           end
         end
       end
@@ -45,18 +42,46 @@ module Percy
       end
 
       def get(path)
-        response = connection.get do |request|
-          request.url(path)
-          request.headers['Content-Type'] = 'application/vnd.api+json'
+        retries = 3
+        begin
+          response = connection.get do |request|
+            request.url(path)
+            request.headers['Content-Type'] = 'application/vnd.api+json'
+          end
+        rescue Faraday::TimeoutError
+          raise Percy::Client::TimeoutError
+        rescue Faraday::ConnectionFailed
+          raise Percy::Client::ConnectionFailed
+        rescue Percy::Client::HttpError => e
+          # Retry on 502 errors.
+          if e.status == 502 && (retries -= 1) >= 0
+            sleep(rand(1..3))
+            retry
+          end
+          raise e
         end
         JSON.parse(response.body)
       end
 
       def post(path, data)
-        response = connection.post do |request|
-          request.url(path)
-          request.headers['Content-Type'] = 'application/vnd.api+json'
-          request.body = data.to_json
+        retries = 3
+        begin
+          response = connection.post do |request|
+            request.url(path)
+            request.headers['Content-Type'] = 'application/vnd.api+json'
+            request.body = data.to_json
+          end
+        rescue Faraday::TimeoutError
+          raise Percy::Client::TimeoutError
+        rescue Faraday::ConnectionFailed
+          raise Percy::Client::ConnectionFailed
+        rescue Percy::Client::HttpError => e
+          # Retry on 502 errors.
+          if e.status == 502 && (retries -= 1) >= 0
+            sleep(rand(1..3))
+            retry
+          end
+          raise e
         end
         JSON.parse(response.body)
       end

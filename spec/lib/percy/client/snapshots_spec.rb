@@ -20,7 +20,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
       build = Percy.create_build('fotinakis/percy-examples')
       expect do
         Percy.create_snapshot(build['data']['id'], [])
-      end.to raise_error(Percy::Client::ClientError)
+      end.to raise_error(Percy::Client::HttpError)
     end
   end
   describe '#finalize_snapshot' do
