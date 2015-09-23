@@ -20,6 +20,7 @@ module Percy
         return :jenkins if ENV['JENKINS_URL'] && ENV['ghprbPullId']  # Pull Request Builder plugin.
         return :circle if ENV['CIRCLECI']
         return :codeship if ENV['CI_NAME'] && ENV['CI_NAME'] == 'codeship'
+        return :drone if ENV['DRONE'] == 'true'
       end
 
       # @return [Hash] All commit data from the current commit. Might be empty if commit data could
@@ -65,6 +66,8 @@ module Percy
           ENV['CIRCLE_SHA1']
         when :codeship
           ENV['CI_COMMIT_ID']
+        when :drone
+          ENV['DRONE_COMMIT']
         end
       end
 
@@ -89,6 +92,8 @@ module Percy
           ENV['CIRCLE_BRANCH']
         when :codeship
           ENV['CI_BRANCH']
+        when :drone
+          ENV['DRONE_BRANCH']
         else
           _raw_branch_output
         end
@@ -146,6 +151,8 @@ module Percy
           end
         when :codeship
           # Unfortunately, codeship always returns 'false' for CI_PULL_REQUEST. For now, return nil.
+        when :drone
+          ENV['CI_PULL_REQUEST']
         end
       end
 

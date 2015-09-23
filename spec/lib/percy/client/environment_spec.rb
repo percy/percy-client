@@ -32,6 +32,13 @@ RSpec.describe Percy::Client::Environment do
     ENV['CI_BRANCH'] = nil
     ENV['CI_PULL_REQUEST'] = nil
     ENV['CI_COMMIT_ID'] = nil
+
+    # Unset Drone vars.
+    ENV['CI'] = nil
+    ENV['DRONE'] = nil
+    ENV['DRONE_COMMIT'] = nil
+    ENV['DRONE_BRANCH'] = nil
+    ENV['CI_PULL_REQUEST'] = nil
   end
 
   before(:each) do
@@ -265,6 +272,40 @@ RSpec.describe Percy::Client::Environment do
     describe '#pull_request_number' do
       it 'reads from the CI environment' do
         expect(Percy::Client::Environment.pull_request_number).to be_nil
+      end
+    end
+    describe '#repo' do
+      it 'returns the current local repo name' do
+        expect(Percy::Client::Environment.repo).to eq('percy/percy-client')
+      end
+    end
+  end
+  context 'in Drone' do
+    before(:each) do
+      ENV['DRONE'] = 'true'
+      ENV['DRONE_COMMIT'] = 'drone-commit-sha'
+      ENV['DRONE_BRANCH'] = 'drone-branch'
+      ENV['CI_PULL_REQUEST'] = '123'
+    end
+
+    describe '#current_ci' do
+      it 'is :drone' do
+        expect(Percy::Client::Environment.current_ci).to eq(:drone)
+      end
+    end
+    describe '#branch' do
+      it 'reads from the CI environment' do
+        expect(Percy::Client::Environment.branch).to eq('drone-branch')
+      end
+    end
+    describe '#_commit_sha' do
+      it 'reads from the CI environment' do
+        expect(Percy::Client::Environment._commit_sha).to eq('drone-commit-sha')
+      end
+    end
+    describe '#pull_request_number' do
+      it 'reads from the CI environment' do
+        expect(Percy::Client::Environment.pull_request_number).to eq('123')
       end
     end
     describe '#repo' do
