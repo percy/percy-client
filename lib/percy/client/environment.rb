@@ -20,6 +20,15 @@ module Percy
         return :jenkins if ENV['JENKINS_URL'] && ENV['ghprbPullId']  # Pull Request Builder plugin.
         return :circle if ENV['CIRCLECI']
         return :codeship if ENV['CI_NAME'] && ENV['CI_NAME'] == 'codeship'
+        return :drone if ENV['CI_NAME'] == 'DRONE'
+      end
+      
+      def self.ci_name
+        case current_ci
+        when :travis, :circle  then current_ci.to_s.upcase
+        when :drone, :codeship then ENV['CI_NAME'].upcase
+        when :jenkins          then 'JENKINS'
+        end
       end
 
       # @return [Hash] All commit data from the current commit. Might be empty if commit data could
@@ -59,8 +68,8 @@ module Percy
         when :jenkins
           # Pull Request Builder Plugin OR Git Plugin.
           ENV['ghprbActualCommit'] || ENV['GIT_COMMIT']
-        when :travis
-          ENV['TRAVIS_COMMIT']
+        when :travis, :drone
+          ENV["#{ci_name}_COMMIT"]
         when :circle
           ENV['CIRCLE_SHA1']
         when :codeship
@@ -83,10 +92,8 @@ module Percy
         result = case current_ci
         when :jenkins
           ENV['ghprbTargetBranch']
-        when :travis
-          ENV['TRAVIS_BRANCH']
-        when :circle
-          ENV['CIRCLE_BRANCH']
+        when :travis, :circle, :drone
+          ENV["#{ci_name}_BRANCH"]
         when :codeship
           ENV['CI_BRANCH']
         else
@@ -140,7 +147,7 @@ module Percy
           ENV['ghprbPullId']
         when :travis
           ENV['TRAVIS_PULL_REQUEST'] if ENV['TRAVIS_PULL_REQUEST'] != 'false'
-        when :circle
+        when :circle, :drone
           if ENV['CI_PULL_REQUESTS'] && ENV['CI_PULL_REQUESTS'] != ''
             ENV['CI_PULL_REQUESTS'].split('/')[-1]
           end
