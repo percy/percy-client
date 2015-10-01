@@ -24,10 +24,14 @@ RSpec.describe Percy do
     end
   end
   describe '#reset' do
-    it 'clears the main global config object' do
+    it 'clears certain instance variables' do
       old_config = Percy.client.config
+      old_client = Percy.client
+      old_logger = Percy.logger
       Percy.reset
       expect(old_config).to_not eq(Percy.config)
+      expect(old_client).to_not eq(Percy.client)
+      expect(old_logger).to_not eq(Percy.logger)
     end
   end
 end

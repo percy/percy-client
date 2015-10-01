@@ -9,6 +9,7 @@ module Percy
   def self.reset
     @config = nil
     @client = nil
+    @logger = nil
   end
 
   # API client based on configured options.
