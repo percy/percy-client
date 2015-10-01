@@ -39,7 +39,9 @@ module Percy
           data['data'].merge!(relationships_data)
         end
 
-        post("#{config.api_url}/repos/#{repo}/builds/", data)
+        build_data = post("#{config.api_url}/repos/#{repo}/builds/", data)
+        Percy.logger.debug { "Build #{build_data['data']['id']} created" }
+        build_data
       end
 
       def finalize_build(build_id)
