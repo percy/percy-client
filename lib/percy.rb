@@ -1,3 +1,4 @@
+require 'logger'
 require 'percy/client'
 
 module Percy
@@ -16,6 +17,17 @@ module Percy
   def self.client
     @client = Percy::Client.new(config: config) if !defined?(@client) || !@client
     @client
+  end
+
+  # @private
+  def self.logger
+    @logger if defined?(@logger)
+    @logger ||= Logger.new(STDOUT)
+    @logger.level = config.debug ? Logger::DEBUG : Logger::INFO
+    @logger.formatter = proc do |severity, datetime, progname, msg|
+       "[percy][#{severity}] #{msg}\n"
+    end
+    @logger
   end
 
   # @private
