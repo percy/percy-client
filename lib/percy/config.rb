@@ -7,6 +7,7 @@ module Percy
 
     attr_accessor :access_token
     attr_accessor :api_url
+    attr_accessor :debug
     attr_accessor :repo
 
     # List of configurable keys for {Percy::Client}
@@ -15,6 +16,7 @@ module Percy
       @keys ||= [
         :access_token,
         :api_url,
+        :debug,
         :repo,
       ]
     end
@@ -25,6 +27,10 @@ module Percy
 
     def api_url
       @api_url ||= ENV['PERCY_API'] || 'https://percy.io/api/v1'
+    end
+
+    def debug
+      @debug ||= ENV['PERCY_DEBUG'] == '1'
     end
 
     def repo

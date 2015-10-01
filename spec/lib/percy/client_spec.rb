@@ -7,10 +7,12 @@ RSpec.describe Percy::Client do
       expect(client.config.keys).to eq([
         :access_token,
         :api_url,
+        :debug,
         :repo,
       ])
       expect(client.config.access_token).to be_nil
       expect(client.config.api_url).to eq(ENV['PERCY_API'])
+      expect(client.config.debug).to eq(false)
       expect(client.config.repo).to eq('percy/percy-client')
     end
   end
