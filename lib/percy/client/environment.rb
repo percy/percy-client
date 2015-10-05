@@ -156,6 +156,14 @@ module Percy
         end
       end
 
+      def self.parallel_nonce
+        return ENV['PERCY_PARALLEL_NONCE'] if ENV['PERCY_PARALLEL_NONCE']
+      end
+
+      def self.parallel_total_shards
+        return Integer(ENV['PERCY_PARALLEL_TOTAL']) if ENV['PERCY_PARALLEL_TOTAL']
+      end
+
       # @private
       def self._get_origin_url
         `git config --get remote.origin.url`

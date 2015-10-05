@@ -5,6 +5,8 @@ RSpec.describe Percy::Client::Environment do
     ENV['PERCY_BRANCH'] = nil
     ENV['PERCY_PULL_REQUEST'] = nil
     ENV['PERCY_REPO_SLUG'] = nil
+    ENV['PERCY_PARALLEL_NONCE'] = nil
+    ENV['PERCY_PARALLEL_TOTAL'] = nil
 
     # Unset Travis vars.
     ENV['TRAVIS_BUILD_ID'] = nil
@@ -137,6 +139,24 @@ RSpec.describe Percy::Client::Environment do
         expect(Percy::Client::Environment).to receive(:_get_origin_url).once.and_return('foo')
         expect { Percy::Client::Environment.repo }.to raise_error(
           Percy::Client::Environment::RepoNotFoundError)
+      end
+    end
+    describe '#parallel_nonce' do
+      it 'returns nil' do
+        expect(Percy::Client::Environment.parallel_nonce).to be_nil
+      end
+      it 'can be set with environment var' do
+        ENV['PERCY_PARALLEL_NONCE'] = 'nonce'
+        expect(Percy::Client::Environment.parallel_nonce).to eq('nonce')
+      end
+    end
+    describe '#parallel_total_shards' do
+      it 'returns nil' do
+        expect(Percy::Client::Environment.parallel_nonce).to be_nil
+      end
+      it 'can be set with environment var' do
+        ENV['PERCY_PARALLEL_TOTAL'] = '3'
+        expect(Percy::Client::Environment.parallel_total_shards).to eq(3)
       end
     end
   end

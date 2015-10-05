@@ -6,6 +6,13 @@ module Percy
           Percy::Client::Environment.pull_request_number
         commit_data = options[:commit_data] || Percy::Client::Environment.commit
         resources = options[:resources]
+        parallel_nonce = options[:parallel_nonce] || Percy::Client::Environment.parallel_nonce
+        parallel_total_shards = options[:parallel_total_shards] \
+          || Percy::Client::Environment.parallel_total_shards
+
+        if (parallel_nonce && !parallel_total_shards) || (!parallel_nonce && parallel_total_shards)
+          raise ArgumentError.new('If parallel_nonce is given, parallel_total_shards is required.')
+        end
 
         data = {
           'data' => {
@@ -20,6 +27,8 @@ module Percy
               'commit-committer-email' => commit_data[:committer_email],
               'commit-message' => commit_data[:message],
               'pull-request-number' => pull_request_number,
+              'parallel-nonce' => parallel_nonce,
+              'parallel-total-shards' => parallel_total_shards,
             },
           }
         }
@@ -41,6 +50,12 @@ module Percy
 
         build_data = post("#{config.api_url}/repos/#{repo}/builds/", data)
         Percy.logger.debug { "Build #{build_data['data']['id']} created" }
+        parallelism_msg = if parallel_total_shards
+          "#{parallel_total_shards} shards detected (nonce: #{parallel_nonce.inspect})"
+        else
+          'not detected'
+        end
+        Percy.logger.debug { "Parallel test environment: #{parallelism_msg}" }
         build_data
       end
 

@@ -33,6 +33,16 @@ RSpec.describe Percy::Client::Builds, :vcr do
       expect(build['data']['relationships']['missing-resources']['data']).to be
       expect(build['data']['relationships']['missing-resources']['data'].length).to eq(1)
     end
+    context 'parallel test environment' do
+      it 'raises an error if either parallel_nonce or parallel_total_shards is given alone' do
+        expect do
+          Percy.create_build('fotinakis/percy-examples', parallel_nonce: 123)
+        end.to raise_error(ArgumentError)
+        expect do
+          Percy.create_build('fotinakis/percy-examples', parallel_total_shards: 2)
+        end.to raise_error(ArgumentError)
+      end
+    end
   end
   describe '#finalize_build' do
     it 'finalizes a build' do
