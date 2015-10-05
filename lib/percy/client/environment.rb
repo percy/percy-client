@@ -156,12 +156,24 @@ module Percy
         end
       end
 
+      # A nonce which will be the same for all nodes of a parallel build, used to identify shards
+      # of the same CI build. This is usually just the CI environment build ID.
       def self.parallel_nonce
         return ENV['PERCY_PARALLEL_NONCE'] if ENV['PERCY_PARALLEL_NONCE']
+
+        case current_ci
+        when :circle
+          ENV['CIRCLE_BUILD_NUM']
+        end
       end
 
       def self.parallel_total_shards
         return Integer(ENV['PERCY_PARALLEL_TOTAL']) if ENV['PERCY_PARALLEL_TOTAL']
+
+        case current_ci
+        when :circle
+          Integer(ENV['CIRCLE_NODE_TOTAL']) if !ENV['CIRCLE_NODE_TOTAL'].empty?
+        end
       end
 
       # @private

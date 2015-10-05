@@ -27,6 +27,7 @@ RSpec.describe Percy::Client::Environment do
     ENV['CIRCLE_BRANCH'] = nil
     ENV['CIRCLE_PROJECT_USERNAME'] = nil
     ENV['CIRCLE_PROJECT_REPONAME'] = nil
+    ENV['CIRCLE_BUILD_NUM'] = nil
     ENV['CI_PULL_REQUESTS'] = nil
 
     # Unset Codeship vars.
@@ -236,6 +237,8 @@ RSpec.describe Percy::Client::Environment do
       ENV['CIRCLE_SHA1'] = 'circle-commit-sha'
       ENV['CIRCLE_PROJECT_USERNAME'] = 'circle'
       ENV['CIRCLE_PROJECT_REPONAME'] = 'repo-name'
+      ENV['CIRCLE_BUILD_NUM'] = 'build-number'
+      ENV['CIRCLE_NODE_TOTAL'] = '2'
       ENV['CI_PULL_REQUESTS'] = 'https://github.com/owner/repo-name/pull/123'
     end
 
@@ -263,6 +266,20 @@ RSpec.describe Percy::Client::Environment do
     describe '#repo' do
       it 'reads from the CI environment' do
         expect(Percy::Client::Environment.repo).to eq('circle/repo-name')
+      end
+    end
+    describe '#parallel_nonce' do
+      it 'reads from the CI environment (the CI build ID)' do
+        expect(Percy::Client::Environment.parallel_nonce).to eq('build-number')
+      end
+    end
+    describe '#parallel_total_shards' do
+      it 'reads from the CI environment (the number of nodes)' do
+        expect(Percy::Client::Environment.parallel_total_shards).to eq(2)
+      end
+      it 'is nil if empty' do
+        ENV['CIRCLE_NODE_TOTAL'] = ''
+        expect(Percy::Client::Environment.parallel_total_shards).to be_nil
       end
     end
   end
