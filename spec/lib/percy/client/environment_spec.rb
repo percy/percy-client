@@ -10,10 +10,12 @@ RSpec.describe Percy::Client::Environment do
 
     # Unset Travis vars.
     ENV['TRAVIS_BUILD_ID'] = nil
+    ENV['TRAVIS_BUILD_NUMBER'] = nil
     ENV['TRAVIS_COMMIT'] = nil
     ENV['TRAVIS_BRANCH'] = nil
     ENV['TRAVIS_PULL_REQUEST'] = nil
     ENV['TRAVIS_REPO_SLUG'] = nil
+    ENV['CI_NODE_TOTAL'] = nil
 
     # Unset Jenkins vars.
     ENV['JENKINS_URL'] = nil
@@ -47,6 +49,7 @@ RSpec.describe Percy::Client::Environment do
   before(:each) do
     @original_env = {
       'TRAVIS_BUILD_ID' => ENV['TRAVIS_BUILD_ID'],
+      'TRAVIS_BUILD_NUMBER' => ENV['TRAVIS_BUILD_NUMBER'],
       'TRAVIS_COMMIT' => ENV['TRAVIS_COMMIT'],
       'TRAVIS_BRANCH' => ENV['TRAVIS_BRANCH'],
       'TRAVIS_PULL_REQUEST' => ENV['TRAVIS_PULL_REQUEST'],
@@ -57,6 +60,7 @@ RSpec.describe Percy::Client::Environment do
   after(:each) do
     clear_env_vars
     ENV['TRAVIS_BUILD_ID'] = @original_env['TRAVIS_BUILD_ID']
+    ENV['TRAVIS_BUILD_NUMBER'] = @original_env['TRAVIS_BUILD_NUMBER']
     ENV['TRAVIS_COMMIT'] = @original_env['TRAVIS_COMMIT']
     ENV['TRAVIS_BRANCH'] = @original_env['TRAVIS_BRANCH']
     ENV['TRAVIS_PULL_REQUEST'] = @original_env['TRAVIS_PULL_REQUEST']
@@ -198,10 +202,12 @@ RSpec.describe Percy::Client::Environment do
   context 'in Travis CI' do
     before(:each) do
       ENV['TRAVIS_BUILD_ID'] = '1234'
+      ENV['TRAVIS_BUILD_NUMBER'] = 'build-number'
       ENV['TRAVIS_PULL_REQUEST'] = '256'
       ENV['TRAVIS_REPO_SLUG'] = 'travis/repo-slug'
       ENV['TRAVIS_COMMIT'] = 'travis-commit-sha'
       ENV['TRAVIS_BRANCH'] = 'travis-branch'
+      ENV['CI_NODE_TOTAL'] = '3'
     end
 
     describe '#current_ci' do
@@ -227,6 +233,20 @@ RSpec.describe Percy::Client::Environment do
     describe '#repo' do
       it 'reads from the CI environment' do
         expect(Percy::Client::Environment.repo).to eq('travis/repo-slug')
+      end
+    end
+    describe '#parallel_nonce' do
+      it 'reads from the CI environment (the CI build number)' do
+        expect(Percy::Client::Environment.parallel_nonce).to eq('build-number')
+      end
+    end
+    describe '#parallel_total_shards' do
+      it 'reads from the CI environment (the number of nodes)' do
+        expect(Percy::Client::Environment.parallel_total_shards).to eq(3)
+      end
+      it 'is nil if empty' do
+        ENV['CI_NODE_TOTAL'] = ''
+        expect(Percy::Client::Environment.parallel_total_shards).to be_nil
       end
     end
   end
@@ -269,7 +289,7 @@ RSpec.describe Percy::Client::Environment do
       end
     end
     describe '#parallel_nonce' do
-      it 'reads from the CI environment (the CI build ID)' do
+      it 'reads from the CI environment (the CI build number)' do
         expect(Percy::Client::Environment.parallel_nonce).to eq('build-number')
       end
     end

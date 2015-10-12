@@ -164,6 +164,8 @@ module Percy
         case current_ci
         when :circle
           ENV['CIRCLE_BUILD_NUM']
+        when :travis
+          ENV['TRAVIS_BUILD_NUMBER']
         end
       end
 
@@ -172,7 +174,12 @@ module Percy
 
         case current_ci
         when :circle
-          Integer(ENV['CIRCLE_NODE_TOTAL']) if !ENV['CIRCLE_NODE_TOTAL'].empty?
+          var = 'CIRCLE_NODE_TOTAL'
+          Integer(ENV[var]) if ENV[var] && !ENV[var].empty?
+        when :travis
+          # Support for https://github.com/ArturT/knapsack
+          var = 'CI_NODE_TOTAL'
+          Integer(ENV[var]) if ENV[var] && !ENV[var].empty?
         end
       end
 
