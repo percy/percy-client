@@ -21,6 +21,7 @@ module Percy
         return :circle if ENV['CIRCLECI']
         return :codeship if ENV['CI_NAME'] && ENV['CI_NAME'] == 'codeship'
         return :drone if ENV['DRONE'] == 'true'
+        return :semaphore if ENV['SEMAPHORE'] == 'true'
       end
 
       # @return [Hash] All commit data from the current commit. Might be empty if commit data could
@@ -68,6 +69,8 @@ module Percy
           ENV['CI_COMMIT_ID']
         when :drone
           ENV['DRONE_COMMIT']
+        when :semaphore
+          ENV['REVISION']
         end
       end
 
@@ -94,6 +97,8 @@ module Percy
           ENV['CI_BRANCH']
         when :drone
           ENV['DRONE_BRANCH']
+        when :semaphore
+          ENV['BRANCH_NAME']
         else
           _raw_branch_output
         end
@@ -119,6 +124,8 @@ module Percy
           ENV['TRAVIS_REPO_SLUG']
         when :circle
           "#{ENV['CIRCLE_PROJECT_USERNAME']}/#{ENV['CIRCLE_PROJECT_REPONAME']}"
+        when :semaphore
+          ENV['SEMAPHORE_REPO_SLUG']
         else
           origin_url = _get_origin_url.strip
           if origin_url == ''
@@ -153,6 +160,8 @@ module Percy
           # Unfortunately, codeship always returns 'false' for CI_PULL_REQUEST. For now, return nil.
         when :drone
           ENV['CI_PULL_REQUEST']
+        when :semaphore
+          ENV['PULL_REQUEST_NUMBER']
         end
       end
 
@@ -166,6 +175,8 @@ module Percy
           ENV['CIRCLE_BUILD_NUM']
         when :travis
           ENV['TRAVIS_BUILD_NUMBER']
+        when :semaphore
+          ENV['SEMAPHORE_BUILD_NUMBER']
         end
       end
 
@@ -180,6 +191,8 @@ module Percy
           # Support for https://github.com/ArturT/knapsack
           var = 'CI_NODE_TOTAL'
           Integer(ENV[var]) if ENV[var] && !ENV[var].empty?
+        when :semaphore
+          Integer(ENV['SEMAPHORE_THREAD_COUNT'])
         end
       end
 
