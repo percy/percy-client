@@ -44,6 +44,16 @@ RSpec.describe Percy::Client::Environment do
     ENV['DRONE_COMMIT'] = nil
     ENV['DRONE_BRANCH'] = nil
     ENV['CI_PULL_REQUEST'] = nil
+
+    # Unset Semaphore CI vars
+    ENV['CI'] = nil
+    ENV['SEMAPHORE'] = nil
+    ENV['REVISION'] = nil
+    ENV['BRANCH_NAME'] = nil
+    ENV['SEMAPHORE_REPO_SLUG'] = nil
+    ENV['SEMAPHORE_BUILD_NUMBER'] = nil
+    ENV['SEMAPHORE_CURRENT_THREAD'] = nil
+    ENV['PULL_REQUEST_NUMBER'] = nil
   end
 
   before(:each) do
@@ -368,6 +378,54 @@ RSpec.describe Percy::Client::Environment do
     describe '#repo' do
       it 'returns the current local repo name' do
         expect(Percy::Client::Environment.repo).to eq('percy/percy-client')
+      end
+    end
+  end
+  context 'in Semaphoe CI' do
+    before(:each) do
+      ENV['SEMAPHORE'] = 'true'
+      ENV['BRANCH_NAME'] = 'semaphore-branch'
+      ENV['REVISION'] = 'semaphore-commit-sha'
+      ENV['SEMAPHORE_REPO_SLUG'] = 'repo-owner/repo-name'
+      ENV['SEMAPHORE_BUILD_NUMBER'] = 'semaphore-build-number'
+      ENV['SEMAPHORE_THREAD_COUNT'] = '2'
+      ENV['PULL_REQUEST_NUMBER'] = '123'
+    end
+
+    describe '#current_ci' do
+      it 'is :semaphore' do
+        expect(Percy::Client::Environment.current_ci).to eq(:semaphore)
+      end
+    end
+    describe '#branch' do
+      it 'reads from the CI environment' do
+        expect(Percy::Client::Environment.branch).to eq('semaphore-branch')
+      end
+    end
+    describe '#_commit_sha' do
+      it 'reads from the CI environment' do
+        expect(Percy::Client::Environment._commit_sha).to eq('semaphore-commit-sha')
+      end
+    end
+
+    describe '#pull_request_number' do
+      it 'reads from the CI environment' do
+        expect(Percy::Client::Environment.pull_request_number).to eq('123')
+      end
+    end
+    describe '#repo' do
+      it 'reads from the CI environment' do
+        expect(Percy::Client::Environment.repo).to eq('repo-owner/repo-name')
+      end
+    end
+    describe '#parallel_nonce' do
+      it 'reads from the CI environment (the CI build number)' do
+        expect(Percy::Client::Environment.parallel_nonce).to eq('semaphore-build-number')
+      end
+    end
+    describe '#parallel_total_shards' do
+      it 'reads from the CI environment (the number of nodes)' do
+        expect(Percy::Client::Environment.parallel_total_shards).to eq(2)
       end
     end
   end
