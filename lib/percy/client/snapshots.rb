@@ -7,11 +7,13 @@ module Percy
             'resources argument must be an iterable of Percy::Client::Resource objects')
         end
         name = options[:name]
+        enable_javascript = options[:enable_javascript]
         data = {
           'data' => {
             'type' => 'snapshots',
             'attributes' => {
               'name' => name,
+              'enable-javascript' => enable_javascript,
             },
             'relationships' => {
               'resources' => {

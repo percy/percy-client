@@ -8,7 +8,12 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
       resources = []
       resources << Percy::Client::Resource.new('/foo/test.html', sha: sha, is_root: true)
       resources << Percy::Client::Resource.new('/css/test.css', sha: sha)
-      snapshot = Percy.create_snapshot(build['data']['id'], resources, name: 'homepage')
+      snapshot = Percy.create_snapshot(
+        build['data']['id'],
+        resources,
+        name: 'homepage',
+        enable_javascript: true,
+      )
 
       expect(snapshot['data']).to be
       expect(snapshot['data']['id']).to be
