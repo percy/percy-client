@@ -381,7 +381,7 @@ RSpec.describe Percy::Client::Environment do
       end
     end
   end
-  context 'in Semaphoe CI' do
+  context 'in Semaphore CI' do
     before(:each) do
       ENV['SEMAPHORE'] = 'true'
       ENV['BRANCH_NAME'] = 'semaphore-branch'

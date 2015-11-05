@@ -82,7 +82,7 @@ module Percy
         output
       end
 
-      # The name of the target branch that the build will be compared against.
+      # The name of the current branch.
       def self.branch
         return ENV['PERCY_BRANCH'] if ENV['PERCY_BRANCH']
 
