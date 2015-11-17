@@ -37,6 +37,7 @@ RSpec.describe Percy::Client::Environment do
     ENV['CI_BRANCH'] = nil
     ENV['CI_PULL_REQUEST'] = nil
     ENV['CI_COMMIT_ID'] = nil
+    ENV['CI_BUILD_NUMBER'] = nil
 
     # Unset Drone vars.
     ENV['CI'] = nil
@@ -317,6 +318,7 @@ RSpec.describe Percy::Client::Environment do
     before(:each) do
       ENV['CI_NAME'] = 'codeship'
       ENV['CI_BRANCH'] = 'codeship-branch'
+      ENV['CI_BUILD_NUMBER'] = 'codeship-build-number'
       ENV['CI_PULL_REQUEST'] = 'false'  # This is always false on Codeship, unfortunately.
       ENV['CI_COMMIT_ID'] = 'codeship-commit-sha'
     end
@@ -344,6 +346,11 @@ RSpec.describe Percy::Client::Environment do
     describe '#repo' do
       it 'returns the current local repo name' do
         expect(Percy::Client::Environment.repo).to eq('percy/percy-client')
+      end
+    end
+    describe '#parallel_nonce' do
+      it 'reads from the CI environment (the CI build number)' do
+        expect(Percy::Client::Environment.parallel_nonce).to eq('codeship-build-number')
       end
     end
   end

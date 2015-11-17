@@ -171,10 +171,12 @@ module Percy
         return ENV['PERCY_PARALLEL_NONCE'] if ENV['PERCY_PARALLEL_NONCE']
 
         case current_ci
-        when :circle
-          ENV['CIRCLE_BUILD_NUM']
         when :travis
           ENV['TRAVIS_BUILD_NUMBER']
+        when :circle
+          ENV['CIRCLE_BUILD_NUM']
+        when :codeship
+          ENV['CI_BUILD_NUMBER']
         when :semaphore
           ENV['SEMAPHORE_BUILD_NUMBER']
         end
