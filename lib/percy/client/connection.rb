@@ -19,12 +19,32 @@ module Percy
         CLIENT_ERROR_STATUS_RANGE = 400...600
 
         def on_complete(env)
+          error_class = nil
           case env[:status]
-          when CLIENT_ERROR_STATUS_RANGE
-            raise Percy::Client::HttpError.new(
-              env.status, env.method.upcase, env.url, env.body,
-              "Got #{env.status} (#{env.method.upcase} #{env.url}):\n#{env.body}")
+          when 400
+            error_class = Percy::Client::BadRequestError
+          when 401
+            error_class = Percy::Client::UnauthorizedError
+          when 402
+            error_class = Percy::Client::PaymentRequiredError
+          when 403
+            error_class = Percy::Client::ForbiddenError
+          when 404
+            error_class = Percy::Client::NotFoundError
+          when 409
+            error_class = Percy::Client::ConflictError
+          when 500
+            error_class = Percy::Client::InternalServerError
+          when 502
+            error_class = Percy::Client::BadGatewayError
+          when 503
+            error_class = Percy::Client::ServiceUnavailableError
+          when CLIENT_ERROR_STATUS_RANGE  # Catchall.
+            error_class = Percy::Client::HttpError
           end
+          raise error_class.new(
+              env.status, env.method.upcase, env.url, env.body,
+              "Got #{env.status} (#{env.method.upcase} #{env.url}):\n#{env.body}") if error_class
         end
       end
 
@@ -41,8 +61,8 @@ module Percy
         @connection
       end
 
-      def get(path)
-        retries = 3
+      def get(path, options = {})
+        retries = options[:retries] || 3
         begin
           response = connection.get do |request|
             request.url(path)
@@ -63,8 +83,8 @@ module Percy
         JSON.parse(response.body)
       end
 
-      def post(path, data)
-        retries = 3
+      def post(path, data, options = {})
+        retries = options[:retries] || 3
         begin
           response = connection.post do |request|
             request.url(path)
@@ -75,9 +95,8 @@ module Percy
           raise Percy::Client::TimeoutError
         rescue Faraday::ConnectionFailed
           raise Percy::Client::ConnectionFailed
-        rescue Percy::Client::HttpError => e
-          # Retry on 502 errors.
-          if e.status == 502 && (retries -= 1) >= 0
+        rescue Percy::Client::ServerError => e
+          if (retries -= 1) >= 0
             sleep(rand(1..3))
             retry
           end
