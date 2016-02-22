@@ -8,11 +8,109 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
       resources = []
       resources << Percy::Client::Resource.new('/foo/test.html', sha: sha, is_root: true)
       resources << Percy::Client::Resource.new('/css/test.css', sha: sha)
+
+      # Whitebox test to catch POST data that is sent but is not returned in the API response.
+      expect_any_instance_of(Percy::Client).to \
+        receive(:post)
+        .with(/snapshots\/$/, {
+          'data' => {
+            'type' => 'snapshots',
+            'attributes' => {
+              'name' => 'homepage',
+              'enable-javascript' => true,
+              'widths' => Percy.config.default_widths,
+            },
+            'relationships' => {
+              'resources' => {
+                'data' => [
+                  {
+                    'type' => 'resources',
+                    'id' => kind_of(String),
+                    'attributes' => {
+                      'resource-url' => '/foo/test.html',
+                      'mimetype' => nil,
+                      'is-root' => true,
+                    },
+                  },
+                  {
+                    'type' => 'resources',
+                    'id' => kind_of(String),
+                    'attributes' => {
+                      'resource-url' => '/css/test.css',
+                      'mimetype' => nil,
+                      'is-root' => nil,
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        })
+        .and_call_original
+
       snapshot = Percy.create_snapshot(
         build['data']['id'],
         resources,
         name: 'homepage',
         enable_javascript: true,
+      )
+
+      expect(snapshot['data']).to be
+      expect(snapshot['data']['id']).to be
+      expect(snapshot['data']['type']).to eq('snapshots')
+      expect(snapshot['data']['attributes']['name']).to eq('homepage')
+      expect(snapshot['data']['relationships']['missing-resources']).to be
+    end
+    it 'overrides default_widths if given' do
+      build = Percy.create_build('fotinakis/percy-examples')
+      resources = []
+      resources << Percy::Client::Resource.new('/foo/test.html', sha: sha, is_root: true)
+      resources << Percy::Client::Resource.new('/css/test.css', sha: sha)
+
+      # Whitebox test to catch POST data that is sent but is not returned in the API response.
+      expect_any_instance_of(Percy::Client).to \
+        receive(:post)
+        .with(/snapshots\/$/, {
+          'data' => {
+            'type' => 'snapshots',
+            'attributes' => {
+              'name' => 'homepage',
+              'enable-javascript' => nil,
+              'widths' => [320, 1280],
+            },
+            'relationships' => {
+              'resources' => {
+                'data' => [
+                  {
+                    'type' => 'resources',
+                    'id' => kind_of(String),
+                    'attributes' => {
+                      'resource-url' => '/foo/test.html',
+                      'mimetype' => nil,
+                      'is-root' => true,
+                    },
+                  },
+                  {
+                    'type' => 'resources',
+                    'id' => kind_of(String),
+                    'attributes' => {
+                      'resource-url' => '/css/test.css',
+                      'mimetype' => nil,
+                      'is-root' => nil,
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        })
+        .and_call_original
+
+      snapshot = Percy.create_snapshot(
+        build['data']['id'],
+        resources,
+        name: 'homepage',
+        widths: [320, 1280],
       )
 
       expect(snapshot['data']).to be

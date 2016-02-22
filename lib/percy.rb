@@ -41,6 +41,7 @@ module Percy
     client.respond_to?(method_name, include_private) || super
   end if RUBY_VERSION < '1.9'
 
+  # @private
   def self.method_missing(method_name, *args, &block)
     return super if !client.respond_to?(method_name)
     client.send(method_name, *args, &block)
