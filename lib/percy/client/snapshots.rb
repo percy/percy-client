@@ -6,14 +6,15 @@ module Percy
           raise ArgumentError.new(
             'resources argument must be an iterable of Percy::Client::Resource objects')
         end
-        name = options[:name]
-        enable_javascript = options[:enable_javascript]
+
+        widths = options[:widths] || config.default_widths
         data = {
           'data' => {
             'type' => 'snapshots',
             'attributes' => {
-              'name' => name,
-              'enable-javascript' => enable_javascript,
+              'name' => options[:name],
+              'enable-javascript' => options[:enable_javascript],
+              'widths' => widths,
             },
             'relationships' => {
               'resources' => {
