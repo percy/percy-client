@@ -90,7 +90,11 @@ module Percy
         when :jenkins
           ENV['ghprbTargetBranch']
         when :travis
-          ENV['TRAVIS_BRANCH']
+          if pull_request_number && ENV['TRAVIS_BRANCH'] == 'master'
+            "github-pr-#{pull_request_number}"
+          else
+            ENV['TRAVIS_BRANCH']
+          end
         when :circle
           ENV['CIRCLE_BRANCH']
         when :codeship
