@@ -4,6 +4,7 @@ addons:
   apt:
     packages:
     - ruby-dev
+    - libffi-dev
 cache: bundler
 rvm:
   - 1.9.3
