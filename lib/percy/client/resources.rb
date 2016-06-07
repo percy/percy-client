@@ -57,8 +57,8 @@ module Percy
         data = {
           'data' => {
             'type' => 'resources',
+            'id' => sha,
             'attributes' => {
-              'id' => sha,
               'base64-content' => Base64.strict_encode64(content),
             },
           },
