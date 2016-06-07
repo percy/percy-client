@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    percy-client (1.4.1)
+    percy-client (1.4.2)
       faraday (>= 0.9)
       httpclient (>= 2.6)
 
@@ -34,7 +34,7 @@ GEM
       guard-compat (~> 1.1)
       rspec (>= 2.99.0, < 4.0)
     hitimes (1.2.2)
-    httpclient (2.7.1)
+    httpclient (2.8.0)
     listen (2.10.0)
       celluloid (~> 0.16.0)
       rb-fsevent (>= 0.9.3)
