@@ -231,10 +231,7 @@ RSpec.describe Percy::Client::Environment do
         expect(Percy::Client::Environment.branch).to eq('travis-branch')
       end
       it 'renames the Percy branch if this is a PR with an unknown head branch' do
-        # Note: this is very unfortunately necessary because Travis does not expose the head branch,
-        # only the targeted branch in TRAVIS_BRANCH and no way to get the actual head PR branch.
-        # We create a fake branch name so that Percy does not mistake this PR as a new master build.
-        # https://github.com/travis-ci/travis-ci/issues/1633#issuecomment-194749671
+        # Special Travis-only behavior, see note in branch method.
         ENV['TRAVIS_BRANCH'] = 'master'
         expect(Percy::Client::Environment.branch).to eq('github-pr-256')
       end
