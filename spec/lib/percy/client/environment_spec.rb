@@ -3,6 +3,7 @@ RSpec.describe Percy::Client::Environment do
     # Unset Percy vars.
     ENV['PERCY_COMMIT'] = nil
     ENV['PERCY_BRANCH'] = nil
+    ENV['PERCY_TARGET_BRANCH'] = nil
     ENV['PERCY_PULL_REQUEST'] = nil
     ENV['PERCY_REPO_SLUG'] = nil
     ENV['PERCY_PARALLEL_NONCE'] = nil
@@ -95,6 +96,15 @@ RSpec.describe Percy::Client::Environment do
       it 'can be overridden with PERCY_BRANCH' do
         ENV['PERCY_BRANCH'] = 'test-branch'
         expect(Percy::Client::Environment.branch).to eq('test-branch')
+      end
+    end
+    describe '#target_branch' do
+      it 'returns nil if unset' do
+        expect(Percy::Client::Environment.target_branch).to be_nil
+      end
+      it 'can be set with PERCY_TARGET_BRANCH' do
+        ENV['PERCY_TARGET_BRANCH'] = 'test-target-branch'
+        expect(Percy::Client::Environment.target_branch).to eq('test-target-branch')
       end
     end
     describe '#_commit_sha' do

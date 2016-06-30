@@ -3,9 +3,30 @@ RSpec.describe Percy::Client::Builds, :vcr do
   let(:sha) { Digest::SHA256.hexdigest(content) }
 
   describe '#create_build' do
-    before(:each) { ENV['PERCY_PULL_REQUEST'] = '123' }
-    after(:each) { ENV['PERCY_PULL_REQUEST'] = nil }
     it 'creates a build' do
+      # Whitebox test to check POST data.
+      expect_any_instance_of(Percy::Client).to \
+        receive(:post)
+        .with(/\/api\/v1\/repos\/fotinakis\/percy-examples\/builds\//, {
+          'data' => {
+            'type' => 'builds',
+            'attributes' => {
+              'branch' => 'master',
+              'target-branch' => nil,
+              'commit-sha' => kind_of(String),
+              'commit-committed-at' => kind_of(String),
+              'commit-author-name' => kind_of(String),
+              'commit-author-email' => kind_of(String),
+              'commit-committer-name' => kind_of(String),
+              'commit-committer-email' => kind_of(String),
+              'commit-message' => kind_of(String),
+              'pull-request-number' => nil,
+              'parallel-nonce' => nil,
+              'parallel-total-shards' => nil,
+            },
+          },
+        }).and_call_original
+
       build = Percy.create_build('fotinakis/percy-examples')
       expect(build).to be
       expect(build['data']).to be
@@ -32,6 +53,48 @@ RSpec.describe Percy::Client::Builds, :vcr do
       expect(build['data']['relationships']['missing-resources']).to be
       expect(build['data']['relationships']['missing-resources']['data']).to be
       expect(build['data']['relationships']['missing-resources']['data'].length).to eq(1)
+    end
+    context 'with env vars configured' do
+      before(:each) do
+        ENV['PERCY_BRANCH'] = 'foo-branch'
+        ENV['PERCY_TARGET_BRANCH'] = 'bar-branch'
+        ENV['PERCY_PULL_REQUEST'] = '123'
+        ENV['PERCY_PARALLEL_NONCE'] = 'nonce'
+        ENV['PERCY_PARALLEL_TOTAL'] = '4'
+      end
+      after(:each) do
+        ENV['PERCY_BRANCH'] = nil
+        ENV['PERCY_TARGET_BRANCH'] = nil
+        ENV['PERCY_PULL_REQUEST'] = nil
+        ENV['PERCY_PARALLEL_NONCE'] = nil
+        ENV['PERCY_PARALLEL_TOTAL'] = nil
+      end
+      it 'passes through some attributes from environment' do
+        # Whitebox test to check POST data.
+        expect_any_instance_of(Percy::Client).to \
+          receive(:post)
+          .with(/\/api\/v1\/repos\/fotinakis\/percy-examples\/builds\//, {
+            'data' => {
+              'type' => 'builds',
+              'attributes' => {
+                'branch' => 'foo-branch',
+                'target-branch' => 'bar-branch',
+                'commit-sha' => kind_of(String),
+                'commit-committed-at' => kind_of(String),
+                'commit-author-name' => kind_of(String),
+                'commit-author-email' => kind_of(String),
+                'commit-committer-name' => kind_of(String),
+                'commit-committer-email' => kind_of(String),
+                'commit-message' => kind_of(String),
+                'pull-request-number' => '123',
+                'parallel-nonce' => 'nonce',
+                'parallel-total-shards' => 4,
+              },
+            },
+          })
+
+        Percy.create_build('fotinakis/percy-examples')
+      end
     end
     context 'parallel test environment' do
       it 'passes through parallelism variables' do

@@ -118,6 +118,11 @@ module Percy
         result
       end
 
+      # The target branch to compare against (if unset, Percy will pick master).
+      def self.target_branch
+        return ENV['PERCY_TARGET_BRANCH'] if ENV['PERCY_TARGET_BRANCH']
+      end
+
       # @private
       def self._raw_branch_output
         # Discover from local git repo branch name.
