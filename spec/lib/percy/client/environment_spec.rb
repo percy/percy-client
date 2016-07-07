@@ -5,7 +5,8 @@ RSpec.describe Percy::Client::Environment do
     ENV['PERCY_BRANCH'] = nil
     ENV['PERCY_TARGET_BRANCH'] = nil
     ENV['PERCY_PULL_REQUEST'] = nil
-    ENV['PERCY_REPO_SLUG'] = nil
+    ENV['PERCY_PROJECT'] = nil
+    ENV['PERCY_REPO_SLUG'] = nil  # Deprecated.
     ENV['PERCY_PARALLEL_NONCE'] = nil
     ENV['PERCY_PARALLEL_TOTAL'] = nil
 
@@ -131,7 +132,11 @@ RSpec.describe Percy::Client::Environment do
       it 'returns the current local repo name' do
         expect(Percy::Client::Environment.repo).to eq('percy/percy-client')
       end
-      it 'can be overridden with PERCY_REPO_SLUG' do
+      it 'can be overridden with PERCY_PROJECT' do
+        ENV['PERCY_PROJECT'] = 'percy/slug'
+        expect(Percy::Client::Environment.repo).to eq('percy/slug')
+      end
+      it 'can be overridden with PERCY_REPO_SLUG (deprecated)' do
         ENV['PERCY_REPO_SLUG'] = 'percy/slug'
         expect(Percy::Client::Environment.repo).to eq('percy/slug')
       end
