@@ -40,6 +40,7 @@ RSpec.describe Percy::Client::Environment do
     ENV['CI_PULL_REQUEST'] = nil
     ENV['CI_COMMIT_ID'] = nil
     ENV['CI_BUILD_NUMBER'] = nil
+    ENV['CI_NODE_TOTAL'] = nil
 
     # Unset Drone vars.
     ENV['CI'] = nil
@@ -341,6 +342,7 @@ RSpec.describe Percy::Client::Environment do
       ENV['CI_BUILD_NUMBER'] = 'codeship-build-number'
       ENV['CI_PULL_REQUEST'] = 'false'  # This is always false on Codeship, unfortunately.
       ENV['CI_COMMIT_ID'] = 'codeship-commit-sha'
+      ENV['CI_NODE_TOTAL'] = '3'
     end
 
     describe '#current_ci' do
@@ -371,6 +373,15 @@ RSpec.describe Percy::Client::Environment do
     describe '#parallel_nonce' do
       it 'reads from the CI environment (the CI build number)' do
         expect(Percy::Client::Environment.parallel_nonce).to eq('codeship-build-number')
+      end
+    end
+    describe '#parallel_total_shards' do
+      it 'reads from the CI environment (the number of nodes)' do
+        expect(Percy::Client::Environment.parallel_total_shards).to eq(3)
+      end
+      it 'is nil if empty' do
+        ENV['CI_NODE_TOTAL'] = ''
+        expect(Percy::Client::Environment.parallel_total_shards).to be_nil
       end
     end
   end

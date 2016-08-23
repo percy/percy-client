@@ -208,6 +208,9 @@ module Percy
           # Support for https://github.com/ArturT/knapsack
           var = 'CI_NODE_TOTAL'
           Integer(ENV[var]) if ENV[var] && !ENV[var].empty?
+        when :codeship
+          var = 'CI_NODE_TOTAL'
+          Integer(ENV[var]) if ENV[var] && !ENV[var].empty?
         when :semaphore
           Integer(ENV['SEMAPHORE_THREAD_COUNT'])
         end
