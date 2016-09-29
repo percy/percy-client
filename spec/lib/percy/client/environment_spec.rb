@@ -218,7 +218,9 @@ RSpec.describe Percy::Client::Environment do
     before(:each) do
       ENV['TRAVIS_BUILD_ID'] = '1234'
       ENV['TRAVIS_BUILD_NUMBER'] = 'build-number'
-      ENV['TRAVIS_PULL_REQUEST'] = '256'
+      ENV['TRAVIS_PULL_REQUEST'] = 'false'
+      ENV['TRAVIS_PULL_REQUEST_BRANCH'] = ''
+      ENV['TRAVIS_PULL_REQUEST_SHA'] = ''
       ENV['TRAVIS_REPO_SLUG'] = 'travis/repo-slug'
       ENV['TRAVIS_COMMIT'] = 'travis-commit-sha'
       ENV['TRAVIS_BRANCH'] = 'travis-branch'
@@ -229,10 +231,22 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.current_ci).to eq(:travis)
       expect(Percy::Client::Environment.branch).to eq('travis-branch')
       expect(Percy::Client::Environment._commit_sha).to eq('travis-commit-sha')
-      expect(Percy::Client::Environment.pull_request_number).to eq('256')
+      expect(Percy::Client::Environment.pull_request_number).to be_nil
       expect(Percy::Client::Environment.repo).to eq('travis/repo-slug')
       expect(Percy::Client::Environment.parallel_nonce).to eq('build-number')
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
+    end
+    context 'Pull Request build' do
+      before(:each) do
+        ENV['TRAVIS_PULL_REQUEST'] = '256'
+        ENV['TRAVIS_PULL_REQUEST_BRANCH'] = 'travis-pr-branch'
+        ENV['TRAVIS_PULL_REQUEST_SHA'] = 'travis-pr-head-commit-sha'
+      end
+      it 'has the correct properties' do
+        expect(Percy::Client::Environment.branch).to eq('travis-pr-branch')
+        expect(Percy::Client::Environment._commit_sha).to eq('travis-pr-head-commit-sha')
+        expect(Percy::Client::Environment.pull_request_number).to eq('256')
+      end
     end
     context 'parallel build' do
       before(:each) do
