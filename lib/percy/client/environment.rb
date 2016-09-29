@@ -62,7 +62,11 @@ module Percy
           # Pull Request Builder Plugin OR Git Plugin.
           ENV['ghprbActualCommit'] || ENV['GIT_COMMIT']
         when :travis
-          ENV['TRAVIS_COMMIT']
+          if pull_request_number
+            ENV['TRAVIS_PULL_REQUEST_SHA']
+          else
+            ENV['TRAVIS_COMMIT']
+          end
         when :circle
           ENV['CIRCLE_SHA1']
         when :codeship
@@ -90,13 +94,8 @@ module Percy
         when :jenkins
           ENV['ghprbTargetBranch']
         when :travis
-          # Note: this is very unfortunately necessary because Travis does not expose the head
-          # branch, only the targeted 'master' branch in TRAVIS_BRANCH, with no way to get the
-          # actual head branch of the PR. We create a fake branch name so that Percy does not
-          # mistake this PR as a new master build.
-          # https://github.com/travis-ci/travis-ci/issues/1633#issuecomment-194749671
-          if pull_request_number && ENV['TRAVIS_BRANCH'] == 'master'
-            "github-pr-#{pull_request_number}"
+          if pull_request_number
+            ENV['TRAVIS_PULL_REQUEST_BRANCH']
           else
             ENV['TRAVIS_BRANCH']
           end
@@ -212,7 +211,8 @@ module Percy
           var = 'CI_NODE_TOTAL'
           Integer(ENV[var]) if ENV[var] && !ENV[var].empty?
         when :semaphore
-          Integer(ENV['SEMAPHORE_THREAD_COUNT'])
+          var = 'SEMAPHORE_THREAD_COUNT'
+          Integer(ENV[var]) if ENV[var] && !ENV[var].empty?
         end
       end
 
