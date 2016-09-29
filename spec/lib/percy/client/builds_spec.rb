@@ -20,7 +20,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
               'commit-committer-name' => kind_of(String),
               'commit-committer-email' => kind_of(String),
               'commit-message' => kind_of(String),
-              'pull-request-number' => nil,
+              'pull-request-number' => anything,
               'parallel-nonce' => nil,
               'parallel-total-shards' => nil,
             },
