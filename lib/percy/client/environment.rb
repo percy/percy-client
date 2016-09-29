@@ -22,6 +22,7 @@ module Percy
         return :codeship if ENV['CI_NAME'] && ENV['CI_NAME'] == 'codeship'
         return :drone if ENV['DRONE'] == 'true'
         return :semaphore if ENV['SEMAPHORE'] == 'true'
+        return :buildkite if ENV['BUILDKITE'] == 'true'
       end
 
       # @return [Hash] All commit data from the current commit. Might be empty if commit data could
@@ -75,6 +76,10 @@ module Percy
           ENV['DRONE_COMMIT']
         when :semaphore
           ENV['REVISION']
+        when :buildkite
+          # Buildkite mixes SHAs and non-SHAs in BUILDKITE_COMMIT, so we return null if non-SHA.
+          return if ENV['BUILDKITE_COMMIT'] == 'HEAD'
+          ENV['BUILDKITE_COMMIT']
         end
       end
 
@@ -107,6 +112,8 @@ module Percy
           ENV['DRONE_BRANCH']
         when :semaphore
           ENV['BRANCH_NAME']
+        when :buildkite
+          ENV['BUILDKITE_BRANCH']
         else
           _raw_branch_output
         end
@@ -176,6 +183,8 @@ module Percy
           ENV['CI_PULL_REQUEST']
         when :semaphore
           ENV['PULL_REQUEST_NUMBER']
+        when :buildkite
+          ENV['BUILDKITE_PULL_REQUEST'] if ENV['BUILDKITE_PULL_REQUEST'] != 'false'
         end
       end
 
@@ -193,6 +202,8 @@ module Percy
           ENV['CI_BUILD_NUMBER']
         when :semaphore
           ENV['SEMAPHORE_BUILD_NUMBER']
+        when :buildkite
+          ENV['BUILDKITE_BUILD_ID']
         end
       end
 

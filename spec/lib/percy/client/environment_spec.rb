@@ -60,6 +60,13 @@ RSpec.describe Percy::Client::Environment do
     ENV['SEMAPHORE_BUILD_NUMBER'] = nil
     ENV['SEMAPHORE_CURRENT_THREAD'] = nil
     ENV['PULL_REQUEST_NUMBER'] = nil
+
+    # Unset Buildkite CI vars
+    ENV['BUILDKITE'] = nil
+    ENV['BUILDKITE_COMMIT'] = nil
+    ENV['BUILDKITE_BRANCH'] = nil
+    ENV['BUILDKITE_PULL_REQUEST'] = nil
+    ENV['BUILDKITE_BUILD_ID'] = nil
   end
 
   before(:each) do
@@ -361,6 +368,41 @@ RSpec.describe Percy::Client::Environment do
       it 'has the correct properties' do
         expect(Percy::Client::Environment.parallel_nonce).to eq('semaphore-build-number')
         expect(Percy::Client::Environment.parallel_total_shards).to eq(3)
+      end
+    end
+  end
+  context 'in Buildkite' do
+    before(:each) do
+      ENV['BUILDKITE'] = 'true'
+      ENV['BUILDKITE_COMMIT'] = 'buildkite-commit-sha'
+      ENV['BUILDKITE_BRANCH'] = 'buildkite-branch'
+      ENV['BUILDKITE_PULL_REQUEST'] = 'false'
+      ENV['BUILDKITE_BUILD_ID'] = 'buildkite-build-id'
+    end
+
+    it 'has the correct properties' do
+      expect(Percy::Client::Environment.current_ci).to eq(:buildkite)
+      expect(Percy::Client::Environment.branch).to eq('buildkite-branch')
+      expect(Percy::Client::Environment._commit_sha).to eq('buildkite-commit-sha')
+      expect(Percy::Client::Environment.pull_request_number).to be_nil
+      expect(Percy::Client::Environment.repo).to eq('percy/percy-client')  # From git, not env.
+      expect(Percy::Client::Environment.parallel_nonce).to eq('buildkite-build-id')
+      expect(Percy::Client::Environment.parallel_total_shards).to be_nil
+    end
+    context 'Pull Request build' do
+      before(:each) do
+        ENV['BUILDKITE_PULL_REQUEST'] = '123'
+      end
+      it 'has the correct properties' do
+        expect(Percy::Client::Environment.pull_request_number).to eq('123')
+      end
+    end
+    context 'UI-triggered HEAD build' do
+      before(:each) do
+        ENV['BUILDKITE_COMMIT'] = 'HEAD'
+      end
+      it 'has the correct properties' do
+        expect(Percy::Client::Environment._commit_sha).to be_nil
       end
     end
   end
