@@ -16,6 +16,8 @@ RSpec.describe Percy::Client::Environment do
     ENV['TRAVIS_COMMIT'] = nil
     ENV['TRAVIS_BRANCH'] = nil
     ENV['TRAVIS_PULL_REQUEST'] = nil
+    ENV['TRAVIS_PULL_REQUEST_BRANCH'] = nil
+    ENV['TRAVIS_PULL_REQUEST_SHA'] = nil
     ENV['TRAVIS_REPO_SLUG'] = nil
     ENV['CI_NODE_TOTAL'] = nil
 
@@ -67,6 +69,8 @@ RSpec.describe Percy::Client::Environment do
       'TRAVIS_COMMIT' => ENV['TRAVIS_COMMIT'],
       'TRAVIS_BRANCH' => ENV['TRAVIS_BRANCH'],
       'TRAVIS_PULL_REQUEST' => ENV['TRAVIS_PULL_REQUEST'],
+      'TRAVIS_PULL_REQUEST_BRANCH' => ENV['TRAVIS_PULL_REQUEST_BRANCH'],
+      'TRAVIS_PULL_REQUEST_SHA' => ENV['TRAVIS_PULL_REQUEST_SHA'],
       'TRAVIS_REPO_SLUG' => ENV['TRAVIS_REPO_SLUG'],
     }
     clear_env_vars
@@ -78,6 +82,8 @@ RSpec.describe Percy::Client::Environment do
     ENV['TRAVIS_COMMIT'] = @original_env['TRAVIS_COMMIT']
     ENV['TRAVIS_BRANCH'] = @original_env['TRAVIS_BRANCH']
     ENV['TRAVIS_PULL_REQUEST'] = @original_env['TRAVIS_PULL_REQUEST']
+    ENV['TRAVIS_PULL_REQUEST_BRANCH'] = @original_env['TRAVIS_PULL_REQUEST_BRANCH']
+    ENV['TRAVIS_PULL_REQUEST_SHA'] = @original_env['TRAVIS_PULL_REQUEST_SHA']
     ENV['TRAVIS_REPO_SLUG'] = @original_env['TRAVIS_REPO_SLUG']
   end
 
@@ -200,30 +206,12 @@ RSpec.describe Percy::Client::Environment do
       ENV['ghprbActualCommit'] = 'jenkins-actual-commit'
     end
 
-    describe '#current_ci' do
-      it 'is :jenkins' do
-        expect(Percy::Client::Environment.current_ci).to eq(:jenkins)
-      end
-    end
-    describe '#branch' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment.branch).to eq('jenkins-target-branch')
-      end
-    end
-    describe '#_commit_sha' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment._commit_sha).to eq('jenkins-actual-commit')
-      end
-    end
-    describe '#pull_request_number' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment.pull_request_number).to eq('123')
-      end
-    end
-    describe '#repo' do
-      it 'returns the current local repo name' do
-        expect(Percy::Client::Environment.repo).to eq('percy/percy-client')
-      end
+    it 'has the correct properties' do
+      expect(Percy::Client::Environment.current_ci).to eq(:jenkins)
+      expect(Percy::Client::Environment.branch).to eq('jenkins-target-branch')
+      expect(Percy::Client::Environment._commit_sha).to eq('jenkins-actual-commit')
+      expect(Percy::Client::Environment.pull_request_number).to eq('123')
+      expect(Percy::Client::Environment.repo).to eq('percy/percy-client')
     end
   end
   context 'in Travis CI' do
@@ -234,51 +222,25 @@ RSpec.describe Percy::Client::Environment do
       ENV['TRAVIS_REPO_SLUG'] = 'travis/repo-slug'
       ENV['TRAVIS_COMMIT'] = 'travis-commit-sha'
       ENV['TRAVIS_BRANCH'] = 'travis-branch'
-      ENV['CI_NODE_TOTAL'] = '3'
+      ENV['CI_NODE_TOTAL'] = ''
     end
 
-    describe '#current_ci' do
-      it 'is :travis' do
-        expect(Percy::Client::Environment.current_ci).to eq(:travis)
-      end
+    it 'has the correct properties' do
+      expect(Percy::Client::Environment.current_ci).to eq(:travis)
+      expect(Percy::Client::Environment.branch).to eq('travis-branch')
+      expect(Percy::Client::Environment._commit_sha).to eq('travis-commit-sha')
+      expect(Percy::Client::Environment.pull_request_number).to eq('256')
+      expect(Percy::Client::Environment.repo).to eq('travis/repo-slug')
+      expect(Percy::Client::Environment.parallel_nonce).to eq('build-number')
+      expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
-    describe '#branch' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment.branch).to eq('travis-branch')
+    context 'parallel build' do
+      before(:each) do
+        ENV['CI_NODE_TOTAL'] = '3'
       end
-      it 'renames the Percy branch if this is a PR with an unknown head branch' do
-        # Special Travis-only behavior, see note in branch method.
-        ENV['TRAVIS_BRANCH'] = 'master'
-        expect(Percy::Client::Environment.branch).to eq('github-pr-256')
-      end
-    end
-    describe '#_commit_sha' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment._commit_sha).to eq('travis-commit-sha')
-      end
-    end
-    describe '#pull_request_number' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment.pull_request_number).to eq('256')
-      end
-    end
-    describe '#repo' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment.repo).to eq('travis/repo-slug')
-      end
-    end
-    describe '#parallel_nonce' do
-      it 'reads from the CI environment (the CI build number)' do
+      it 'has the correct properties' do
         expect(Percy::Client::Environment.parallel_nonce).to eq('build-number')
-      end
-    end
-    describe '#parallel_total_shards' do
-      it 'reads from the CI environment (the number of nodes)' do
         expect(Percy::Client::Environment.parallel_total_shards).to eq(3)
-      end
-      it 'is nil if empty' do
-        ENV['CI_NODE_TOTAL'] = ''
-        expect(Percy::Client::Environment.parallel_total_shards).to be_nil
       end
     end
   end
@@ -290,48 +252,26 @@ RSpec.describe Percy::Client::Environment do
       ENV['CIRCLE_PROJECT_USERNAME'] = 'circle'
       ENV['CIRCLE_PROJECT_REPONAME'] = 'repo-name'
       ENV['CIRCLE_BUILD_NUM'] = 'build-number'
-      ENV['CIRCLE_NODE_TOTAL'] = '2'
+      ENV['CIRCLE_NODE_TOTAL'] = ''
       ENV['CI_PULL_REQUESTS'] = 'https://github.com/owner/repo-name/pull/123'
     end
 
-    describe '#current_ci' do
-      it 'is :circle' do
-        expect(Percy::Client::Environment.current_ci).to eq(:circle)
-      end
+    it 'has the correct properties' do
+      expect(Percy::Client::Environment.current_ci).to eq(:circle)
+      expect(Percy::Client::Environment.branch).to eq('circle-branch')
+      expect(Percy::Client::Environment._commit_sha).to eq('circle-commit-sha')
+      expect(Percy::Client::Environment.pull_request_number).to eq('123')
+      expect(Percy::Client::Environment.repo).to eq('circle/repo-name')
+      expect(Percy::Client::Environment.parallel_nonce).to eq('build-number')
+      expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
-    describe '#branch' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment.branch).to eq('circle-branch')
+    context 'parallel build' do
+      before(:each) do
+        ENV['CIRCLE_NODE_TOTAL'] = '3'
       end
-    end
-    describe '#_commit_sha' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment._commit_sha).to eq('circle-commit-sha')
-      end
-    end
-
-    describe '#pull_request_number' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment.pull_request_number).to eq('123')
-      end
-    end
-    describe '#repo' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment.repo).to eq('circle/repo-name')
-      end
-    end
-    describe '#parallel_nonce' do
-      it 'reads from the CI environment (the CI build number)' do
+      it 'has the correct properties' do
         expect(Percy::Client::Environment.parallel_nonce).to eq('build-number')
-      end
-    end
-    describe '#parallel_total_shards' do
-      it 'reads from the CI environment (the number of nodes)' do
-        expect(Percy::Client::Environment.parallel_total_shards).to eq(2)
-      end
-      it 'is nil if empty' do
-        ENV['CIRCLE_NODE_TOTAL'] = ''
-        expect(Percy::Client::Environment.parallel_total_shards).to be_nil
+        expect(Percy::Client::Environment.parallel_total_shards).to eq(3)
       end
     end
   end
@@ -342,46 +282,25 @@ RSpec.describe Percy::Client::Environment do
       ENV['CI_BUILD_NUMBER'] = 'codeship-build-number'
       ENV['CI_PULL_REQUEST'] = 'false'  # This is always false on Codeship, unfortunately.
       ENV['CI_COMMIT_ID'] = 'codeship-commit-sha'
-      ENV['CI_NODE_TOTAL'] = '3'
+      ENV['CI_NODE_TOTAL'] = ''
     end
 
-    describe '#current_ci' do
-      it 'is :codeship' do
-        expect(Percy::Client::Environment.current_ci).to eq(:codeship)
-      end
+    it 'has the correct properties' do
+      expect(Percy::Client::Environment.current_ci).to eq(:codeship)
+      expect(Percy::Client::Environment.branch).to eq('codeship-branch')
+      expect(Percy::Client::Environment._commit_sha).to eq('codeship-commit-sha')
+      expect(Percy::Client::Environment.pull_request_number).to be_nil
+      expect(Percy::Client::Environment.repo).to eq('percy/percy-client')
+      expect(Percy::Client::Environment.parallel_nonce).to eq('codeship-build-number')
+      expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
-    describe '#branch' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment.branch).to eq('codeship-branch')
+    context 'parallel build' do
+      before(:each) do
+        ENV['CI_NODE_TOTAL'] = '3'
       end
-    end
-    describe '#_commit_sha' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment._commit_sha).to eq('codeship-commit-sha')
-      end
-    end
-    describe '#pull_request_number' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment.pull_request_number).to be_nil
-      end
-    end
-    describe '#repo' do
-      it 'returns the current local repo name' do
-        expect(Percy::Client::Environment.repo).to eq('percy/percy-client')
-      end
-    end
-    describe '#parallel_nonce' do
-      it 'reads from the CI environment (the CI build number)' do
+      it 'has the correct properties' do
         expect(Percy::Client::Environment.parallel_nonce).to eq('codeship-build-number')
-      end
-    end
-    describe '#parallel_total_shards' do
-      it 'reads from the CI environment (the number of nodes)' do
         expect(Percy::Client::Environment.parallel_total_shards).to eq(3)
-      end
-      it 'is nil if empty' do
-        ENV['CI_NODE_TOTAL'] = ''
-        expect(Percy::Client::Environment.parallel_total_shards).to be_nil
       end
     end
   end
@@ -393,30 +312,12 @@ RSpec.describe Percy::Client::Environment do
       ENV['CI_PULL_REQUEST'] = '123'
     end
 
-    describe '#current_ci' do
-      it 'is :drone' do
-        expect(Percy::Client::Environment.current_ci).to eq(:drone)
-      end
-    end
-    describe '#branch' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment.branch).to eq('drone-branch')
-      end
-    end
-    describe '#_commit_sha' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment._commit_sha).to eq('drone-commit-sha')
-      end
-    end
-    describe '#pull_request_number' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment.pull_request_number).to eq('123')
-      end
-    end
-    describe '#repo' do
-      it 'returns the current local repo name' do
-        expect(Percy::Client::Environment.repo).to eq('percy/percy-client')
-      end
+    it 'has the correct properties' do
+      expect(Percy::Client::Environment.current_ci).to eq(:drone)
+      expect(Percy::Client::Environment.branch).to eq('drone-branch')
+      expect(Percy::Client::Environment._commit_sha).to eq('drone-commit-sha')
+      expect(Percy::Client::Environment.pull_request_number).to eq('123')
+      expect(Percy::Client::Environment.repo).to eq('percy/percy-client')
     end
   end
   context 'in Semaphore CI' do
@@ -426,44 +327,26 @@ RSpec.describe Percy::Client::Environment do
       ENV['REVISION'] = 'semaphore-commit-sha'
       ENV['SEMAPHORE_REPO_SLUG'] = 'repo-owner/repo-name'
       ENV['SEMAPHORE_BUILD_NUMBER'] = 'semaphore-build-number'
-      ENV['SEMAPHORE_THREAD_COUNT'] = '2'
+      ENV['SEMAPHORE_THREAD_COUNT'] = ''
       ENV['PULL_REQUEST_NUMBER'] = '123'
     end
 
-    describe '#current_ci' do
-      it 'is :semaphore' do
-        expect(Percy::Client::Environment.current_ci).to eq(:semaphore)
-      end
+    it 'has the correct properties' do
+      expect(Percy::Client::Environment.current_ci).to eq(:semaphore)
+      expect(Percy::Client::Environment.branch).to eq('semaphore-branch')
+      expect(Percy::Client::Environment._commit_sha).to eq('semaphore-commit-sha')
+      expect(Percy::Client::Environment.pull_request_number).to eq('123')
+      expect(Percy::Client::Environment.repo).to eq('repo-owner/repo-name')
+      expect(Percy::Client::Environment.parallel_nonce).to eq('semaphore-build-number')
+      expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
-    describe '#branch' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment.branch).to eq('semaphore-branch')
+    context 'parallel build' do
+      before(:each) do
+        ENV['SEMAPHORE_THREAD_COUNT'] = '3'
       end
-    end
-    describe '#_commit_sha' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment._commit_sha).to eq('semaphore-commit-sha')
-      end
-    end
-
-    describe '#pull_request_number' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment.pull_request_number).to eq('123')
-      end
-    end
-    describe '#repo' do
-      it 'reads from the CI environment' do
-        expect(Percy::Client::Environment.repo).to eq('repo-owner/repo-name')
-      end
-    end
-    describe '#parallel_nonce' do
-      it 'reads from the CI environment (the CI build number)' do
+      it 'has the correct properties' do
         expect(Percy::Client::Environment.parallel_nonce).to eq('semaphore-build-number')
-      end
-    end
-    describe '#parallel_total_shards' do
-      it 'reads from the CI environment (the number of nodes)' do
-        expect(Percy::Client::Environment.parallel_total_shards).to eq(2)
+        expect(Percy::Client::Environment.parallel_total_shards).to eq(3)
       end
     end
   end

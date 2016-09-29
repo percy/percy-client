@@ -212,7 +212,8 @@ module Percy
           var = 'CI_NODE_TOTAL'
           Integer(ENV[var]) if ENV[var] && !ENV[var].empty?
         when :semaphore
-          Integer(ENV['SEMAPHORE_THREAD_COUNT'])
+          var = 'SEMAPHORE_THREAD_COUNT'
+          Integer(ENV[var]) if ENV[var] && !ENV[var].empty?
         end
       end
 
