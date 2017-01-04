@@ -11,11 +11,11 @@ module Percy
     # @!attribute default_widths
     #   @return [Array] List of default widths for snapshot rendering unless overridden.
 
-    attr_accessor :access_token
-    attr_accessor :api_url
-    attr_accessor :debug
-    attr_accessor :repo
-    attr_accessor :default_widths
+    attr_writer :access_token
+    attr_writer :api_url
+    attr_writer :debug
+    attr_writer :repo
+    attr_writer :default_widths
 
     # List of configurable keys for {Percy::Client}
     # @return [Array] Option keys.
