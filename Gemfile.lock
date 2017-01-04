@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     percy-client (1.9.0)
+      addressable
       faraday (>= 0.9)
       httpclient (>= 2.6)
 
@@ -34,7 +35,7 @@ GEM
       guard-compat (~> 1.1)
       rspec (>= 2.99.0, < 4.0)
     hitimes (1.2.2)
-    httpclient (2.8.2.4)
+    httpclient (2.8.3)
     listen (2.10.0)
       celluloid (~> 0.16.0)
       rb-fsevent (>= 0.9.3)
@@ -91,4 +92,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   1.12.5
+   1.13.6
