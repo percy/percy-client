@@ -8,9 +8,9 @@ addons:
     - libgmp-dev
 cache: bundler
 rvm:
-  - 2.2
-  - 2.3
-  - 2.4
+  - ruby-2.2.6
+  - ruby-2.3.3
+  - ruby-2.4.0
   - ruby-head
 before_install:
   - gem update bundler
