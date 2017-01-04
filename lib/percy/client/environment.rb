@@ -36,7 +36,7 @@ module Percy
 
         # If not running in a git repo, allow nils for certain commit attributes.
         extract_or_nil = lambda { |regex| (output && output.match(regex) || [])[1] }
-        data = {
+        return {
           # The only required attribute:
           branch: branch,
           # An optional but important attribute:
