@@ -11,3 +11,4 @@
 *.rbc
 mkmf.log
 .DS_Store
+Gemfile.lock
