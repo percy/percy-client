@@ -58,7 +58,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"data":{"id":"29","type":"builds","attributes":{"build-number":29,"state":"pending","is-pull-request":false,"pull-request-number":0,"pull-request-title":null,"approved-at":null,"created-at":"2015-06-11T00:20:38.233Z","updated-at":"2015-06-11T00:20:38.233Z"},"links":{"self":"/api/v1/builds/29"},"relationships":{"commit":{"links":{"self":"/api/v1/builds/29/relationships/commit","related":"/api/v1/builds/29/commit"},"data":{"type":"commits","id":"2"}},"repo":{"links":{"self":"/api/v1/builds/29/relationships/repo","related":"/api/v1/builds/29/repo"}},"base-build":{"links":{"self":"/api/v1/builds/29/relationships/base-build","related":"/api/v1/builds/29/base-build"},"data":{"type":"builds","id":"22"}},"approved-by":{"links":{"self":"/api/v1/builds/29/relationships/approved-by","related":"/api/v1/builds/29/approved-by"}},"snapshots":{"links":{"self":"/api/v1/builds/29/relationships/snapshots","related":"/api/v1/builds/29/snapshots"}},"comparisons":{"links":{"self":"/api/v1/builds/29/relationships/comparisons","related":"/api/v1/builds/29/comparisons"}},"missing-resources":{"links":{"self":"/api/v1/builds/29/relationships/missing-resources","related":"/api/v1/builds/29/missing-resources"}}},"meta":{"finalize-link":"/api/v1/builds/29/finalize","approve-link":"/api/v1/builds/29/approve"}},"included":[{"id":"2","type":"commits","attributes":{"sha":"fc4d2c2e6b55d995a005dba2d071e2f2fca5e04b","branch":"master","message":"Fix
         test environment issue.","committed-at":"2015-06-09 23:22:31 -0700","author-name":"<COMMIT_AUTHOR_NAME>","committer-name":"<COMMIT_AUTHOR_NAME>","created-at":"2015-06-11T00:15:24.000Z","updated-at":"2015-06-11T00:15:24.000Z"},"links":{"self":"/api/v1/commits/2"}},{"id":"22","type":"builds","attributes":{"build-number":22,"state":"finished","is-pull-request":false,"pull-request-number":0,"pull-request-title":null,"approved-at":null,"created-at":"2015-06-11T00:17:46.000Z","updated-at":"2015-06-11T00:17:46.000Z"},"links":{"self":"/api/v1/builds/22"},"relationships":{"commit":{"links":{"self":"/api/v1/builds/22/relationships/commit","related":"/api/v1/builds/22/commit"},"data":{"type":"commits","id":"2"}},"repo":{"links":{"self":"/api/v1/builds/22/relationships/repo","related":"/api/v1/builds/22/repo"}},"base-build":{"links":{"self":"/api/v1/builds/22/relationships/base-build","related":"/api/v1/builds/22/base-build"}},"approved-by":{"links":{"self":"/api/v1/builds/22/relationships/approved-by","related":"/api/v1/builds/22/approved-by"}},"snapshots":{"links":{"self":"/api/v1/builds/22/relationships/snapshots","related":"/api/v1/builds/22/snapshots"}},"comparisons":{"links":{"self":"/api/v1/builds/22/relationships/comparisons","related":"/api/v1/builds/22/comparisons"}},"missing-resources":{"links":{"self":"/api/v1/builds/22/relationships/missing-resources","related":"/api/v1/builds/22/missing-resources"}}},"meta":{"finalize-link":"/api/v1/builds/22/finalize","approve-link":"/api/v1/builds/22/approve"}}]}'
-    http_version: 
+    http_version:
   recorded_at: Thu, 11 Jun 2015 00:20:38 GMT
 - request:
     method: post
@@ -115,6 +115,6 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"success":true}'
-    http_version: 
+    http_version:
   recorded_at: Thu, 11 Jun 2015 00:20:38 GMT
 recorded_with: VCR 2.9.3

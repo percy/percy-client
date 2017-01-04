@@ -71,5 +71,3 @@ module Percy
     end
   end
 end
-
-
