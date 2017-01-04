@@ -1,6 +1,6 @@
 require 'base64'
 require 'digest'
-require 'uri'
+require 'addressable/uri'
 
 module Percy
   class Client
@@ -37,7 +37,7 @@ module Percy
           'type' => 'resources',
           'id' => sha,
           'attributes' => {
-            'resource-url' => URI.escape(resource_url),
+            'resource-url' => Addressable::URI.escape(resource_url),
             'mimetype' => mimetype,
             'is-root' => is_root,
           },
