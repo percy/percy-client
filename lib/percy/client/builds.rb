@@ -14,7 +14,7 @@ module Percy
         # Only pass parallelism data if it all exists and there is more than 1 shard.
         in_parallel_environment = parallel_nonce && \
           parallel_total_shards && parallel_total_shards > 1
-        if !in_parallel_environment
+        unless in_parallel_environment
           parallel_nonce = nil
           parallel_total_shards = nil
         end
@@ -36,18 +36,18 @@ module Percy
               'parallel-nonce' => parallel_nonce,
               'parallel-total-shards' => parallel_total_shards,
             },
-          }
+          },
         }
 
         if resources
-          if !resources.respond_to?(:each)
-            raise ArgumentError.new(
-              'resources argument must be an iterable of Percy::Client::Resource objects')
+          unless resources.respond_to?(:each)
+            raise ArgumentError,
+              'resources argument must be an iterable of Percy::Client::Resource objects'
           end
           relationships_data = {
             'relationships' => {
               'resources' => {
-                'data' => resources.map { |r| r.serialize },
+                'data' => resources.map(&:serialize),
               },
             },
           }
@@ -71,5 +71,3 @@ module Percy
     end
   end
 end
-
-

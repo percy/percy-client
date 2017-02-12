@@ -11,31 +11,6 @@ Lint/EmptyWhen:
   Exclude:
     - 'lib/percy/client/environment.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyleAlignWith, SupportedStylesAlignWith, AutoCorrect.
-# SupportedStylesAlignWith: keyword, variable, start_of_line
-Lint/EndAlignment:
-  Exclude:
-    - 'lib/percy/client/builds.rb'
-    - 'lib/percy/client/environment.rb'
-
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: runtime_error, standard_error
-Lint/InheritException:
-  Exclude:
-    - 'lib/percy/client.rb'
-    - 'lib/percy/client/environment.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: IgnoreEmptyBlocks, AllowUnusedKeywordArguments.
-Lint/UnusedBlockArgument:
-  Exclude:
-    - 'lib/percy.rb'
-
 # Offense count: 13
 Metrics/AbcSize:
   Max: 52
@@ -43,7 +18,7 @@ Metrics/AbcSize:
 # Offense count: 24
 # Configuration parameters: CountComments, ExcludedMethods.
 Metrics/BlockLength:
-  Max: 407
+  Max: 408
 
 # Offense count: 10
 Metrics/CyclomaticComplexity:
@@ -58,7 +33,7 @@ Metrics/LineLength:
 # Offense count: 14
 # Configuration parameters: CountComments.
 Metrics/MethodLength:
-  Max: 56
+  Max: 57
 
 # Offense count: 1
 # Configuration parameters: CountComments.
@@ -121,219 +96,6 @@ RSpec/NotToNot:
     - 'spec/lib/percy_spec.rb'
 
 # Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: prefer_alias, prefer_alias_method
-Style/Alias:
-  Exclude:
-    - 'lib/percy/client/resources.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles, IndentationWidth.
-# SupportedStyles: with_first_parameter, with_fixed_indentation
-Style/AlignParameters:
-  Exclude:
-    - 'lib/percy/client/connection.rb'
-
-# Offense count: 12
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: braces, no_braces, context_dependent
-Style/BracesAroundHashParameters:
-  Exclude:
-    - 'spec/lib/percy/client/builds_spec.rb'
-    - 'spec/lib/percy/client/connection_spec.rb'
-    - 'spec/lib/percy/client/resources_spec.rb'
-    - 'spec/lib/percy/client/snapshots_spec.rb'
-
-# Offense count: 7
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles, IndentOneStep, IndentationWidth.
-# SupportedStyles: case, end
-Style/CaseIndentation:
-  Exclude:
-    - 'lib/percy/client/environment.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/ElseAlignment:
-  Exclude:
-    - 'lib/percy/client/builds.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: empty_lines, empty_lines_except_namespace, empty_lines_special, no_empty_lines
-Style/EmptyLinesAroundClassBody:
-  Exclude:
-    - 'lib/percy/client/resources.rb'
-
-# Offense count: 16
-# Cop supports --auto-correct.
-# Configuration parameters: AllowForAlignment, ForceEqualSignAlignment.
-Style/ExtraSpacing:
-  Exclude:
-    - 'lib/percy/client.rb'
-    - 'lib/percy/client/connection.rb'
-    - 'lib/percy/client/environment.rb'
-    - 'spec/lib/percy/client/environment_spec.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles, IndentationWidth.
-# SupportedStyles: consistent, special_for_inner_method_call, special_for_inner_method_call_in_parentheses
-Style/FirstParameterIndentation:
-  Exclude:
-    - 'lib/percy/client/connection.rb'
-
-# Offense count: 12
-# Cop supports --auto-correct.
-# Configuration parameters: SupportedStyles, IndentationWidth.
-# SupportedStyles: special_inside_parentheses, consistent, align_braces
-Style/IndentHash:
-  EnforcedStyle: consistent
-
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: Width.
-Style/IndentationWidth:
-  Exclude:
-    - 'lib/percy.rb'
-    - 'lib/percy/client/builds.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: line_count_dependent, lambda, literal
-Style/Lambda:
-  Exclude:
-    - 'lib/percy/client/environment.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/LineEndConcatenation:
-  Exclude:
-    - 'lib/percy/client/environment.rb'
-
-# Offense count: 1
 Style/MethodMissing:
   Exclude:
     - 'lib/percy.rb'
-
-# Offense count: 3
-# Cop supports --auto-correct.
-Style/MultilineIfModifier:
-  Exclude:
-    - 'lib/percy.rb'
-    - 'lib/percy/client/connection.rb'
-
-# Offense count: 6
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: symmetrical, new_line, same_line
-Style/MultilineMethodCallBraceLayout:
-  Exclude:
-    - 'lib/percy/client/builds.rb'
-    - 'lib/percy/client/connection.rb'
-    - 'lib/percy/client/environment.rb'
-    - 'lib/percy/client/snapshots.rb'
-    - 'spec/lib/percy/client/environment_spec.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/MutableConstant:
-  Exclude:
-    - 'lib/percy/client/version.rb'
-
-# Offense count: 6
-# Cop supports --auto-correct.
-Style/NegatedIf:
-  Exclude:
-    - 'lib/percy.rb'
-    - 'lib/percy/client/builds.rb'
-    - 'lib/percy/client/environment.rb'
-    - 'lib/percy/client/snapshots.rb'
-
-# Offense count: 4
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: compact, exploded
-Style/RaiseArgs:
-  Exclude:
-    - 'lib/percy/client/builds.rb'
-    - 'lib/percy/client/environment.rb'
-    - 'lib/percy/client/snapshots.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: AllowMultipleReturnValues.
-Style/RedundantReturn:
-  Exclude:
-    - 'lib/percy/client/environment.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: AllowForAlignment.
-Style/SpaceAroundOperators:
-  Exclude:
-    - 'lib/percy/client/environment.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: SupportedStyles.
-# SupportedStyles: use_perl_names, use_english_names
-Style/SpecialGlobalVars:
-  EnforcedStyle: use_perl_names
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles, ConsistentQuotesInMultiline.
-# SupportedStyles: single_quotes, double_quotes
-Style/StringLiterals:
-  Exclude:
-    - 'lib/percy/client/environment.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: IgnoredMethods.
-# IgnoredMethods: respond_to, define_method
-Style/SymbolProc:
-  Exclude:
-    - 'lib/percy/client/builds.rb'
-    - 'lib/percy/client/snapshots.rb'
-
-# Offense count: 5
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: final_newline, final_blank_line
-Style/TrailingBlankLines:
-  Exclude:
-    - 'Rakefile'
-    - 'lib/percy/client/builds.rb'
-    - 'spec/lib/percy/client_spec.rb'
-    - 'spec/lib/percy/config_spec.rb'
-    - 'spec/lib/percy_spec.rb'
-
-# Offense count: 7
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyleForMultiline, SupportedStylesForMultiline.
-# SupportedStylesForMultiline: comma, consistent_comma, no_comma
-Style/TrailingCommaInArguments:
-  Exclude:
-    - 'lib/percy/client/builds.rb'
-    - 'lib/percy/client/connection.rb'
-    - 'lib/percy/client/environment.rb'
-    - 'lib/percy/client/snapshots.rb'
-    - 'spec/lib/percy/client/environment_spec.rb'
-    - 'spec/lib/percy/config_spec.rb'
-
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyleForMultiline, SupportedStylesForMultiline.
-# SupportedStylesForMultiline: comma, consistent_comma, no_comma
-Style/TrailingCommaInLiteral:
-  Exclude:
-    - 'lib/percy/client/builds.rb'
-    - 'lib/percy/client/environment.rb'
-    - 'spec/support/vcr_setup.rb'

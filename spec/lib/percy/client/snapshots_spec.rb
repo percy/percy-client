@@ -12,7 +12,8 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
       # Whitebox test to catch POST data that is sent but is not returned in the API response.
       expect_any_instance_of(Percy::Client).to \
         receive(:post)
-        .with(/snapshots\/$/, {
+        .with(
+          /snapshots\/$/,
           'data' => {
             'type' => 'snapshots',
             'attributes' => {
@@ -45,7 +46,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
               },
             },
           },
-        })
+        )
         .and_call_original
 
       snapshot = Percy.create_snapshot(
@@ -70,7 +71,8 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
       # Whitebox test to catch POST data that is sent but is not returned in the API response.
       expect_any_instance_of(Percy::Client).to \
         receive(:post)
-        .with(/snapshots\/$/, {
+        .with(
+          /snapshots\/$/,
           'data' => {
             'type' => 'snapshots',
             'attributes' => {
@@ -103,7 +105,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
               },
             },
           },
-        })
+        )
         .and_call_original
 
       snapshot = Percy.create_snapshot(
@@ -135,7 +137,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
       snapshot = Percy.create_snapshot(build['data']['id'], resources, name: 'homepage')
 
       result = Percy.finalize_snapshot(snapshot['data']['id'])
-      expect(result).to eq({'success' => true})
+      expect(result).to eq('success' => true)
     end
   end
 end

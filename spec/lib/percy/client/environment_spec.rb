@@ -6,7 +6,7 @@ RSpec.describe Percy::Client::Environment do
     ENV['PERCY_TARGET_BRANCH'] = nil
     ENV['PERCY_PULL_REQUEST'] = nil
     ENV['PERCY_PROJECT'] = nil
-    ENV['PERCY_REPO_SLUG'] = nil  # Deprecated.
+    ENV['PERCY_REPO_SLUG'] = nil # Deprecated.
     ENV['PERCY_PARALLEL_NONCE'] = nil
     ENV['PERCY_PARALLEL_TOTAL'] = nil
 
@@ -183,7 +183,8 @@ RSpec.describe Percy::Client::Environment do
       it 'errors if unable to parse local repo name' do
         expect(Percy::Client::Environment).to receive(:_get_origin_url).once.and_return('foo')
         expect { Percy::Client::Environment.repo }.to raise_error(
-          Percy::Client::Environment::RepoNotFoundError)
+          Percy::Client::Environment::RepoNotFoundError,
+        )
       end
     end
     describe '#parallel_nonce' do
@@ -301,7 +302,7 @@ RSpec.describe Percy::Client::Environment do
       ENV['CI_NAME'] = 'codeship'
       ENV['CI_BRANCH'] = 'codeship-branch'
       ENV['CI_BUILD_NUMBER'] = 'codeship-build-number'
-      ENV['CI_PULL_REQUEST'] = 'false'  # This is always false on Codeship, unfortunately.
+      ENV['CI_PULL_REQUEST'] = 'false' # This is always false on Codeship, unfortunately.
       ENV['CI_COMMIT_ID'] = 'codeship-commit-sha'
       ENV['CI_NODE_TOTAL'] = ''
     end
@@ -385,7 +386,7 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.branch).to eq('buildkite-branch')
       expect(Percy::Client::Environment._commit_sha).to eq('buildkite-commit-sha')
       expect(Percy::Client::Environment.pull_request_number).to be_nil
-      expect(Percy::Client::Environment.repo).to eq('percy/percy-client')  # From git, not env.
+      expect(Percy::Client::Environment.repo).to eq('percy/percy-client') # From git, not env.
       expect(Percy::Client::Environment.parallel_nonce).to eq('buildkite-build-id')
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end

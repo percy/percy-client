@@ -9,15 +9,15 @@ module Percy
         'COMMITTER_EMAIL:%ae',
         'COMMITTED_DATE:%ai',
         # Note: order is important, this must come last because the regex is a multiline match.
-        'COMMIT_MESSAGE:%B'
+        'COMMIT_MESSAGE:%B',
       ].freeze
 
-      class Error < Exception; end
-      class RepoNotFoundError < Exception; end
+      class Error < RuntimeError; end
+      class RepoNotFoundError < RuntimeError; end
 
       def self.current_ci
         return :travis if ENV['TRAVIS_BUILD_ID']
-        return :jenkins if ENV['JENKINS_URL'] && ENV['ghprbPullId']  # Pull Request Builder plugin.
+        return :jenkins if ENV['JENKINS_URL'] && ENV['ghprbPullId'] # Pull Request Builder plugin.
         return :circle if ENV['CIRCLECI']
         return :codeship if ENV['CI_NAME'] && ENV['CI_NAME'] == 'codeship'
         return :drone if ENV['DRONE'] == 'true'
@@ -29,14 +29,14 @@ module Percy
       # not be found.
       def self.commit
         output = _raw_commit_output(_commit_sha) if _commit_sha
-        output = _raw_commit_output('HEAD') if !output
+        output = _raw_commit_output('HEAD') unless output
 
         # Use the specified SHA or, if not given, the parsed SHA at HEAD.
         commit_sha = _commit_sha || output && output.match(/COMMIT_SHA:(.*)/)[1]
 
         # If not running in a git repo, allow nils for certain commit attributes.
-        extract_or_nil = lambda { |regex| (output && output.match(regex) || [])[1] }
-        return {
+        extract_or_nil = ->(regex) { (output && output.match(regex) || [])[1] }
+        {
           # The only required attribute:
           branch: branch,
           # An optional but important attribute:
@@ -48,7 +48,7 @@ module Percy
           # These GIT_ environment vars are from the Jenkins Git Plugin, but could be
           # used generically. This behavior may change in the future.
           author_name: extract_or_nil.call(/AUTHOR_NAME:(.*)/) || ENV['GIT_AUTHOR_NAME'],
-          author_email: extract_or_nil.call(/AUTHOR_EMAIL:(.*)/)  || ENV['GIT_AUTHOR_EMAIL'],
+          author_email: extract_or_nil.call(/AUTHOR_EMAIL:(.*)/) || ENV['GIT_AUTHOR_EMAIL'],
           committer_name: extract_or_nil.call(/COMMITTER_NAME:(.*)/) || ENV['GIT_COMMITTER_NAME'],
           committer_email: extract_or_nil.call(/COMMITTER_EMAIL:(.*)/) || ENV['GIT_COMMITTER_EMAIL'],
         }
@@ -85,9 +85,9 @@ module Percy
 
       # @private
       def self._raw_commit_output(commit_sha)
-        format = GIT_FORMAT_LINES.join('%n')  # "git show" format uses %n for newlines.
+        format = GIT_FORMAT_LINES.join('%n') # "git show" format uses %n for newlines.
         output = `git show --quiet #{commit_sha} --format="#{format}" 2> /dev/null`.strip
-        return if $?.to_i != 0
+        return if $CHILD_STATUS.to_i != 0
         output
       end
 
@@ -117,6 +117,7 @@ module Percy
         else
           _raw_branch_output
         end
+
         if result == ''
           STDERR.puts '[percy] Warning: not in a git repo, setting PERCY_BRANCH to "master".'
           result = 'master'
@@ -138,7 +139,7 @@ module Percy
 
       def self.repo
         return ENV['PERCY_PROJECT'] if ENV['PERCY_PROJECT']
-        return ENV['PERCY_REPO_SLUG'] if ENV['PERCY_REPO_SLUG']  # Deprecated.
+        return ENV['PERCY_REPO_SLUG'] if ENV['PERCY_REPO_SLUG'] # Deprecated.
 
         case current_ci
         when :travis
@@ -150,15 +151,15 @@ module Percy
         else
           origin_url = _get_origin_url.strip
           if origin_url == ''
-            raise Percy::Client::Environment::RepoNotFoundError.new(
-              'No local git repository found. ' +
-              'You can manually set PERCY_PROJECT to fix this. See https://percy.io/docs')
+            raise Percy::Client::Environment::RepoNotFoundError,
+              'No local git repository found. ' \
+              'You can manually set PERCY_PROJECT to fix this. See https://percy.io/docs'
           end
           match = origin_url.match(Regexp.new('[:/]([^/]+\/[^/]+?)(\.git)?\Z'))
-          if !match
-            raise Percy::Client::Environment::RepoNotFoundError.new(
-              "Could not determine repository name from URL: #{origin_url.inspect}\n" +
-              "You can manually set PERCY_PROJECT to fix this. See https://percy.io/docs")
+          unless match
+            raise Percy::Client::Environment::RepoNotFoundError,
+              "Could not determine repository name from URL: #{origin_url.inspect}\n" \
+              'You can manually set PERCY_PROJECT to fix this. See https://percy.io/docs'
           end
           match[1]
         end
