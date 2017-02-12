@@ -4,3 +4,8 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'guard-rspec', require: false
+
+group :test do
+  gem 'rubocop'
+  gem 'rubocop-rspec'
+end

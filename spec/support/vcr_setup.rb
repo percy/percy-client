@@ -6,7 +6,7 @@ VCR.configure do |c|
   c.hook_into :webmock
 
   c.default_cassette_options = {
-    record: ENV['RECORD'] ? :new_episodes : :none
+    record: ENV['RECORD'] ? :new_episodes : :none,
   }
 
   c.filter_sensitive_data('<FILTERED_PERCY_TOKEN>') do

@@ -2,9 +2,9 @@ module Percy
   class Client
     module Snapshots
       def create_snapshot(build_id, resources, options = {})
-        if !resources.respond_to?(:each)
-          raise ArgumentError.new(
-            'resources argument must be an iterable of Percy::Client::Resource objects')
+        unless resources.respond_to?(:each)
+          raise ArgumentError,
+            'resources argument must be an iterable of Percy::Client::Resource objects'
         end
 
         widths = options[:widths] || config.default_widths
@@ -18,7 +18,7 @@ module Percy
             },
             'relationships' => {
               'resources' => {
-                'data' => resources.map { |r| r.serialize },
+                'data' => resources.map(&:serialize),
               },
             },
           },

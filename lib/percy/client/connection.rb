@@ -39,12 +39,14 @@ module Percy
             error_class = Percy::Client::BadGatewayError
           when 503
             error_class = Percy::Client::ServiceUnavailableError
-          when CLIENT_ERROR_STATUS_RANGE  # Catchall.
+          when CLIENT_ERROR_STATUS_RANGE # Catchall.
             error_class = Percy::Client::HttpError
           end
+          return unless error_class
           raise error_class.new(
-              env.status, env.method.upcase, env.url, env.body,
-              "Got #{env.status} (#{env.method.upcase} #{env.url}):\n#{env.body}") if error_class
+            env.status, env.method.upcase, env.url, env.body,
+            "Got #{env.status} (#{env.method.upcase} #{env.url}):\n#{env.body}",
+          )
         end
       end
 

@@ -4,7 +4,6 @@ require 'addressable/uri'
 
 module Percy
   class Client
-
     # A simple data container object used to pass data to create_snapshot.
     class Resource
       attr_accessor :sha
@@ -48,7 +47,7 @@ module Percy
         content_msg = content.nil? ? '' : "content.length: #{content.length}"
         "<Resource #{sha} #{resource_url} is_root:#{!!is_root} #{mimetype} #{content_msg}>"
       end
-      alias_method :to_s, :inspect
+      alias to_s inspect
     end
 
     module Resources

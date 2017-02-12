@@ -7,7 +7,7 @@ RSpec.describe Percy::Client::Resources, :vcr do
   describe 'Percy::Client::Resource' do
     it 'can be initialized with minimal data' do
       resource = Percy::Client::Resource.new('/foo.html', sha: sha)
-      expect(resource.serialize).to eq({
+      expect(resource.serialize).to eq(
         'type' => 'resources',
         'id' => sha,
         'attributes' => {
@@ -15,7 +15,7 @@ RSpec.describe Percy::Client::Resources, :vcr do
           'mimetype' => nil,
           'is-root' => nil,
         },
-      })
+      )
     end
     it 'can be initialized with all data' do
       resource = Percy::Client::Resource.new(
@@ -25,7 +25,7 @@ RSpec.describe Percy::Client::Resources, :vcr do
         mimetype: 'text/html',
         content: content,
       )
-      expect(resource.serialize).to eq({
+      expect(resource.serialize).to eq(
         'type' => 'resources',
         'id' => sha,
         'attributes' => {
@@ -33,7 +33,7 @@ RSpec.describe Percy::Client::Resources, :vcr do
           'mimetype' => 'text/html',
           'is-root' => true,
         },
-      })
+      )
     end
     it 'errors if not given sha or content' do
       expect { Percy::Client::Resource.new('/foo.html') }.to raise_error(ArgumentError)

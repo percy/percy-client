@@ -8,7 +8,7 @@ RSpec.describe Percy::Client::Connection do
     it 'performs a GET request to the api_url and parses response' do
       stub_request(:get, "#{Percy.config.api_url}/test").to_return(body: {foo: true}.to_json)
       data = Percy.client.get("#{Percy.config.api_url}/test")
-      expect(data).to eq({'foo' => true})
+      expect(data).to eq('foo' => true)
     end
     it 'raises customized timeout errors' do
       stub_request(:get, "#{Percy.config.api_url}/test").to_raise(Faraday::TimeoutError)
@@ -28,7 +28,7 @@ RSpec.describe Percy::Client::Connection do
         .then.to_return(body: {foo: true}.to_json, status: 200)
 
       data = Percy.client.get("#{Percy.config.api_url}/test")
-      expect(data).to eq({'foo' => true})
+      expect(data).to eq('foo' => true)
     end
     it 'raises error after 3 retries' do
       stub_request(:get, "#{Percy.config.api_url}/test")
@@ -42,7 +42,7 @@ RSpec.describe Percy::Client::Connection do
     it 'performs a POST request to the api_url and parses response' do
       stub_request(:post, "#{Percy.config.api_url}/test").to_return(body: {foo: true}.to_json)
       data = Percy.client.post("#{Percy.config.api_url}/test", {})
-      expect(data).to eq({'foo' => true})
+      expect(data).to eq('foo' => true)
     end
     it 'raises customized timeout errors' do
       stub_request(:post, "#{Percy.config.api_url}/test").to_raise(Faraday::TimeoutError)
@@ -101,7 +101,7 @@ RSpec.describe Percy::Client::Connection do
         .then.to_return(body: {foo: true}.to_json, status: 200)
 
       data = Percy.client.post("#{Percy.config.api_url}/test", {})
-      expect(data).to eq({'foo' => true})
+      expect(data).to eq('foo' => true)
     end
     it 'raises error after 3 retries' do
       stub_request(:post, "#{Percy.config.api_url}/test")

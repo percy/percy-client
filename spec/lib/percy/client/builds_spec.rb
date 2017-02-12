@@ -7,7 +7,8 @@ RSpec.describe Percy::Client::Builds, :vcr do
       # Whitebox test to check POST data.
       expect_any_instance_of(Percy::Client).to \
         receive(:post)
-        .with(/\/api\/v1\/repos\/fotinakis\/percy-examples\/builds\//, {
+        .with(
+          /\/api\/v1\/repos\/fotinakis\/percy-examples\/builds\//,
           'data' => {
             'type' => 'builds',
             'attributes' => {
@@ -25,7 +26,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
               'parallel-total-shards' => nil,
             },
           },
-        }).and_call_original
+        ).and_call_original
 
       build = Percy.create_build('fotinakis/percy-examples')
       expect(build).to be
@@ -73,7 +74,8 @@ RSpec.describe Percy::Client::Builds, :vcr do
         # Whitebox test to check POST data.
         expect_any_instance_of(Percy::Client).to \
           receive(:post)
-          .with(/\/api\/v1\/repos\/fotinakis\/percy-examples\/builds\//, {
+          .with(
+            /\/api\/v1\/repos\/fotinakis\/percy-examples\/builds\//,
             'data' => {
               'type' => 'builds',
               'attributes' => {
@@ -91,7 +93,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
                 'parallel-total-shards' => 4,
               },
             },
-          })
+          )
 
         Percy.create_build('fotinakis/percy-examples')
       end
@@ -112,7 +114,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
     it 'finalizes a build' do
       build = Percy.create_build('fotinakis/percy-examples')
       result = Percy.finalize_build(build['data']['id'])
-      expect(result).to eq({'success' => true})
+      expect(result).to eq('success' => true)
     end
   end
 end
