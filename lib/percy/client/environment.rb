@@ -23,6 +23,7 @@ module Percy
         return :drone if ENV['DRONE'] == 'true'
         return :semaphore if ENV['SEMAPHORE'] == 'true'
         return :buildkite if ENV['BUILDKITE'] == 'true'
+        return :gitlab if ENV['GITLAB_CI']
       end
 
       # @return [Hash] All commit data from the current commit. Might be empty if commit data could
@@ -80,6 +81,8 @@ module Percy
           # Buildkite mixes SHAs and non-SHAs in BUILDKITE_COMMIT, so we return null if non-SHA.
           return if ENV['BUILDKITE_COMMIT'] == 'HEAD'
           ENV['BUILDKITE_COMMIT']
+        when :gitlab
+          ENV['CI_BUILD_REF']
         end
       end
 
@@ -114,6 +117,8 @@ module Percy
           ENV['BRANCH_NAME']
         when :buildkite
           ENV['BUILDKITE_BRANCH']
+        when :gitlab
+          ENV['CI_BUILD_REF_NAME']
         else
           _raw_branch_output
         end
@@ -205,6 +210,8 @@ module Percy
           ENV['SEMAPHORE_BUILD_NUMBER']
         when :buildkite
           ENV['BUILDKITE_BUILD_ID']
+        when :gitlab
+          ENV['CI_BUILD_ID']
         end
       end
 
