@@ -51,7 +51,7 @@ RSpec.describe Percy::Client::Environment do
     ENV['DRONE_BRANCH'] = nil
     ENV['CI_PULL_REQUEST'] = nil
 
-    # Unset Semaphore CI vars
+    # Unset Semaphore CI vars.
     ENV['CI'] = nil
     ENV['SEMAPHORE'] = nil
     ENV['REVISION'] = nil
@@ -61,12 +61,18 @@ RSpec.describe Percy::Client::Environment do
     ENV['SEMAPHORE_CURRENT_THREAD'] = nil
     ENV['PULL_REQUEST_NUMBER'] = nil
 
-    # Unset Buildkite CI vars
+    # Unset Buildkite CI vars.
     ENV['BUILDKITE'] = nil
     ENV['BUILDKITE_COMMIT'] = nil
     ENV['BUILDKITE_BRANCH'] = nil
     ENV['BUILDKITE_PULL_REQUEST'] = nil
     ENV['BUILDKITE_BUILD_ID'] = nil
+
+    # Unset Gitlab CI vars.
+    ENV['GITLAB_CI'] = nil
+    ENV['CI_BUILD_REF'] = nil
+    ENV['CI_BUILD_REF_NAME'] = nil
+    ENV['CI_BUILD_ID'] = nil
   end
 
   before(:each) do
@@ -405,6 +411,25 @@ RSpec.describe Percy::Client::Environment do
       it 'has the correct properties' do
         expect(Percy::Client::Environment._commit_sha).to be_nil
       end
+    end
+  end
+  context 'in Gitlab CI' do
+    before(:each) do
+      ENV['GITLAB_CI'] = 'yes'
+      ENV['CI_BUILD_REF'] = 'gitlab-commit-sha'
+      ENV['CI_BUILD_REF_NAME'] = 'gitlab-branch'
+      ENV['CI_BUILD_ID'] = 'gitlab-build-id'
+    end
+
+    it 'has the correct properties' do
+      expect(Percy::Client::Environment.current_ci).to eq(:gitlab)
+      expect(Percy::Client::Environment.branch).to eq('gitlab-branch')
+      expect(Percy::Client::Environment._commit_sha).to eq('gitlab-commit-sha')
+      expect(Percy::Client::Environment.pull_request_number).to be_nil
+      expect(Percy::Client::Environment.parallel_nonce).to eq('gitlab-build-id')
+      expect(Percy::Client::Environment.parallel_total_shards).to be_nil
+      # TODO: repo is deprecated, remove this:
+      expect(Percy::Client::Environment.repo).to eq('percy/percy-client') # From git, not env.
     end
   end
   describe 'local git repo methods' do
