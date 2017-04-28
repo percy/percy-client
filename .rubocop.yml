@@ -4,6 +4,8 @@ AllCops:
   Include:
     - Rakefile
     - lib/**/*.rake
+  Exclude:
+    - percy-client.gemspec
 
 Lint/EndAlignment:
   EnforcedStyleAlignWith: variable
@@ -36,6 +38,12 @@ Style/MultilineOperationIndentation:
 Style/NumericLiterals:
   Enabled: false
 
+Style/FileName:
+  Enabled: false
+
+Style/SymbolArray:
+  Enabled: false
+
 Style/NumericPredicate:
   EnforcedStyle: comparison
 
@@ -58,8 +66,8 @@ Style/TrailingCommaInLiteral:
 RSpec/MessageSpies:
   EnforcedStyle: receive
 
-
-
+RSpec/NotToNot:
+  Enabled: false
 
 
 # Will be able to do this in >= v1.11
