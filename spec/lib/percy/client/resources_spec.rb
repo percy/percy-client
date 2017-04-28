@@ -38,7 +38,52 @@ RSpec.describe Percy::Client::Resources, :vcr do
     it 'errors if not given sha or content' do
       expect { Percy::Client::Resource.new('/foo.html') }.to raise_error(ArgumentError)
     end
+
+    describe 'two resources with same properties' do
+      subject(:resource) { Percy::Client::Resource.new('/some-content', sha: '123456', mimetype: 'text/plain') }
+
+      let(:other) { Percy::Client::Resource.new('/some-content', sha: '123456', mimetype: 'text/plain') }
+
+      it { is_expected.to eq(other) }
+      it { is_expected.to eql(other) }
+      it { expect(resource.hash).to eq(other.hash) }
+      it('makes their array unique') { expect([resource, other].uniq).to eq([resource]) }
+    end
+
+    describe 'two resources with different sha' do
+      subject(:resource) { Percy::Client::Resource.new('/some-content', sha: '123456', mimetype: 'text/plain') }
+
+      let(:other) { Percy::Client::Resource.new('/some-content', sha: '654321', mimetype: 'text/plain') }
+
+      it { is_expected.not_to eq(other) }
+      it { is_expected.not_to eql(other) }
+      it { expect(resource.hash).not_to eq(other.hash) }
+      it('makes array unique') { expect([resource, other].uniq).to eq([resource, other]) }
+    end
+
+    describe 'two resources with different url' do
+      subject(:resource) { Percy::Client::Resource.new('/some-content', sha: '123456', mimetype: 'text/plain') }
+
+      let(:other) { Percy::Client::Resource.new('/different-content', sha: '123456', mimetype: 'text/plain') }
+
+      it { is_expected.not_to eq(other) }
+      it { is_expected.not_to eql(other) }
+      it { expect(resource.hash).not_to eq(other.hash) }
+      it('makes array unique') { expect([resource, other].uniq).to eq([resource, other]) }
+    end
+
+    describe 'two resources with different mimetype' do
+      subject(:resource) { Percy::Client::Resource.new('/some-content', sha: '123456', mimetype: 'text/plain') }
+
+      let(:other) { Percy::Client::Resource.new('/some-content', sha: '123456', mimetype: 'text/x-plain') }
+
+      it { is_expected.not_to eq(other) }
+      it { is_expected.not_to eql(other) }
+      it { expect(resource.hash).not_to eq(other.hash) }
+      it('makes array unique') { expect([resource, other].uniq).to eq([resource, other]) }
+    end
   end
+
   describe '#upload_resource' do
     it 'returns true with success' do
       build = Percy.create_build('fotinakis/percy-examples')
