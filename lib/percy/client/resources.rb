@@ -43,6 +43,21 @@ module Percy
         }
       end
 
+      def ==(other)
+        other.is_a?(self.class) &&
+          other.sha == sha &&
+          other.resource_url == resource_url &&
+          other.mimetype == mimetype
+      end
+
+      def hash
+        [sha, resource_url, mimetype].hash
+      end
+
+      def eql?(other)
+        self == other && hash == other.hash
+      end
+
       def inspect
         content_msg = content.nil? ? '' : "content.length: #{content.length}"
         "<Resource #{sha} #{resource_url} is_root:#{!!is_root} #{mimetype} #{content_msg}>"
