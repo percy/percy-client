@@ -232,6 +232,9 @@ module Percy
         when :semaphore
           var = 'SEMAPHORE_THREAD_COUNT'
           Integer(ENV[var]) if ENV[var] && !ENV[var].empty?
+        when :buildkite
+          var = 'BUILDKITE_PARALLEL_JOB_COUNT'
+          Integer(ENV[var]) if ENV[var] && !ENV[var].empty?
         end
       end
 
