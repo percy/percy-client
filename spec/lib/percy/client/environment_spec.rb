@@ -384,6 +384,7 @@ RSpec.describe Percy::Client::Environment do
       ENV['BUILDKITE_COMMIT'] = 'buildkite-commit-sha'
       ENV['BUILDKITE_BRANCH'] = 'buildkite-branch'
       ENV['BUILDKITE_PULL_REQUEST'] = 'false'
+      ENV['BUILDKITE_PARALLEL_JOB_COUNT'] = ''
       ENV['BUILDKITE_BUILD_ID'] = 'buildkite-build-id'
     end
 
@@ -395,6 +396,15 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.repo).to eq('percy/percy-client') # From git, not env.
       expect(Percy::Client::Environment.parallel_nonce).to eq('buildkite-build-id')
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
+    end
+    context 'Parallel Build' do
+      before(:each) do
+        ENV['BUILDKITE_PARALLEL_JOB_COUNT'] = '3'
+      end
+      it 'has the correct properties' do
+        expect(Percy::Client::Environment.parallel_nonce).to eq('buildkite-build-id')
+        expect(Percy::Client::Environment.parallel_total_shards).to eq(3)
+      end
     end
     context 'Pull Request build' do
       before(:each) do

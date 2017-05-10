@@ -218,24 +218,19 @@ module Percy
       def self.parallel_total_shards
         return Integer(ENV['PERCY_PARALLEL_TOTAL']) if ENV['PERCY_PARALLEL_TOTAL']
 
-        case current_ci
+        var = case current_ci
         when :circle
-          var = 'CIRCLE_NODE_TOTAL'
-          Integer(ENV[var]) if ENV[var] && !ENV[var].empty?
+          'CIRCLE_NODE_TOTAL'
         when :travis
-          # Support for https://github.com/ArturT/knapsack
-          var = 'CI_NODE_TOTAL'
-          Integer(ENV[var]) if ENV[var] && !ENV[var].empty?
+          'CI_NODE_TOTAL'
         when :codeship
-          var = 'CI_NODE_TOTAL'
-          Integer(ENV[var]) if ENV[var] && !ENV[var].empty?
+          'CI_NODE_TOTAL'
         when :semaphore
-          var = 'SEMAPHORE_THREAD_COUNT'
-          Integer(ENV[var]) if ENV[var] && !ENV[var].empty?
+          'SEMAPHORE_THREAD_COUNT'
         when :buildkite
-          var = 'BUILDKITE_PARALLEL_JOB_COUNT'
-          Integer(ENV[var]) if ENV[var] && !ENV[var].empty?
+          'BUILDKITE_PARALLEL_JOB_COUNT'
         end
+        Integer(ENV[var]) if var && ENV[var] && !ENV[var].empty?
       end
 
       # @private
