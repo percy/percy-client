@@ -8,7 +8,7 @@
 
 ```bash
 bundle exec rake build
-gem publish pkg/percy-client-1.XX.XX.gem
+gem push pkg/percy-client-1.XX.XX.gem
 ```
 
 * Announce the new release,
