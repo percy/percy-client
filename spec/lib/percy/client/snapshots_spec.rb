@@ -19,6 +19,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
             'attributes' => {
               'name' => 'homepage',
               'enable-javascript' => true,
+              'minimum-height' => nil,
               'widths' => Percy.config.default_widths,
             },
             'relationships' => {
@@ -62,7 +63,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
       expect(snapshot['data']['attributes']['name']).to eq('homepage')
       expect(snapshot['data']['relationships']['missing-resources']).to be
     end
-    it 'overrides default_widths if given' do
+    it 'passes through certain arguments' do
       build = Percy.create_build('fotinakis/percy-examples')
       resources = []
       resources << Percy::Client::Resource.new('/foo/test.html', sha: sha, is_root: true)
@@ -78,6 +79,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
             'attributes' => {
               'name' => 'homepage',
               'enable-javascript' => nil,
+              'minimum-height' => 700,
               'widths' => [320, 1280],
             },
             'relationships' => {
@@ -113,6 +115,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
         resources,
         name: 'homepage',
         widths: [320, 1280],
+        minimum_height: 700,
       )
 
       expect(snapshot['data']).to be
