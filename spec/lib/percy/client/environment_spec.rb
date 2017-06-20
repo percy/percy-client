@@ -106,6 +106,13 @@ RSpec.describe Percy::Client::Environment do
         expect(Percy::Client::Environment.current_ci).to be_nil
       end
     end
+    describe '#user_agent' do
+      it 'returns a user agent' do
+        user_agent = "Percy/v1 percy-client/#{Percy::Client::VERSION} "\
+                     "(ruby/#{RUBY_VERSION}p#{RUBY_PATCHLEVEL})"
+        expect(Percy::Client::Environment.user_agent).to eq user_agent
+      end
+    end
     describe '#branch' do
       it 'returns master if not in a git repo' do
         expect(Percy::Client::Environment).to receive(:_raw_branch_output).and_return('')
@@ -212,7 +219,18 @@ RSpec.describe Percy::Client::Environment do
       end
     end
   end
+
+  RSpec.shared_examples 'an environment user agent that includes CI' do |ci_name|
+    it 'returns a user_agent that includes CI name' do
+      user_agent = "Percy/v1 percy-client/#{Percy::Client::VERSION} "\
+                   "(ruby/#{RUBY_VERSION}p#{RUBY_PATCHLEVEL}; #{ci_name})"
+      expect(Percy::Client::Environment.user_agent).to eq user_agent
+    end
+  end
+
   context 'in Jenkins CI' do
+    it_behaves_like 'an environment user agent that includes CI', 'jenkins'
+
     before(:each) do
       ENV['JENKINS_URL'] = 'http://localhost:8080/'
       ENV['ghprbPullId'] = '123'
@@ -229,6 +247,8 @@ RSpec.describe Percy::Client::Environment do
     end
   end
   context 'in Travis CI' do
+    it_behaves_like 'an environment user agent that includes CI', 'travis'
+
     before(:each) do
       ENV['TRAVIS_BUILD_ID'] = '1234'
       ENV['TRAVIS_BUILD_NUMBER'] = 'build-number'
@@ -250,6 +270,7 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.parallel_nonce).to eq('build-number')
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
+
     context 'Pull Request build' do
       before(:each) do
         ENV['TRAVIS_PULL_REQUEST'] = '256'
@@ -273,6 +294,8 @@ RSpec.describe Percy::Client::Environment do
     end
   end
   context 'in Circle CI' do
+    it_behaves_like 'an environment user agent that includes CI', 'circle'
+
     before(:each) do
       ENV['CIRCLECI'] = 'true'
       ENV['CIRCLE_BRANCH'] = 'circle-branch'
@@ -304,6 +327,8 @@ RSpec.describe Percy::Client::Environment do
     end
   end
   context 'in Codeship' do
+    it_behaves_like 'an environment user agent that includes CI', 'codeship'
+
     before(:each) do
       ENV['CI_NAME'] = 'codeship'
       ENV['CI_BRANCH'] = 'codeship-branch'
@@ -333,6 +358,8 @@ RSpec.describe Percy::Client::Environment do
     end
   end
   context 'in Drone' do
+    it_behaves_like 'an environment user agent that includes CI', 'drone'
+
     before(:each) do
       ENV['DRONE'] = 'true'
       ENV['DRONE_COMMIT'] = 'drone-commit-sha'
@@ -349,6 +376,8 @@ RSpec.describe Percy::Client::Environment do
     end
   end
   context 'in Semaphore CI' do
+    it_behaves_like 'an environment user agent that includes CI', 'semaphore'
+
     before(:each) do
       ENV['SEMAPHORE'] = 'true'
       ENV['BRANCH_NAME'] = 'semaphore-branch'
@@ -379,6 +408,8 @@ RSpec.describe Percy::Client::Environment do
     end
   end
   context 'in Buildkite' do
+    it_behaves_like 'an environment user agent that includes CI', 'buildkite'
+
     before(:each) do
       ENV['BUILDKITE'] = 'true'
       ENV['BUILDKITE_COMMIT'] = 'buildkite-commit-sha'
@@ -424,6 +455,8 @@ RSpec.describe Percy::Client::Environment do
     end
   end
   context 'in Gitlab CI' do
+    it_behaves_like 'an environment user agent that includes CI', 'gitlab'
+
     before(:each) do
       ENV['GITLAB_CI'] = 'yes'
       ENV['CI_BUILD_REF'] = 'gitlab-commit-sha'

@@ -26,6 +26,22 @@ module Percy
         return :gitlab if ENV['GITLAB_CI']
       end
 
+      def self.user_agent(client_info: nil, environment_info: nil)
+        client = [
+          "Percy/#{_api_version}",
+          client_info,
+          "percy-client/#{VERSION}",
+        ].compact.join(' ')
+
+        environment = [
+          environment_info,
+          "ruby/#{_ruby_version}",
+          current_ci,
+        ].compact.join('; ')
+
+        "#{client} (#{environment})"
+      end
+
       # @return [Hash] All commit data from the current commit. Might be empty if commit data could
       # not be found.
       def self.commit
@@ -92,6 +108,14 @@ module Percy
         output = `git show --quiet #{commit_sha} --format="#{format}" 2> /dev/null`.strip
         return if $CHILD_STATUS.to_i != 0
         output
+      end
+
+      def self._ruby_version
+        "#{RUBY_VERSION}p#{RUBY_PATCHLEVEL}"
+      end
+
+      def self._api_version
+        Config.new.api_url.match(/\w+$/).to_s
       end
 
       # The name of the current branch.
