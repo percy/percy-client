@@ -28,4 +28,10 @@ RSpec.configure do |config|
   # test failures related to randomization by passing the same `--seed` value
   # as the one that triggered the failure.
   Kernel.srand config.seed
+
+  config.after(:each) do |_example|
+    # After each run, clear the memoized `_user_agent` property to avoid polluting
+    # other tests with the incorrect values.
+    Percy.client._reset_user_agent
+  end
 end

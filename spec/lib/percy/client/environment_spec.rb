@@ -88,6 +88,7 @@ RSpec.describe Percy::Client::Environment do
     }
     clear_env_vars
   end
+
   after(:each) do
     clear_env_vars
     ENV['TRAVIS_BUILD_ID'] = @original_env['TRAVIS_BUILD_ID']
@@ -106,41 +107,50 @@ RSpec.describe Percy::Client::Environment do
         expect(Percy::Client::Environment.current_ci).to be_nil
       end
     end
+
     describe '#branch' do
       it 'returns master if not in a git repo' do
         expect(Percy::Client::Environment).to receive(:_raw_branch_output).and_return('')
         expect(Percy::Client::Environment.branch).to eq('master')
       end
+
       it 'reads from the current local repo' do
         expect(Percy::Client::Environment.branch).to_not be_empty
       end
+
       it 'can be overridden with PERCY_BRANCH' do
         ENV['PERCY_BRANCH'] = 'test-branch'
         expect(Percy::Client::Environment.branch).to eq('test-branch')
       end
     end
+
     describe '#target_branch' do
       it 'returns nil if unset' do
         expect(Percy::Client::Environment.target_branch).to be_nil
       end
+
       it 'can be set with PERCY_TARGET_BRANCH' do
         ENV['PERCY_TARGET_BRANCH'] = 'test-target-branch'
         expect(Percy::Client::Environment.target_branch).to eq('test-target-branch')
       end
     end
+
     describe '#_commit_sha' do
       it 'returns nil if no environment info can be found' do
         expect(Percy::Client::Environment._commit_sha).to be_nil
       end
+
       it 'can be overridden with PERCY_COMMIT' do
         ENV['PERCY_COMMIT'] = 'test-commit'
         expect(Percy::Client::Environment._commit_sha).to eq('test-commit')
       end
     end
+
     describe '#pull_request_number' do
       it 'returns nil if no CI environment' do
         expect(Percy::Client::Environment.pull_request_number).to be_nil
       end
+
       it 'can be overridden with PERCY_PULL_REQUEST' do
         ENV['PERCY_PULL_REQUEST'] = '123'
         ENV['TRAVIS_BUILD_ID'] = '1234'
@@ -148,18 +158,22 @@ RSpec.describe Percy::Client::Environment do
         expect(Percy::Client::Environment.pull_request_number).to eq('123')
       end
     end
+
     describe '#repo' do
       it 'returns the current local repo name' do
         expect(Percy::Client::Environment.repo).to eq('percy/percy-client')
       end
+
       it 'can be overridden with PERCY_PROJECT' do
         ENV['PERCY_PROJECT'] = 'percy/slug'
         expect(Percy::Client::Environment.repo).to eq('percy/slug')
       end
+
       it 'can be overridden with PERCY_REPO_SLUG (deprecated)' do
         ENV['PERCY_REPO_SLUG'] = 'percy/slug'
         expect(Percy::Client::Environment.repo).to eq('percy/slug')
       end
+
       it 'handles git ssh urls' do
         expect(Percy::Client::Environment).to receive(:_get_origin_url)
           .once.and_return('git@github.com:org-name/repo-name.git')
@@ -173,6 +187,7 @@ RSpec.describe Percy::Client::Environment do
           .once.and_return('git@custom-local-hostname:org-name/repo-name.org')
         expect(Percy::Client::Environment.repo).to eq('org-name/repo-name.org')
       end
+
       it 'handles git https urls' do
         expect(Percy::Client::Environment).to receive(:_get_origin_url)
           .once.and_return('https://github.com/org-name/repo-name.git')
@@ -186,6 +201,7 @@ RSpec.describe Percy::Client::Environment do
           .once.and_return("https://github.com/org-name/repo-name.org\n")
         expect(Percy::Client::Environment.repo).to eq('org-name/repo-name.org')
       end
+
       it 'errors if unable to parse local repo name' do
         expect(Percy::Client::Environment).to receive(:_get_origin_url).once.and_return('foo')
         expect { Percy::Client::Environment.repo }.to raise_error(
@@ -193,25 +209,38 @@ RSpec.describe Percy::Client::Environment do
         )
       end
     end
+
     describe '#parallel_nonce' do
       it 'returns nil' do
         expect(Percy::Client::Environment.parallel_nonce).to be_nil
       end
+
       it 'can be set with environment var' do
         ENV['PERCY_PARALLEL_NONCE'] = 'nonce'
         expect(Percy::Client::Environment.parallel_nonce).to eq('nonce')
       end
     end
+
     describe '#parallel_total_shards' do
       it 'returns nil' do
         expect(Percy::Client::Environment.parallel_nonce).to be_nil
       end
+
       it 'can be set with environment var' do
         ENV['PERCY_PARALLEL_TOTAL'] = '3'
         expect(Percy::Client::Environment.parallel_total_shards).to eq(3)
       end
     end
   end
+
+  RSpec.shared_examples 'an environment user agent that includes CI' do |ci_name|
+    it 'returns a user_agent that includes CI name' do
+      user_agent = "Percy/v1 percy-client/#{Percy::Client::VERSION} "\
+                   "(ruby/#{RUBY_VERSION}p#{RUBY_PATCHLEVEL}; #{ci_name})"
+      expect(Percy::Client::Environment.user_agent).to eq user_agent
+    end
+  end
+
   context 'in Jenkins CI' do
     before(:each) do
       ENV['JENKINS_URL'] = 'http://localhost:8080/'
@@ -228,6 +257,7 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.repo).to eq('percy/percy-client')
     end
   end
+
   context 'in Travis CI' do
     before(:each) do
       ENV['TRAVIS_BUILD_ID'] = '1234'
@@ -250,28 +280,33 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.parallel_nonce).to eq('build-number')
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
+
     context 'Pull Request build' do
       before(:each) do
         ENV['TRAVIS_PULL_REQUEST'] = '256'
         ENV['TRAVIS_PULL_REQUEST_BRANCH'] = 'travis-pr-branch'
         ENV['TRAVIS_PULL_REQUEST_SHA'] = 'travis-pr-head-commit-sha'
       end
+
       it 'has the correct properties' do
         expect(Percy::Client::Environment.branch).to eq('travis-pr-branch')
         expect(Percy::Client::Environment._commit_sha).to eq('travis-pr-head-commit-sha')
         expect(Percy::Client::Environment.pull_request_number).to eq('256')
       end
     end
+
     context 'parallel build' do
       before(:each) do
         ENV['CI_NODE_TOTAL'] = '3'
       end
+
       it 'has the correct properties' do
         expect(Percy::Client::Environment.parallel_nonce).to eq('build-number')
         expect(Percy::Client::Environment.parallel_total_shards).to eq(3)
       end
     end
   end
+
   context 'in Circle CI' do
     before(:each) do
       ENV['CIRCLECI'] = 'true'
@@ -293,16 +328,19 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.parallel_nonce).to eq('build-number')
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
+
     context 'parallel build' do
       before(:each) do
         ENV['CIRCLE_NODE_TOTAL'] = '3'
       end
+
       it 'has the correct properties' do
         expect(Percy::Client::Environment.parallel_nonce).to eq('build-number')
         expect(Percy::Client::Environment.parallel_total_shards).to eq(3)
       end
     end
   end
+
   context 'in Codeship' do
     before(:each) do
       ENV['CI_NAME'] = 'codeship'
@@ -322,16 +360,19 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.parallel_nonce).to eq('codeship-build-number')
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
+
     context 'parallel build' do
       before(:each) do
         ENV['CI_NODE_TOTAL'] = '3'
       end
+
       it 'has the correct properties' do
         expect(Percy::Client::Environment.parallel_nonce).to eq('codeship-build-number')
         expect(Percy::Client::Environment.parallel_total_shards).to eq(3)
       end
     end
   end
+
   context 'in Drone' do
     before(:each) do
       ENV['DRONE'] = 'true'
@@ -348,6 +389,7 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.repo).to eq('percy/percy-client')
     end
   end
+
   context 'in Semaphore CI' do
     before(:each) do
       ENV['SEMAPHORE'] = 'true'
@@ -368,16 +410,19 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.parallel_nonce).to eq('semaphore-build-number')
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
+
     context 'parallel build' do
       before(:each) do
         ENV['SEMAPHORE_THREAD_COUNT'] = '3'
       end
+
       it 'has the correct properties' do
         expect(Percy::Client::Environment.parallel_nonce).to eq('semaphore-build-number')
         expect(Percy::Client::Environment.parallel_total_shards).to eq(3)
       end
     end
   end
+
   context 'in Buildkite' do
     before(:each) do
       ENV['BUILDKITE'] = 'true'

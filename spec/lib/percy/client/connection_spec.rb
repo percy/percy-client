@@ -1,114 +1,143 @@
 RSpec.describe Percy::Client::Connection do
+  let(:user_agent) do
+    "Percy/#{api_version} #{client_info} percy-client/#{Percy::Client::VERSION} "\
+    "(#{environment_info}; ruby/#{ruby_version}; #{ci_name})"
+  end
+  let(:content_type) { 'application/vnd.api+json' }
+  let(:api_version) { 'v1' }
+  let(:ruby_version) { '2.2.6p396' }
+  let(:client_info) { 'percy-capybara/3.1.0' }
+  let(:environment_info) { 'Rails/4.2.1' }
+  let(:ci_name) { 'buildkite' }
+  let(:uri) { "#{Percy.config.api_url}/test" }
+
   describe '#connection' do
     it 'disables cookies on faraday httpclient adapter' do
       expect(Percy.client.connection.builder.app.client.cookie_manager).to be_nil
     end
   end
+
+  shared_examples_for 'a connection that sets headers with HTTP method' do |http_method|
+    it 'sets headers' do
+      stub_request(http_method, uri)
+        .with(headers: {'User-Agent' => user_agent, 'Content-Type' => content_type})
+        .to_return(body: {foo: true}.to_json)
+
+      expect(Percy.client).to receive(:_api_version).and_return(api_version)
+      expect(Percy.client).to receive(:_ruby_version).and_return(ruby_version)
+
+      expect(Percy.client).to receive(:client_info).and_return(client_info)
+      expect(Percy.client).to receive(:environment_info).and_return(environment_info)
+
+      expect(Percy::Client::Environment).to receive(:current_ci).and_return(ci_name)
+
+      expect(response).to eq('foo' => true)
+    end
+  end
+
   describe '#get' do
+    subject(:response) { Percy.client.get(uri) }
+
+    it_behaves_like 'a connection that sets headers with HTTP method', :get
+
     it 'performs a GET request to the api_url and parses response' do
-      stub_request(:get, "#{Percy.config.api_url}/test").to_return(body: {foo: true}.to_json)
-      data = Percy.client.get("#{Percy.config.api_url}/test")
-      expect(data).to eq('foo' => true)
+      stub_request(:get, uri).to_return(body: {foo: true}.to_json)
+      expect(response).to eq('foo' => true)
     end
+
     it 'raises customized timeout errors' do
-      stub_request(:get, "#{Percy.config.api_url}/test").to_raise(Faraday::TimeoutError)
-      expect do
-        Percy.client.get("#{Percy.config.api_url}/test")
-      end.to raise_error(Percy::Client::TimeoutError)
+      stub_request(:get, uri).to_raise(Faraday::TimeoutError)
+      expect { response }.to raise_error(Percy::Client::TimeoutError)
     end
+
     it 'raises customized connection failed errors' do
-      stub_request(:get, "#{Percy.config.api_url}/test").to_raise(Faraday::ConnectionFailed)
-      expect do
-        Percy.client.get("#{Percy.config.api_url}/test")
-      end.to raise_error(Percy::Client::ConnectionFailed)
+      stub_request(:get, uri).to_raise(Faraday::ConnectionFailed)
+      expect { response }.to raise_error(Percy::Client::ConnectionFailed)
     end
+
     it 'retries on 502 errors' do
-      stub_request(:get, "#{Percy.config.api_url}/test")
+      stub_request(:get, uri)
         .to_return(body: {foo: true}.to_json, status: 502)
         .then.to_return(body: {foo: true}.to_json, status: 200)
 
-      data = Percy.client.get("#{Percy.config.api_url}/test")
-      expect(data).to eq('foo' => true)
+      expect(response).to eq('foo' => true)
     end
+
     it 'raises error after 3 retries' do
-      stub_request(:get, "#{Percy.config.api_url}/test")
+      stub_request(:get, uri)
         .to_return(body: {foo: true}.to_json, status: 502).times(3)
-      expect do
-        Percy.client.get("#{Percy.config.api_url}/test")
-      end.to raise_error(Percy::Client::BadGatewayError)
+
+      expect { response }.to raise_error(Percy::Client::BadGatewayError)
     end
   end
+
   describe '#post' do
+    subject(:response) { Percy.client.post(uri, {}) }
+
+    it_behaves_like 'a connection that sets headers with HTTP method', :post
+
     it 'performs a POST request to the api_url and parses response' do
-      stub_request(:post, "#{Percy.config.api_url}/test").to_return(body: {foo: true}.to_json)
-      data = Percy.client.post("#{Percy.config.api_url}/test", {})
-      expect(data).to eq('foo' => true)
+      stub_request(:post, uri).to_return(body: {foo: true}.to_json)
+      expect(response).to eq('foo' => true)
     end
+
+    it 'passes through arguments' do
+      stub_request(:post, uri)
+        .with(headers: {'User-Agent' => user_agent, 'Content-Type' => content_type})
+        .to_return(body: {foo: true}.to_json)
+
+      expect(Percy.client).to receive(:_user_agent).and_return(user_agent)
+      expect(response).to eq('foo' => true)
+    end
+
     it 'raises customized timeout errors' do
-      stub_request(:post, "#{Percy.config.api_url}/test").to_raise(Faraday::TimeoutError)
-      expect do
-        Percy.client.post("#{Percy.config.api_url}/test", {})
-      end.to raise_error(Percy::Client::TimeoutError)
+      stub_request(:post, uri).to_raise(Faraday::TimeoutError)
+      expect { response }.to raise_error(Percy::Client::TimeoutError)
     end
+
     it 'raises customized connection failed errors' do
-      stub_request(:post, "#{Percy.config.api_url}/test").to_raise(Faraday::ConnectionFailed)
-      expect do
-        Percy.client.post("#{Percy.config.api_url}/test", {})
-      end.to raise_error(Percy::Client::ConnectionFailed)
+      stub_request(:post, uri).to_raise(Faraday::ConnectionFailed)
+      expect { response }.to raise_error(Percy::Client::ConnectionFailed)
     end
-    it 'raises custom error classes for some HTTP errors' do
-      stub_request(:post, "#{Percy.config.api_url}/test")
-        .to_return(body: {foo: true}.to_json, status: 400)
-        .then.to_return(body: {foo: true}.to_json, status: 401)
-        .then.to_return(body: {foo: true}.to_json, status: 402)
-        .then.to_return(body: {foo: true}.to_json, status: 403)
-        .then.to_return(body: {foo: true}.to_json, status: 404)
-        .then.to_return(body: {foo: true}.to_json, status: 409)
-        .then.to_return(body: {foo: true}.to_json, status: 500)
-        .then.to_return(body: {foo: true}.to_json, status: 502)
-        .then.to_return(body: {foo: true}.to_json, status: 503)
-      expect do
-        Percy.client.post("#{Percy.config.api_url}/test", {}, retries: 0)
-      end.to raise_error(Percy::Client::BadRequestError)
-      expect do
-        Percy.client.post("#{Percy.config.api_url}/test", {}, retries: 0)
-      end.to raise_error(Percy::Client::UnauthorizedError)
-      expect do
-        Percy.client.post("#{Percy.config.api_url}/test", {}, retries: 0)
-      end.to raise_error(Percy::Client::PaymentRequiredError)
-      expect do
-        Percy.client.post("#{Percy.config.api_url}/test", {}, retries: 0)
-      end.to raise_error(Percy::Client::ForbiddenError)
-      expect do
-        Percy.client.post("#{Percy.config.api_url}/test", {}, retries: 0)
-      end.to raise_error(Percy::Client::NotFoundError)
-      expect do
-        Percy.client.post("#{Percy.config.api_url}/test", {}, retries: 0)
-      end.to raise_error(Percy::Client::ConflictError)
-      expect do
-        Percy.client.post("#{Percy.config.api_url}/test", {}, retries: 0)
-      end.to raise_error(Percy::Client::InternalServerError)
-      expect do
-        Percy.client.post("#{Percy.config.api_url}/test", {}, retries: 0)
-      end.to raise_error(Percy::Client::BadGatewayError)
-      expect do
-        Percy.client.post("#{Percy.config.api_url}/test", {}, retries: 0)
-      end.to raise_error(Percy::Client::ServiceUnavailableError)
+
+    shared_examples_for 'HTTP status raises custom error class' do |http_status, error_class|
+      subject(:request) { Percy.client.post(uri, {}, retries: 0) }
+
+      it 'raises custom error classes for some HTTP errors' do
+        stub_request(:post, uri).to_return(body: {foo: true}.to_json, status: http_status.to_i)
+        expect { request }.to raise_error(error_class)
+      end
     end
+
+    http_errors = {
+      '400' => Percy::Client::BadRequestError,
+      '401' => Percy::Client::UnauthorizedError,
+      '402' => Percy::Client::PaymentRequiredError,
+      '403' => Percy::Client::ForbiddenError,
+      '404' => Percy::Client::NotFoundError,
+      '409' => Percy::Client::ConflictError,
+      '500' => Percy::Client::InternalServerError,
+      '502' => Percy::Client::BadGatewayError,
+      '503' => Percy::Client::ServiceUnavailableError,
+    }
+
+    http_errors.each do |http_status, error_class|
+      include_examples 'HTTP status raises custom error class', http_status, error_class
+    end
+
     it 'retries on server errors' do
-      stub_request(:post, "#{Percy.config.api_url}/test")
+      stub_request(:post, uri)
         .to_return(body: {foo: true}.to_json, status: 500)
         .then.to_return(body: {foo: true}.to_json, status: 200)
 
-      data = Percy.client.post("#{Percy.config.api_url}/test", {})
-      expect(data).to eq('foo' => true)
+      expect(response).to eq('foo' => true)
     end
+
     it 'raises error after 3 retries' do
-      stub_request(:post, "#{Percy.config.api_url}/test")
+      stub_request(:post, uri)
         .to_return(body: {foo: true}.to_json, status: 502).times(3)
-      expect do
-        Percy.client.post("#{Percy.config.api_url}/test", {})
-      end.to raise_error(Percy::Client::BadGatewayError)
+
+      expect { response }.to raise_error(Percy::Client::BadGatewayError)
     end
   end
 end

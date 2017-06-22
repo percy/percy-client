@@ -15,8 +15,15 @@ module Percy
   # API client based on configured options.
   #
   # @return [Percy::Client] API client.
-  def self.client
-    @client = Percy::Client.new(config: config) if !defined?(@client) || !@client
+  def self.client(options = {})
+    if !defined?(@client) || !@client
+      @client = Percy::Client.new(
+        config: config,
+        client_info: options[:client_info],
+        environment_info: options[:environment_info],
+      )
+    end
+
     @client
   end
 

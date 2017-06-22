@@ -14,6 +14,7 @@ module Percy
         # Only pass parallelism data if it all exists and there is more than 1 shard.
         in_parallel_environment = parallel_nonce && \
           parallel_total_shards && parallel_total_shards > 1
+
         unless in_parallel_environment
           parallel_nonce = nil
           parallel_total_shards = nil
@@ -44,6 +45,7 @@ module Percy
             raise ArgumentError,
               'resources argument must be an iterable of Percy::Client::Resource objects'
           end
+
           relationships_data = {
             'relationships' => {
               'resources' => {
@@ -51,16 +53,19 @@ module Percy
               },
             },
           }
+
           data['data'].merge!(relationships_data)
         end
 
         build_data = post("#{config.api_url}/repos/#{repo}/builds/", data)
         Percy.logger.debug { "Build #{build_data['data']['id']} created" }
+
         parallelism_msg = if parallel_total_shards
           "#{parallel_total_shards} shards detected (nonce: #{parallel_nonce.inspect})"
         else
           'not detected'
         end
+
         Percy.logger.debug { "Parallel test environment: #{parallelism_msg}" }
         build_data
       end
