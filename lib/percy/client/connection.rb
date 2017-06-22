@@ -125,19 +125,25 @@ module Percy
       end
 
       def _user_agent
-        client = [
-          "Percy/#{_api_version}",
-          client_info,
-          "percy-client/#{VERSION}",
-        ].compact.join(' ')
+        @_user_agent ||= begin
+          client = [
+            "Percy/#{_api_version}",
+            client_info,
+            "percy-client/#{VERSION}",
+          ].compact.join(' ')
 
-        environment = [
-          environment_info,
-          "ruby/#{_ruby_version}",
-          Percy::Client::Environment.current_ci,
-        ].compact.join('; ')
+          environment = [
+            environment_info,
+            "ruby/#{_ruby_version}",
+            Percy::Client::Environment.current_ci,
+          ].compact.join('; ')
 
-        "#{client} (#{environment})"
+          "#{client} (#{environment})"
+        end
+      end
+
+      def _reset_user_agent
+        @_user_agent = nil
       end
 
       def _api_version
