@@ -26,8 +26,6 @@ module Percy
         return :gitlab if ENV['GITLAB_CI']
       end
 
-
-
       # @return [Hash] All commit data from the current commit. Might be empty if commit data could
       # not be found.
       def self.commit
