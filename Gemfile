@@ -5,6 +5,10 @@ gemspec
 
 gem 'guard-rspec', require: false
 
+group :test, :development do
+  gem 'pry'
+end
+
 group :test do
   gem 'rubocop'
   gem 'rubocop-rspec'
