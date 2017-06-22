@@ -45,10 +45,12 @@ module Percy
     class BadGatewayError < ServerError; end # 502.
     class ServiceUnavailableError < ServerError; end # 503.
 
-    attr_reader :config
+    attr_reader :config, :client_info, :environment_info
 
     def initialize(options = {})
       @config = options[:config] || Percy::Config.new
+      @client_info = options[:client_info]
+      @environment_info = options[:environment_info]
     end
   end
 end

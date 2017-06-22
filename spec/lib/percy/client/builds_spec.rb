@@ -55,6 +55,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
       expect(build['data']['relationships']['missing-resources']['data']).to be
       expect(build['data']['relationships']['missing-resources']['data'].length).to eq(1)
     end
+
     context 'with env vars configured' do
       before(:each) do
         ENV['PERCY_BRANCH'] = 'foo-branch'
