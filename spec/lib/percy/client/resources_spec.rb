@@ -2,7 +2,7 @@ require 'digest'
 
 # rubocop:disable RSpec/MultipleDescribes
 RSpec.describe Percy::Client::Resources, :vcr do
-  let(:content) { "hello world! #{described_class.name}" }
+  let(:content) { "hello world! #{Percy::Client::Resources.name}" }
   let(:sha) { Digest::SHA256.hexdigest(content) }
 
   describe '#upload_resource' do
@@ -19,11 +19,11 @@ RSpec.describe Percy::Client::Resources, :vcr do
 end
 
 RSpec.describe Percy::Client::Resource do
-  let(:content) { "hello world! #{described_class.name}" }
+  let(:content) { "hello world! #{Percy::Client::Resource.name}" }
   let(:sha) { Digest::SHA256.hexdigest(content) }
 
   it 'can be initialized with minimal data' do
-    resource = described_class.new('/foo.html', sha: sha)
+    resource = Percy::Client::Resource.new('/foo.html', sha: sha)
     expect(resource.serialize).to eq(
       'type' => 'resources',
       'id' => sha,
@@ -35,7 +35,7 @@ RSpec.describe Percy::Client::Resource do
     )
   end
   it 'can be initialized with all data' do
-    resource = described_class.new(
+    resource = Percy::Client::Resource.new(
       '/foo new.html',
       sha: sha,
       is_root: true,
@@ -53,48 +53,54 @@ RSpec.describe Percy::Client::Resource do
     )
   end
   it 'errors if not given sha or content' do
-    expect { described_class.new('/foo.html') }.to raise_error(ArgumentError)
+    expect { Percy::Client::Resource.new('/foo.html') }.to raise_error(ArgumentError)
   end
 
   describe 'object equality' do
-    subject(:resource) { described_class.new('/some-content', sha: sha, mimetype: mimetype) }
+    subject(:resource) do
+      Percy::Client::Resource.new('/some-content', sha: sha, mimetype: mimetype)
+    end
 
     let(:sha) { '123456' }
     let(:mimetype) { 'text/plain' }
 
     describe 'two resources with same properties' do
-      let(:other) { described_class.new('/some-content', sha: sha, mimetype: mimetype) }
+      let(:other) { Percy::Client::Resource.new('/some-content', sha: sha, mimetype: mimetype) }
 
-      it { is_expected.to eq(other) }
-      it { is_expected.to eql(other) }
+      it { should eq(other) }
+      it { should eql(other) }
       it { expect(resource.hash).to eq(other.hash) }
       it('makes their array unique') { expect([resource, other].uniq).to eq([resource]) }
     end
 
     describe 'two resources with different sha' do
-      let(:other) { described_class.new('/some-content', sha: sha.reverse, mimetype: mimetype) }
+      let(:other) do
+        Percy::Client::Resource.new('/some-content', sha: sha.reverse, mimetype: mimetype)
+      end
 
-      it { is_expected.not_to eq(other) }
-      it { is_expected.not_to eql(other) }
-      it { expect(resource.hash).not_to eq(other.hash) }
+      it { should_not eq(other) }
+      it { should_not eql(other) }
+      it { expect(resource.hash).to_not eq(other.hash) }
       it('makes array unique') { expect([resource, other].uniq).to eq([resource, other]) }
     end
 
     describe 'two resources with different url' do
-      let(:other) { described_class.new('/different-content', sha: sha, mimetype: mimetype) }
+      let(:other) do
+        Percy::Client::Resource.new('/different-content', sha: sha, mimetype: mimetype)
+      end
 
-      it { is_expected.not_to eq(other) }
-      it { is_expected.not_to eql(other) }
-      it { expect(resource.hash).not_to eq(other.hash) }
+      it { should_not eq(other) }
+      it { should_not eql(other) }
+      it { expect(resource.hash).to_not eq(other.hash) }
       it('makes array unique') { expect([resource, other].uniq).to eq([resource, other]) }
     end
 
     describe 'two resources with different mimetype' do
-      let(:other) { described_class.new('/some-content', sha: sha, mimetype: 'text/css') }
+      let(:other) { Percy::Client::Resource.new('/some-content', sha: sha, mimetype: 'text/css') }
 
-      it { is_expected.not_to eq(other) }
-      it { is_expected.not_to eql(other) }
-      it { expect(resource.hash).not_to eq(other.hash) }
+      it { should_not eq(other) }
+      it { should_not eql(other) }
+      it { expect(resource.hash).to_not eq(other.hash) }
       it('makes array unique') { expect([resource, other].uniq).to eq([resource, other]) }
     end
   end

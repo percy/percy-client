@@ -58,4 +58,9 @@ module Percy
     client.send(method_name, *args, &block)
   end
   private :method_missing
+
+  # @private
+  def self.respond_to_missing?(method_name, _ = false)
+    client.respond_to?(method_name)
+  end
 end

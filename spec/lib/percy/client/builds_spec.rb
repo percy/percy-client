@@ -1,5 +1,5 @@
 RSpec.describe Percy::Client::Builds, :vcr do
-  let(:content) { "hello world! #{described_class.name}" }
+  let(:content) { "hello world! #{Percy::Client::Builds.name}" }
   let(:sha) { Digest::SHA256.hexdigest(content) }
 
   describe '#create_build' do
