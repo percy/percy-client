@@ -36,7 +36,7 @@ module Percy
         commit_sha = _commit_sha || output && output.match(/COMMIT_SHA:(.*)/)[1]
 
         # If not running in a git repo, allow nils for certain commit attributes.
-        extract_or_nil = ->(regex) { (output && output.match(regex) || [])[1] }
+        parse = ->(regex) { (output && output.match(regex) || [])[1] }
         {
           # The only required attribute:
           branch: branch,
@@ -44,14 +44,14 @@ module Percy
           sha: commit_sha,
 
           # Optional attributes:
-          message: extract_or_nil.call(/COMMIT_MESSAGE:(.*)/m),
-          committed_at: extract_or_nil.call(/COMMITTED_DATE:(.*)/),
+          message: parse.call(/COMMIT_MESSAGE:(.*)/m),
+          committed_at: parse.call(/COMMITTED_DATE:(.*)/),
           # These GIT_ environment vars are from the Jenkins Git Plugin, but could be
           # used generically. This behavior may change in the future.
-          author_name: extract_or_nil.call(/AUTHOR_NAME:(.*)/) || ENV['GIT_AUTHOR_NAME'],
-          author_email: extract_or_nil.call(/AUTHOR_EMAIL:(.*)/) || ENV['GIT_AUTHOR_EMAIL'],
-          committer_name: extract_or_nil.call(/COMMITTER_NAME:(.*)/) || ENV['GIT_COMMITTER_NAME'],
-          committer_email: extract_or_nil.call(/COMMITTER_EMAIL:(.*)/) || ENV['GIT_COMMITTER_EMAIL'],
+          author_name: parse.call(/AUTHOR_NAME:(.*)/) || ENV['GIT_AUTHOR_NAME'],
+          author_email: parse.call(/AUTHOR_EMAIL:(.*)/) || ENV['GIT_AUTHOR_EMAIL'],
+          committer_name: parse.call(/COMMITTER_NAME:(.*)/) || ENV['GIT_COMMITTER_NAME'],
+          committer_email: parse.call(/COMMITTER_EMAIL:(.*)/) || ENV['GIT_COMMITTER_EMAIL'],
         }
       end
 
@@ -185,6 +185,7 @@ module Percy
           end
         when :codeship
           # Unfortunately, codeship always returns 'false' for CI_PULL_REQUEST. For now, return nil.
+          nil
         when :drone
           ENV['CI_PULL_REQUEST']
         when :semaphore

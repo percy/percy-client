@@ -1,5 +1,5 @@
 RSpec.describe Percy::Config do
-  let(:config) { described_class.new }
+  let(:config) { Percy::Config.new }
 
   it 'returns the correct defaults' do
     expect(config.keys).to eq(
