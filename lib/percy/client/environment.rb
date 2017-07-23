@@ -91,7 +91,9 @@ module Percy
         format = GIT_FORMAT_LINES.join('%n') # "git show" format uses %n for newlines.
         output = `git show --quiet #{commit_sha} --format="#{format}" 2> /dev/null`.strip
         return if $CHILD_STATUS.to_i != 0
-        output
+        # output
+        # output.force_encoding('US-ASCII')
+        output.force_encoding('UTF-8')
       end
 
       # The name of the current branch.
