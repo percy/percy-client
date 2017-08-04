@@ -205,6 +205,8 @@ module Percy
           ENV['TRAVIS_BUILD_NUMBER']
         when :circle
           ENV['CIRCLE_BUILD_NUM']
+        when :jenkins
+          ENV['BUILD_NUMBER']
         when :codeship
           ENV['CI_BUILD_NUMBER']
         when :semaphore

@@ -23,6 +23,7 @@ RSpec.describe Percy::Client::Environment do
 
     # Unset Jenkins vars.
     ENV['JENKINS_URL'] = nil
+    ENV['BUILD_NUMBER'] = nil
     ENV['ghprbPullId'] = nil
     ENV['ghprbActualCommit'] = nil
     ENV['ghprbSourceBranch'] = nil
@@ -244,7 +245,8 @@ RSpec.describe Percy::Client::Environment do
   context 'in Jenkins CI' do
     before(:each) do
       ENV['JENKINS_URL'] = 'http://localhost:8080/'
-      ENV['ghprbPullId'] = '123'
+      ENV['BUILD_NUMBER'] = '111'
+      ENV['ghprbPullId'] = '256'
       ENV['ghprbSourceBranch'] = 'jenkins-source-branch'
       ENV['ghprbActualCommit'] = 'jenkins-actual-commit'
     end
@@ -253,8 +255,10 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.current_ci).to eq(:jenkins)
       expect(Percy::Client::Environment.branch).to eq('jenkins-source-branch')
       expect(Percy::Client::Environment._commit_sha).to eq('jenkins-actual-commit')
-      expect(Percy::Client::Environment.pull_request_number).to eq('123')
+      expect(Percy::Client::Environment.pull_request_number).to eq('256')
       expect(Percy::Client::Environment.repo).to eq('percy/percy-client')
+      expect(Percy::Client::Environment.parallel_nonce).to eq('111')
+      expect(Percy::Client::Environment.parallel_total_shards).to eq(nil)
     end
   end
 
