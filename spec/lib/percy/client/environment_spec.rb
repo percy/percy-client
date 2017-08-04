@@ -25,7 +25,7 @@ RSpec.describe Percy::Client::Environment do
     ENV['JENKINS_URL'] = nil
     ENV['ghprbPullId'] = nil
     ENV['ghprbActualCommit'] = nil
-    ENV['ghprbTargetBranch'] = nil
+    ENV['ghprbSourceBranch'] = nil
 
     # Unset Circle CI vars.
     ENV['CIRCLECI'] = nil
@@ -245,13 +245,13 @@ RSpec.describe Percy::Client::Environment do
     before(:each) do
       ENV['JENKINS_URL'] = 'http://localhost:8080/'
       ENV['ghprbPullId'] = '123'
-      ENV['ghprbTargetBranch'] = 'jenkins-target-branch'
+      ENV['ghprbSourceBranch'] = 'jenkins-source-branch'
       ENV['ghprbActualCommit'] = 'jenkins-actual-commit'
     end
 
     it 'has the correct properties' do
       expect(Percy::Client::Environment.current_ci).to eq(:jenkins)
-      expect(Percy::Client::Environment.branch).to eq('jenkins-target-branch')
+      expect(Percy::Client::Environment.branch).to eq('jenkins-source-branch')
       expect(Percy::Client::Environment._commit_sha).to eq('jenkins-actual-commit')
       expect(Percy::Client::Environment.pull_request_number).to eq('123')
       expect(Percy::Client::Environment.repo).to eq('percy/percy-client')

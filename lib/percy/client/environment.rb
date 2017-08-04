@@ -100,7 +100,7 @@ module Percy
 
         result = case current_ci
         when :jenkins
-          ENV['ghprbTargetBranch']
+          ENV['ghprbSourceBranch']
         when :travis
           if pull_request_number
             ENV['TRAVIS_PULL_REQUEST_BRANCH']
