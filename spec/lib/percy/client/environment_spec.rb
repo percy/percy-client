@@ -400,6 +400,7 @@ RSpec.describe Percy::Client::Environment do
       ENV['BRANCH_NAME'] = 'semaphore-branch'
       ENV['REVISION'] = 'semaphore-commit-sha'
       ENV['SEMAPHORE_REPO_SLUG'] = 'repo-owner/repo-name'
+      ENV['SEMAPHORE_BRANCH_ID'] = 'semaphore-branch-id'
       ENV['SEMAPHORE_BUILD_NUMBER'] = 'semaphore-build-number'
       ENV['SEMAPHORE_THREAD_COUNT'] = ''
       ENV['PULL_REQUEST_NUMBER'] = '123'
@@ -411,7 +412,8 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment._commit_sha).to eq('semaphore-commit-sha')
       expect(Percy::Client::Environment.pull_request_number).to eq('123')
       expect(Percy::Client::Environment.repo).to eq('repo-owner/repo-name')
-      expect(Percy::Client::Environment.parallel_nonce).to eq('semaphore-build-number')
+      expected_nonce = 'semaphore-branch-id/semaphore-build-number'
+      expect(Percy::Client::Environment.parallel_nonce).to eq(expected_nonce)
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
 
@@ -421,7 +423,8 @@ RSpec.describe Percy::Client::Environment do
       end
 
       it 'has the correct properties' do
-        expect(Percy::Client::Environment.parallel_nonce).to eq('semaphore-build-number')
+        expected_nonce = 'semaphore-branch-id/semaphore-build-number'
+        expect(Percy::Client::Environment.parallel_nonce).to eq(expected_nonce)
         expect(Percy::Client::Environment.parallel_total_shards).to eq(3)
       end
     end

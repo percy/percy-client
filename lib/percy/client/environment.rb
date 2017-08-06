@@ -210,7 +210,7 @@ module Percy
         when :codeship
           ENV['CI_BUILD_NUMBER']
         when :semaphore
-          ENV['SEMAPHORE_BUILD_NUMBER']
+          "#{ENV['SEMAPHORE_BRANCH_ID']}/#{ENV['SEMAPHORE_BUILD_NUMBER']}"
         when :buildkite
           ENV['BUILDKITE_BUILD_ID']
         when :gitlab
