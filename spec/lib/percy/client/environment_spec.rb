@@ -58,6 +58,7 @@ RSpec.describe Percy::Client::Environment do
     ENV['REVISION'] = nil
     ENV['BRANCH_NAME'] = nil
     ENV['SEMAPHORE_REPO_SLUG'] = nil
+    ENV['SEMAPHORE_BRANCH_ID'] = nil
     ENV['SEMAPHORE_BUILD_NUMBER'] = nil
     ENV['SEMAPHORE_CURRENT_THREAD'] = nil
     ENV['PULL_REQUEST_NUMBER'] = nil
