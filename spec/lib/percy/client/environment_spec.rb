@@ -524,6 +524,15 @@ RSpec.describe Percy::Client::Environment do
         expect(commit[:committer_name]).to be_nil
         expect(commit[:message]).to be_nil
       end
+      it 'handles unicode characters in environment where LANG is not set' do
+        output = "COMMIT_SHA:\nAUTHOR_NAME:Spêcìal Ñàme\nAUTHOR_EMAIL:\nCOMMITTER_NAME:\n" \
+          "COMMITTER_EMAIL:\nCOMMITTED_DATE:\nCOMMIT_MESSAGE:".force_encoding('US-ASCII')
+        expect(output.encoding.to_s).to eq('US-ASCII')
+        expect(Percy::Client::Environment).to receive(:_raw_commit_output).once.and_return(output)
+
+        commit = Percy::Client::Environment.commit
+        expect(commit[:author_name]).to eq('Spêcìal Ñàme')
+      end
     end
   end
 end

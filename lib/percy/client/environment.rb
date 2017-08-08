@@ -31,6 +31,7 @@ module Percy
       def self.commit
         output = _raw_commit_output(_commit_sha) if _commit_sha
         output = _raw_commit_output('HEAD') unless output
+        output = output.force_encoding('UTF-8') if output && output.encoding.to_s == 'US-ASCII'
 
         # Use the specified SHA or, if not given, the parsed SHA at HEAD.
         commit_sha = _commit_sha || output && output.match(/COMMIT_SHA:(.*)/)[1]
