@@ -90,10 +90,10 @@ module Percy
       # @private
       def self._raw_commit_output(commit_sha)
         format = GIT_FORMAT_LINES.join('%n') # "git show" format uses %n for newlines.
-        if Gem.win_platform?
-          output = `git show --quiet #{commit_sha} --format="#{format}" 2> NUL`.strip
+        output = if Gem.win_platform?
+          `git show --quiet #{commit_sha} --format="#{format}" 2> NUL`.strip
         else
-          output = `git show --quiet #{commit_sha} --format="#{format}" 2> /dev/null`.strip
+          `git show --quiet #{commit_sha} --format="#{format}" 2> /dev/null`.strip
         end
         return if $CHILD_STATUS.to_i != 0
         output
