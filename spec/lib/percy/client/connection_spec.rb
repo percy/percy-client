@@ -11,12 +11,6 @@ RSpec.describe Percy::Client::Connection do
   let(:ci_name) { 'buildkite' }
   let(:uri) { "#{Percy.config.api_url}/test" }
 
-  describe '#connection' do
-    it 'disables cookies on faraday httpclient adapter' do
-      expect(Percy.client.connection.builder.app.client.cookie_manager).to be_nil
-    end
-  end
-
   shared_examples_for 'a connection that sets headers with HTTP method' do |http_method|
     it 'sets headers' do
       stub_request(http_method, uri)

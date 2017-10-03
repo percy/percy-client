@@ -62,8 +62,8 @@ module Percy
         @connection = Faraday.new(url: base_url) do |faraday|
           faraday.request :token_auth, config.access_token if config.access_token
 
-          faraday.use Percy::Client::Connection::NoCookiesHTTPClientAdapter
           faraday.use Percy::Client::Connection::NiceErrorMiddleware
+          faraday.use Percy::Client::Connection::NoCookiesHTTPClientAdapter
         end
 
         @connection
