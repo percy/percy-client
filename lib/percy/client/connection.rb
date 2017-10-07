@@ -5,16 +5,6 @@ require 'faraday'
 module Percy
   class Client
     module Connection
-      class NoCookiesHTTPClientAdapter < Faraday::Adapter::HTTPClient
-        def client
-          @client ||= ::HTTPClient.new
-          @client.cookie_manager = nil
-          @client.ssl_config.options |= OpenSSL::SSL::OP_NO_SSLv2
-          @client.ssl_config.options |= OpenSSL::SSL::OP_NO_SSLv3
-          @client
-        end
-      end
-
       class NiceErrorMiddleware < Faraday::Response::Middleware
         CLIENT_ERROR_STATUS_RANGE = 400...600
 
@@ -61,9 +51,8 @@ module Percy
 
         @connection = Faraday.new(url: base_url) do |faraday|
           faraday.request :token_auth, config.access_token if config.access_token
-
-          faraday.use Percy::Client::Connection::NoCookiesHTTPClientAdapter
           faraday.use Percy::Client::Connection::NiceErrorMiddleware
+          faraday.adapter :excon
         end
 
         @connection
