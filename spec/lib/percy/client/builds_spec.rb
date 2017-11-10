@@ -39,6 +39,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
       expect(build['data']['relationships']['missing-resources']).to be
       expect(build['data']['relationships']['missing-resources']['data']).to_not be
     end
+
     it 'accepts optional resources' do
       resources = []
       resources << Percy::Client::Resource.new('/css/test.css', sha: sha)
@@ -64,6 +65,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
         ENV['PERCY_PARALLEL_NONCE'] = 'nonce'
         ENV['PERCY_PARALLEL_TOTAL'] = '4'
       end
+
       after(:each) do
         ENV['PERCY_BRANCH'] = nil
         ENV['PERCY_TARGET_BRANCH'] = nil
@@ -71,6 +73,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
         ENV['PERCY_PARALLEL_NONCE'] = nil
         ENV['PERCY_PARALLEL_TOTAL'] = nil
       end
+
       it 'passes through some attributes from environment' do
         # Whitebox test to check POST data.
         expect_any_instance_of(Percy::Client).to \
@@ -99,7 +102,8 @@ RSpec.describe Percy::Client::Builds, :vcr do
         Percy.create_build('fotinakis/percy-examples')
       end
     end
-    context 'parallel test environment' do
+
+    context 'when in a parallel test environment' do
       it 'passes through parallelism variables' do
         build = Percy.create_build(
           'fotinakis/percy-examples',
@@ -111,6 +115,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
       end
     end
   end
+
   describe '#finalize_build' do
     it 'finalizes a build' do
       build = Percy.create_build('fotinakis/percy-examples')
