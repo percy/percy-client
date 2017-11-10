@@ -92,7 +92,6 @@ module Percy
           end
         rescue Faraday::TimeoutError
           if (retries -= 1) >= 0
-            sleep(rand(1..3))
             retry
           end
           raise Percy::Client::TimeoutError
