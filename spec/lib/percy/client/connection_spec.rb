@@ -94,13 +94,11 @@ RSpec.describe Percy::Client::Connection do
       expect { response }.to raise_error(Percy::Client::ConnectionFailed)
     end
 
-    context 'when the API is down' do
-      it 'raises error after 3 timeout retries' do
-        allow_any_instance_of(Kernel).to receive(:sleep).and_return(nil)
-        stub_request(:post, uri).to_raise(Faraday::TimeoutError)
+    it 'raises error after 3 timeout retries' do
+      allow_any_instance_of(Kernel).to receive(:sleep).and_return(nil)
+      stub_request(:post, uri).to_raise(Faraday::TimeoutError)
 
-        expect { response }.to raise_error(Percy::Client::TimeoutError)
-      end
+      expect { response }.to raise_error(Percy::Client::TimeoutError)
     end
 
     shared_examples_for 'HTTP status raises custom error class' do |http_status, error_class|
