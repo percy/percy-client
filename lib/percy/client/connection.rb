@@ -91,6 +91,9 @@ module Percy
             request.body = data.to_json
           end
         rescue Faraday::TimeoutError
+          if (retries -= 1) >= 0
+            retry
+          end
           raise Percy::Client::TimeoutError
         rescue Faraday::ConnectionFailed
           raise Percy::Client::ConnectionFailed

@@ -94,6 +94,15 @@ RSpec.describe Percy::Client::Connection do
       expect { response }.to raise_error(Percy::Client::ConnectionFailed)
     end
 
+    context 'with retries enabled' do
+      subject(:response) { Percy.client.post(uri, {}, retries: 3) }
+
+      it 'raises an exception on retry exhaustion' do
+        stub_request(:post, uri).to_raise(Faraday::TimeoutError)
+        expect { response }.to raise_error(Percy::Client::TimeoutError)
+      end
+    end
+
     shared_examples_for 'HTTP status raises custom error class' do |http_status, error_class|
       subject(:request) { Percy.client.post(uri, {}, retries: 0) }
 

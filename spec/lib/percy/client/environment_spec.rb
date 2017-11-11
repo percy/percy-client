@@ -103,7 +103,7 @@ RSpec.describe Percy::Client::Environment do
     ENV['TRAVIS_REPO_SLUG'] = @original_env['TRAVIS_REPO_SLUG']
   end
 
-  context 'no known CI environment' do
+  context 'with no known CI environment' do
     describe '#current_ci' do
       it 'is nil' do
         expect(Percy::Client::Environment.current_ci).to be_nil
@@ -243,7 +243,7 @@ RSpec.describe Percy::Client::Environment do
     end
   end
 
-  context 'in Jenkins CI' do
+  context 'when in Jenkins CI' do
     before(:each) do
       ENV['JENKINS_URL'] = 'http://localhost:8080/'
       ENV['BUILD_NUMBER'] = '111'
@@ -263,7 +263,7 @@ RSpec.describe Percy::Client::Environment do
     end
   end
 
-  context 'in Travis CI' do
+  context 'when in Travis CI' do
     before(:each) do
       ENV['TRAVIS_BUILD_ID'] = '1234'
       ENV['TRAVIS_BUILD_NUMBER'] = 'build-number'
@@ -286,7 +286,7 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
 
-    context 'Pull Request build' do
+    context ' with a pull request build' do
       before(:each) do
         ENV['TRAVIS_PULL_REQUEST'] = '256'
         ENV['TRAVIS_PULL_REQUEST_BRANCH'] = 'travis-pr-branch'
@@ -300,7 +300,7 @@ RSpec.describe Percy::Client::Environment do
       end
     end
 
-    context 'parallel build' do
+    context 'with parallel build' do
       before(:each) do
         ENV['CI_NODE_TOTAL'] = '3'
       end
@@ -312,7 +312,7 @@ RSpec.describe Percy::Client::Environment do
     end
   end
 
-  context 'in Circle CI' do
+  context 'when in Circle CI' do
     before(:each) do
       ENV['CIRCLECI'] = 'true'
       ENV['CIRCLE_BRANCH'] = 'circle-branch'
@@ -334,7 +334,7 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
 
-    context 'parallel build' do
+    context 'with a parallel build' do
       before(:each) do
         ENV['CIRCLE_NODE_TOTAL'] = '3'
       end
@@ -346,7 +346,7 @@ RSpec.describe Percy::Client::Environment do
     end
   end
 
-  context 'in Codeship' do
+  context 'when in Codeship' do
     before(:each) do
       ENV['CI_NAME'] = 'codeship'
       ENV['CI_BRANCH'] = 'codeship-branch'
@@ -366,7 +366,7 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
 
-    context 'parallel build' do
+    context 'with a parallel build' do
       before(:each) do
         ENV['CI_NODE_TOTAL'] = '3'
       end
@@ -378,7 +378,7 @@ RSpec.describe Percy::Client::Environment do
     end
   end
 
-  context 'in Drone' do
+  context 'when in Drone' do
     before(:each) do
       ENV['DRONE'] = 'true'
       ENV['DRONE_COMMIT'] = 'drone-commit-sha'
@@ -395,7 +395,7 @@ RSpec.describe Percy::Client::Environment do
     end
   end
 
-  context 'in Semaphore CI' do
+  context 'when in Semaphore CI' do
     before(:each) do
       ENV['SEMAPHORE'] = 'true'
       ENV['BRANCH_NAME'] = 'semaphore-branch'
@@ -418,7 +418,7 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
 
-    context 'parallel build' do
+    context 'with a parallel build' do
       before(:each) do
         ENV['SEMAPHORE_THREAD_COUNT'] = '3'
       end
@@ -431,7 +431,7 @@ RSpec.describe Percy::Client::Environment do
     end
   end
 
-  context 'in Buildkite' do
+  context 'when in Buildkite' do
     before(:each) do
       ENV['BUILDKITE'] = 'true'
       ENV['BUILDKITE_COMMIT'] = 'buildkite-commit-sha'
@@ -450,7 +450,8 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.parallel_nonce).to eq('buildkite-build-id')
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
-    context 'Parallel Build' do
+
+    context 'when running a parallel build' do
       before(:each) do
         ENV['BUILDKITE_PARALLEL_JOB_COUNT'] = '3'
       end
@@ -459,7 +460,8 @@ RSpec.describe Percy::Client::Environment do
         expect(Percy::Client::Environment.parallel_total_shards).to eq(3)
       end
     end
-    context 'Pull Request build' do
+
+    context 'with a pull request build' do
       before(:each) do
         ENV['BUILDKITE_PULL_REQUEST'] = '123'
       end
@@ -467,7 +469,8 @@ RSpec.describe Percy::Client::Environment do
         expect(Percy::Client::Environment.pull_request_number).to eq('123')
       end
     end
-    context 'UI-triggered HEAD build' do
+
+    context 'with a UI-triggered HEAD build' do
       before(:each) do
         ENV['BUILDKITE_COMMIT'] = 'HEAD'
       end
@@ -476,7 +479,8 @@ RSpec.describe Percy::Client::Environment do
       end
     end
   end
-  context 'in Gitlab CI' do
+
+  context 'when in Gitlab CI' do
     before(:each) do
       ENV['GITLAB_CI'] = 'yes'
       ENV['CI_BUILD_REF'] = 'gitlab-commit-sha'
@@ -495,6 +499,7 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.repo).to eq('percy/percy-client') # From git, not env.
     end
   end
+
   describe 'local git repo methods' do
     describe '#commit' do
       it 'returns current local commit data' do
@@ -510,6 +515,7 @@ RSpec.describe Percy::Client::Environment do
         expect(commit[:committer_name]).to_not be_empty
         expect(commit[:message]).to_not be_empty
       end
+
       it 'returns only branch if commit data cannot be found' do
         expect(Percy::Client::Environment).to receive(:_raw_commit_output).once.and_return(nil)
 
@@ -524,6 +530,7 @@ RSpec.describe Percy::Client::Environment do
         expect(commit[:committer_name]).to be_nil
         expect(commit[:message]).to be_nil
       end
+
       it 'handles unicode characters in environment where LANG is not set' do
         output = "COMMIT_SHA:\nAUTHOR_NAME:Spêcìal Ñàme\nAUTHOR_EMAIL:\nCOMMITTER_NAME:\n" \
           "COMMITTER_EMAIL:\nCOMMITTED_DATE:\nCOMMIT_MESSAGE:".force_encoding('US-ASCII')
