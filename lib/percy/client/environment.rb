@@ -1,6 +1,8 @@
 module Percy
   class Client
     module Environment
+      BRANCH_FALLBACK = nil
+
       GIT_FORMAT_LINES = [
         'COMMIT_SHA:%H',
         'AUTHOR_NAME:%an',
@@ -130,8 +132,8 @@ module Percy
         end
 
         if result == ''
-          STDERR.puts '[percy] Warning: not in a git repo, setting PERCY_BRANCH to "unknown-branch".'
-          result = 'unknown-branch'
+          STDERR.puts '[percy] Warning: not in a git repo, setting PERCY_BRANCH to fallback.'
+          result = BRANCH_FALLBACK
         end
         result
       end

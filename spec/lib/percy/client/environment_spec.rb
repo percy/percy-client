@@ -113,7 +113,7 @@ RSpec.describe Percy::Client::Environment do
     describe '#branch' do
       it 'returns master if not in a git repo' do
         expect(Percy::Client::Environment).to receive(:_raw_branch_output).and_return('')
-        expect(Percy::Client::Environment.branch).to eq('unknown-branch')
+        expect(Percy::Client::Environment.branch).to eq(Percy::Client::Environment::BRANCH_FALLBACK)
       end
 
       it 'reads from the current local repo' do
@@ -521,7 +521,7 @@ RSpec.describe Percy::Client::Environment do
         expect(Percy::Client::Environment).to receive(:_raw_branch_output).and_return('')
 
         commit = Percy::Client::Environment.commit
-        expect(commit[:branch]).to eq('unknown-branch')
+        expect(commit[:branch]).to eq(Percy::Client::Environment::BRANCH_FALLBACK)
         expect(commit[:sha]).to be_nil
 
         expect(commit[:author_email]).to be_nil
