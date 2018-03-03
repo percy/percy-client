@@ -5,3 +5,6 @@ inherit_gem:
 RSpec/InstanceVariable:
   Exclude:
     - spec/lib/percy/client/environment_spec.rb
+
+AllCops:
+  TargetRubyVersion: 2.1
