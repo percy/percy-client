@@ -30,7 +30,8 @@ module Percy
       # not be found.
       def self.commit
         output = _raw_commit_output(_commit_sha) if _commit_sha
-        output ||= _raw_commit_output('HEAD')
+        output = _raw_commit_output('HEAD') unless output
+        return { branch: branch } unless output && output != ""
         output = output.force_encoding('UTF-8') if output && output.encoding.to_s == 'US-ASCII'
 
         # Use the specified SHA or, if not given, the parsed SHA at HEAD.
@@ -129,8 +130,8 @@ module Percy
         end
 
         if result == ''
-          STDERR.puts '[percy] Warning: not in a git repo, setting PERCY_BRANCH to "master".'
-          result = 'master'
+          STDERR.puts '[percy] Warning: not in a git repo, setting PERCY_BRANCH to "unknown-branch".'
+          result = 'unknown-branch'
         end
         result
       end
