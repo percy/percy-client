@@ -32,15 +32,15 @@ module Percy
       # not be found.
       def self.commit
         output = _raw_commit_output(_commit_sha) if _commit_sha
-        output = _raw_commit_output('HEAD') unless output
-        return { branch: branch } unless output && output != ""
-        output = output.force_encoding('UTF-8') if output && output.encoding.to_s == 'US-ASCII'
+        output ||= _raw_commit_output('HEAD')
+        return {branch: branch} unless output && output != ''
+        output = output.force_encoding('UTF-8') if output&.encoding.to_s == 'US-ASCII'
 
         # Use the specified SHA or, if not given, the parsed SHA at HEAD.
-        commit_sha = _commit_sha || output && output.match(/COMMIT_SHA:(.*)/)[1]
+        commit_sha = _commit_sha || (output&.match(/COMMIT_SHA:(.*)/) || [])[1]
 
         # If not running in a git repo, allow nils for certain commit attributes.
-        parse = ->(regex) { (output && output.match(regex) || [])[1] }
+        parse = ->(regex) { (output&.match(regex) || [])[1] }
         {
           # The only required attribute:
           branch: branch,
