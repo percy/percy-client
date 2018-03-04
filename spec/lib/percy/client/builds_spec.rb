@@ -12,7 +12,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
           'data' => {
             'type' => 'builds',
             'attributes' => {
-              'branch' => anything,
+              'branch' => kind_of(String),
               'target-branch' => nil,
               'commit-sha' => kind_of(String),
               'commit-committed-at' => kind_of(String),

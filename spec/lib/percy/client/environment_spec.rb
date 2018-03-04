@@ -117,8 +117,7 @@ RSpec.describe Percy::Client::Environment do
       end
 
       it 'reads from the current local repo' do
-        expect(Percy::Client::Environment).to receive(:_raw_branch_output).and_return('master')
-        expect(Percy::Client::Environment.branch).to eq('master')
+        expect(Percy::Client::Environment.branch).to_not be_empty
       end
 
       it 'can be overridden with PERCY_BRANCH' do
@@ -504,9 +503,8 @@ RSpec.describe Percy::Client::Environment do
   describe 'local git repo methods' do
     describe '#commit' do
       it 'returns current local commit data' do
-        expect(Percy::Client::Environment).to receive(:branch).and_return('test-branch')
         commit = Percy::Client::Environment.commit
-        expect(commit[:branch]).to_not eq('test-branch')
+        expect(commit[:branch]).to_not be_empty
         expect(commit[:sha]).to_not be_empty
         expect(commit[:sha].length).to eq(40)
 
