@@ -146,7 +146,7 @@ module Percy
       # @private
       def self._raw_branch_output
         # Discover from local git repo branch name.
-        output = if Gem.win_platform?
+        if Gem.win_platform?
           `git rev-parse --abbrev-ref HEAD 2> NUL`.strip
         else
           `git rev-parse --abbrev-ref HEAD 2> /dev/null`.strip
