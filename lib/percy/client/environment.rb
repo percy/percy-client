@@ -132,7 +132,7 @@ module Percy
         end
 
         if result == ''
-          STDERR.puts '[percy] Warning: not in a git repo, setting PERCY_BRANCH to fallback.'
+          STDERR.puts '[percy] Warning: not in a git repo, no BRANCH detected.'
           result = BRANCH_FALLBACK
         end
         result
