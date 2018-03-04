@@ -504,8 +504,9 @@ RSpec.describe Percy::Client::Environment do
   describe 'local git repo methods' do
     describe '#commit' do
       it 'returns current local commit data' do
+        expect(Percy::Client::Environment).to receive(:branch).and_return('test-branch')
         commit = Percy::Client::Environment.commit
-        # expect(commit[:branch]).to_not be_empty
+        expect(commit[:branch]).to_not eq('test-branch')
         expect(commit[:sha]).to_not be_empty
         expect(commit[:sha].length).to eq(40)
 
