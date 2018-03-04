@@ -517,11 +517,10 @@ RSpec.describe Percy::Client::Environment do
       end
 
       it 'returns only branch if commit data cannot be found' do
-        expect(Percy::Client::Environment).to receive(:_raw_commit_output).and_return(nil)
-        expect(Percy::Client::Environment).to receive(:_raw_branch_output).and_return('')
+        expect(Percy::Client::Environment).to receive(:_raw_commit_output).once.and_return(nil)
 
         commit = Percy::Client::Environment.commit
-        expect(commit[:branch]).to eq(Percy::Client::Environment::BRANCH_FALLBACK)
+        expect(commit[:branch]).to be
         expect(commit[:sha]).to be_nil
 
         expect(commit[:author_email]).to be_nil
