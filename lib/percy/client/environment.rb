@@ -1,8 +1,6 @@
 module Percy
   class Client
     module Environment
-      BRANCH_FALLBACK = nil
-
       GIT_FORMAT_LINES = [
         'COMMIT_SHA:%H',
         'AUTHOR_NAME:%an',
@@ -132,8 +130,8 @@ module Percy
         end
 
         if result == ''
-          STDERR.puts '[percy] Warning: not in a git repo, no BRANCH detected.'
-          result = BRANCH_FALLBACK
+          STDERR.puts '[percy] Warning: not in a git repo, no branch detected.'
+          result = nil
         end
         result
       end
