@@ -111,9 +111,9 @@ RSpec.describe Percy::Client::Environment do
     end
 
     describe '#branch' do
-      it 'returns master if not in a git repo' do
+      it 'returns nil if not in a git repo' do
         expect(Percy::Client::Environment).to receive(:_raw_branch_output).and_return('')
-        expect(Percy::Client::Environment.branch).to eq('master')
+        expect(Percy::Client::Environment.branch).to be_nil
       end
 
       it 'reads from the current local repo' do

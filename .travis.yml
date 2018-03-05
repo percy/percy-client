@@ -11,7 +11,9 @@ rvm:
   - ruby-2.2.6
   - ruby-2.3.3
   - ruby-2.4.0
-  - ruby-head
+  - ruby-2.5.0
+  # ruby-head is now 2.6dev. Installation fails.
+  # - ruby-head
 before_install:
   - gem update --system
   - gem update bundler

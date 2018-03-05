@@ -31,10 +31,11 @@ module Percy
       def self.commit
         output = _raw_commit_output(_commit_sha) if _commit_sha
         output ||= _raw_commit_output('HEAD')
+        return {branch: branch} unless output && output != ''
         output = output.force_encoding('UTF-8') if output && output.encoding.to_s == 'US-ASCII'
 
         # Use the specified SHA or, if not given, the parsed SHA at HEAD.
-        commit_sha = _commit_sha || output && output.match(/COMMIT_SHA:(.*)/)[1]
+        commit_sha = _commit_sha || (output && output.match(/COMMIT_SHA:(.*)/) || [])[1]
 
         # If not running in a git repo, allow nils for certain commit attributes.
         parse = ->(regex) { (output && output.match(regex) || [])[1] }
@@ -129,8 +130,8 @@ module Percy
         end
 
         if result == ''
-          STDERR.puts '[percy] Warning: not in a git repo, setting PERCY_BRANCH to "master".'
-          result = 'master'
+          STDERR.puts '[percy] Warning: not in a git repo, no branch detected.'
+          result = nil
         end
         result
       end
@@ -143,7 +144,11 @@ module Percy
       # @private
       def self._raw_branch_output
         # Discover from local git repo branch name.
-        `git rev-parse --abbrev-ref HEAD 2> /dev/null`.strip
+        if Gem.win_platform?
+          `git rev-parse --abbrev-ref HEAD 2> NUL`.strip
+        else
+          `git rev-parse --abbrev-ref HEAD 2> /dev/null`.strip
+        end
       end
       class << self; private :_raw_branch_output; end
 

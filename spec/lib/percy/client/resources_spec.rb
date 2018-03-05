@@ -105,3 +105,4 @@ RSpec.describe Percy::Client::Resource do
     end
   end
 end
+# rubocop:enable RSpec/MultipleDescribes
