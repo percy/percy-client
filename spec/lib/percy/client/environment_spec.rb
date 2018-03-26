@@ -516,6 +516,7 @@ RSpec.describe Percy::Client::Environment do
         expect(commit[:message]).to_not be_empty
       end
 
+      # TODO this test should be update, why does it pass?
       it 'returns only branch if commit data cannot be found' do
         expect(Percy::Client::Environment).to receive(:_raw_commit_output).once.and_return(nil)
 
