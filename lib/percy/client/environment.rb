@@ -31,14 +31,13 @@ module Percy
       # Try getting data from git itself.
       # If git is not present, fallback on data from environment variables.
       def self.commit
-        git_data_from_git = _raw_commit_output(_commit_sha || 'HEAD')
+        git_data_from_git = _git_commit_output
 
-        git_data_from_git = git_data_from_git.force_encoding('UTF-8') if git_data_from_git && git_data_from_git.encoding.to_s == 'US-ASCII'
-        commit_sha = _commit_sha || (git_data_from_git && git_data_from_git.match(/COMMIT_SHA:(.*)/) || [])[1]
+        parse = ->(regex) { (git_data_from_git && git_data_from_git.match(regex) || [])[1] }
+
+        commit_sha = _commit_sha || parse.call(/COMMIT_SHA:(.*)/)
 
         if git_data_from_git
-          parse = ->(regex) { (git_data_from_git && git_data_from_git.match(regex) || [])[1] }
-
           {
             # The only required attribute:
             branch: branch,
@@ -70,6 +69,14 @@ module Percy
             committer_email: ENV['GIT_COMMITTER_EMAIL'],
           }
         end
+      end
+
+      # @private
+      def self._git_commit_output
+        raw_git_output = _raw_commit_output(_commit_sha) if _commit_sha
+        raw_git_output ||= _raw_commit_output('HEAD')
+        raw_git_output = raw_git_output.force_encoding('UTF-8') if raw_git_output && raw_git_output.encoding.to_s == 'US-ASCII'
+        raw_git_output
       end
 
       # @private
