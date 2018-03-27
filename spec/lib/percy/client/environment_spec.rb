@@ -510,7 +510,9 @@ RSpec.describe Percy::Client::Environment do
         "COMMITTER_EMAIL:foobar@gmail.com\n" \
         "COMMITTED_DATE:444-44-44 44:44:44 -0700\n" \
         'COMMIT_MESSAGE:wow how cool is this commit'
-        expect(Percy::Client::Environment).to receive(:_git_commit_output).once.and_return(raw_git_output)
+        expect(Percy::Client::Environment).to receive(:_git_commit_output).once.and_return(
+          raw_git_output,
+        )
 
         commit = Percy::Client::Environment.commit
 

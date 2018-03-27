@@ -75,7 +75,9 @@ module Percy
       def self._git_commit_output
         raw_git_output = _raw_commit_output(_commit_sha) if _commit_sha
         raw_git_output ||= _raw_commit_output('HEAD')
-        raw_git_output = raw_git_output.force_encoding('UTF-8') if raw_git_output && raw_git_output.encoding.to_s == 'US-ASCII'
+        if raw_git_output && raw_git_output.encoding.to_s == 'US-ASCII'
+          raw_git_output = raw_git_output.force_encoding('UTF-8')
+        end
         raw_git_output
       end
 
