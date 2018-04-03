@@ -503,25 +503,39 @@ RSpec.describe Percy::Client::Environment do
   describe 'local git repo methods' do
     describe '#commit' do
       it 'returns current local commit data' do
-        commit = Percy::Client::Environment.commit
-        expect(commit[:branch]).to_not be_empty
-        expect(commit[:sha]).to_not be_empty
-        expect(commit[:sha].length).to eq(40)
+        raw_git_output = "COMMIT_SHA:sweetsha\n" \
+        "AUTHOR_NAME:LC\n" \
+        "AUTHOR_EMAIL:foobar@gmail.com\n" \
+        "COMMITTER_NAME:LC\n" \
+        "COMMITTER_EMAIL:foobar@gmail.com\n" \
+        "COMMITTED_DATE:444-44-44 44:44:44 -0700\n" \
+        'COMMIT_MESSAGE:wow how cool is this commit'
+        expect(Percy::Client::Environment).to receive(:_git_commit_output).once.and_return(
+          raw_git_output,
+        )
 
-        expect(commit[:author_email]).to match(/.+@.+\..+/)
-        expect(commit[:author_name]).to_not be_empty
-        expect(commit[:committed_at]).to_not be_empty
-        expect(commit[:committer_email]).to_not be_empty
-        expect(commit[:committer_name]).to_not be_empty
-        expect(commit[:message]).to_not be_empty
+        commit = Percy::Client::Environment.commit
+
+        expect(commit[:branch]).to_not be_empty
+        expect(commit[:sha]).to eq('sweetsha')
+
+        expect(commit[:author_email]).to eq('foobar@gmail.com')
+        expect(commit[:author_name]).to eq('LC')
+        expect(commit[:committed_at]).to eq('444-44-44 44:44:44 -0700')
+        expect(commit[:committer_email]).to eq('foobar@gmail.com')
+        expect(commit[:committer_name]).to eq('LC')
+        expect(commit[:message]).to eq('wow how cool is this commit')
       end
 
-      it 'returns only branch if commit data cannot be found' do
-        expect(Percy::Client::Environment).to receive(:_raw_commit_output).once.and_return(nil)
+      it 'returns data from environment if commit data cannot be found' do
+        ENV['PERCY_BRANCH'] = 'the-coolest-branch'
+        ENV['PERCY_COMMIT'] = 'agreatsha'
+
+        expect(Percy::Client::Environment).to receive(:_git_commit_output).once.and_return(nil)
 
         commit = Percy::Client::Environment.commit
-        expect(commit[:branch]).to be
-        expect(commit[:sha]).to be_nil
+        expect(commit[:branch]).to eq('the-coolest-branch')
+        expect(commit[:sha]).to eq('agreatsha')
 
         expect(commit[:author_email]).to be_nil
         expect(commit[:author_name]).to be_nil
