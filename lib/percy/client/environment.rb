@@ -28,47 +28,32 @@ module Percy
 
       # @return [Hash] All commit data from the current commit. Might be empty if commit data could
       # not be found.
-      # Try getting data from git itself.
-      # If git is not present, fallback on data from environment variables.
       def self.commit
+        # Try getting data from git itself.
+        # If this has a result, it means git is present in the system.
         git_data_from_git = _git_commit_output
 
         parse = ->(regex) { (git_data_from_git && git_data_from_git.match(regex) || [])[1] }
 
         commit_sha = _commit_sha || parse.call(/COMMIT_SHA:(.*)/)
 
-        if git_data_from_git
-          {
-            # The only required attribute:
-            branch: branch,
-            # An optional but important attribute:
-            sha: commit_sha,
+        {
+          # The only required attribute:
+          branch: branch,
+          # An optional but important attribute:
+          sha: commit_sha,
 
-            # Optional attributes:
-            message: parse.call(/COMMIT_MESSAGE:(.*)/m),
-            committed_at: parse.call(/COMMITTED_DATE:(.*)/),
-            author_name: parse.call(/AUTHOR_NAME:(.*)/),
-            author_email: parse.call(/AUTHOR_EMAIL:(.*)/),
-            committer_name: parse.call(/COMMITTER_NAME:(.*)/),
-            committer_email: parse.call(/COMMITTER_EMAIL:(.*)/),
-          }
-        # If not running in a git repo, look in the environment.
-        # Some nils are acceptable in this case.
-        else
-          {
-            # The only required attribute:
-            branch: branch,
-            # An optional but important attribute:
-            sha: commit_sha,
-
-            # These GIT_ environment vars are from the Jenkins Git Plugin, but could be
-            # used generically. This behavior may change in the future.
-            author_name: ENV['GIT_AUTHOR_NAME'],
-            author_email: ENV['GIT_AUTHOR_EMAIL'],
-            committer_name: ENV['GIT_COMMITTER_NAME'],
-            committer_email: ENV['GIT_COMMITTER_EMAIL'],
-          }
-        end
+          # Optional attributes:
+          # If we have the git information, read from those rather than env vars.
+          # The GIT_ environment vars are from the Jenkins Git Plugin, but could be
+          # used generically. This behavior may change in the future.
+          message: parse.call(/COMMIT_MESSAGE:(.*)/),
+          committed_at: parse.call(/COMMITTED_DATE:(.*)/),
+          author_name: parse.call(/AUTHOR_NAME:(.*)/) || ENV['GIT_AUTHOR_NAME'],
+          author_email: parse.call(/AUTHOR_EMAIL:(.*)/) || ENV['GIT_AUTHOR_EMAIL'],
+          committer_name: parse.call(/COMMITTER_NAME:(.*)/) || ENV['GIT_COMMITTER_NAME'],
+          committer_email: parse.call(/COMMITTER_EMAIL:(.*)/) || ENV['GIT_COMMITTER_EMAIL'],
+        }
       end
 
       # @private
