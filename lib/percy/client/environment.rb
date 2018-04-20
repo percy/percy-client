@@ -5,8 +5,8 @@ module Percy
         'COMMIT_SHA:%H',
         'AUTHOR_NAME:%an',
         'AUTHOR_EMAIL:%ae',
-        'COMMITTER_NAME:%an',
-        'COMMITTER_EMAIL:%ae',
+        'COMMITTER_NAME:%cn',
+        'COMMITTER_EMAIL:%ce',
         'COMMITTED_DATE:%ai',
         # Note: order is important, this must come last because the regex is a multiline match.
         'COMMIT_MESSAGE:%B',
@@ -75,11 +75,7 @@ module Percy
           # Pull Request Builder Plugin OR Git Plugin.
           ENV['ghprbActualCommit'] || ENV['GIT_COMMIT']
         when :travis
-          if pull_request_number
-            ENV['TRAVIS_PULL_REQUEST_SHA']
-          else
-            ENV['TRAVIS_COMMIT']
-          end
+          ENV['TRAVIS_COMMIT']
         when :circle
           ENV['CIRCLE_SHA1']
         when :codeship
