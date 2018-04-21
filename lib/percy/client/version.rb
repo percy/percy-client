@@ -1,5 +1,5 @@
 module Percy
   class Client
-    VERSION = '1.13.8'.freeze
+    VERSION = '1.13.9'.freeze
   end
 end
