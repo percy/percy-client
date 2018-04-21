@@ -17,7 +17,6 @@ RSpec.describe Percy::Client::Environment do
     ENV['TRAVIS_BRANCH'] = nil
     ENV['TRAVIS_PULL_REQUEST'] = nil
     ENV['TRAVIS_PULL_REQUEST_BRANCH'] = nil
-    ENV['TRAVIS_PULL_REQUEST_SHA'] = nil
     ENV['TRAVIS_REPO_SLUG'] = nil
     ENV['CI_NODE_TOTAL'] = nil
 
@@ -85,7 +84,6 @@ RSpec.describe Percy::Client::Environment do
       'TRAVIS_BRANCH' => ENV['TRAVIS_BRANCH'],
       'TRAVIS_PULL_REQUEST' => ENV['TRAVIS_PULL_REQUEST'],
       'TRAVIS_PULL_REQUEST_BRANCH' => ENV['TRAVIS_PULL_REQUEST_BRANCH'],
-      'TRAVIS_PULL_REQUEST_SHA' => ENV['TRAVIS_PULL_REQUEST_SHA'],
       'TRAVIS_REPO_SLUG' => ENV['TRAVIS_REPO_SLUG'],
     }
     clear_env_vars
@@ -99,7 +97,6 @@ RSpec.describe Percy::Client::Environment do
     ENV['TRAVIS_BRANCH'] = @original_env['TRAVIS_BRANCH']
     ENV['TRAVIS_PULL_REQUEST'] = @original_env['TRAVIS_PULL_REQUEST']
     ENV['TRAVIS_PULL_REQUEST_BRANCH'] = @original_env['TRAVIS_PULL_REQUEST_BRANCH']
-    ENV['TRAVIS_PULL_REQUEST_SHA'] = @original_env['TRAVIS_PULL_REQUEST_SHA']
     ENV['TRAVIS_REPO_SLUG'] = @original_env['TRAVIS_REPO_SLUG']
   end
 
@@ -269,7 +266,6 @@ RSpec.describe Percy::Client::Environment do
       ENV['TRAVIS_BUILD_NUMBER'] = 'build-number'
       ENV['TRAVIS_PULL_REQUEST'] = 'false'
       ENV['TRAVIS_PULL_REQUEST_BRANCH'] = ''
-      ENV['TRAVIS_PULL_REQUEST_SHA'] = ''
       ENV['TRAVIS_REPO_SLUG'] = 'travis/repo-slug'
       ENV['TRAVIS_COMMIT'] = 'travis-commit-sha'
       ENV['TRAVIS_BRANCH'] = 'travis-branch'
@@ -290,12 +286,11 @@ RSpec.describe Percy::Client::Environment do
       before(:each) do
         ENV['TRAVIS_PULL_REQUEST'] = '256'
         ENV['TRAVIS_PULL_REQUEST_BRANCH'] = 'travis-pr-branch'
-        ENV['TRAVIS_PULL_REQUEST_SHA'] = 'travis-pr-head-commit-sha'
       end
 
       it 'has the correct properties' do
         expect(Percy::Client::Environment.branch).to eq('travis-pr-branch')
-        expect(Percy::Client::Environment._commit_sha).to eq('travis-pr-head-commit-sha')
+        expect(Percy::Client::Environment._commit_sha).to eq('travis-commit-sha')
         expect(Percy::Client::Environment.pull_request_number).to eq('256')
       end
     end
