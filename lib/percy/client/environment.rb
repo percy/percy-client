@@ -105,6 +105,10 @@ module Percy
         output
       end
 
+      def self.target_commit_sha
+        return ENV['PERCY_TARGET_COMMIT'] if ENV['PERCY_TARGET_COMMIT']
+      end
+
       # The name of the current branch.
       def self.branch
         return ENV['PERCY_BRANCH'] if ENV['PERCY_BRANCH']

@@ -3,6 +3,7 @@ RSpec.describe Percy::Client::Environment do
     # Unset Percy vars.
     ENV['PERCY_COMMIT'] = nil
     ENV['PERCY_BRANCH'] = nil
+    ENV['PERCY_TARGET_COMMIT'] = nil
     ENV['PERCY_TARGET_BRANCH'] = nil
     ENV['PERCY_PULL_REQUEST'] = nil
     ENV['PERCY_PROJECT'] = nil
@@ -144,6 +145,18 @@ RSpec.describe Percy::Client::Environment do
         expect(Percy::Client::Environment._commit_sha).to eq('test-commit')
       end
     end
+
+    describe '#target_commit_sha' do
+      it 'returns nil if unset' do
+        expect(Percy::Client::Environment.target_commit_sha).to be_nil
+      end
+
+      it 'can be set with PERCY_TARGET_COMMIT' do
+        ENV['PERCY_TARGET_COMMIT'] = 'test-target-commit'
+        expect(Percy::Client::Environment.target_commit_sha).to eq('test-target-commit')
+      end
+    end
+
 
     describe '#pull_request_number' do
       it 'returns nil if no CI environment' do
