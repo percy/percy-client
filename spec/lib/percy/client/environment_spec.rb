@@ -157,7 +157,6 @@ RSpec.describe Percy::Client::Environment do
       end
     end
 
-
     describe '#pull_request_number' do
       it 'returns nil if no CI environment' do
         expect(Percy::Client::Environment.pull_request_number).to be_nil
