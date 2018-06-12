@@ -14,6 +14,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
             'attributes' => {
               'branch' => kind_of(String),
               'target-branch' => nil,
+              'target-commit-sha' => nil,
               'commit-sha' => kind_of(String),
               'commit-committed-at' => kind_of(String),
               'commit-author-name' => kind_of(String),
@@ -61,6 +62,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
       before(:each) do
         ENV['PERCY_BRANCH'] = 'foo-branch'
         ENV['PERCY_TARGET_BRANCH'] = 'bar-branch'
+        ENV['PERCY_TARGET_COMMIT'] = 'test-target-commit'
         ENV['PERCY_PULL_REQUEST'] = '123'
         ENV['PERCY_PARALLEL_NONCE'] = 'nonce'
         ENV['PERCY_PARALLEL_TOTAL'] = '4'
@@ -69,6 +71,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
       after(:each) do
         ENV['PERCY_BRANCH'] = nil
         ENV['PERCY_TARGET_BRANCH'] = nil
+        ENV['PERCY_TARGET_COMMIT'] = nil
         ENV['PERCY_PULL_REQUEST'] = nil
         ENV['PERCY_PARALLEL_NONCE'] = nil
         ENV['PERCY_PARALLEL_TOTAL'] = nil
@@ -85,6 +88,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
               'attributes' => {
                 'branch' => 'foo-branch',
                 'target-branch' => 'bar-branch',
+                'target-commit-sha' => 'test-target-commit',
                 'commit-sha' => kind_of(String),
                 'commit-committed-at' => kind_of(String),
                 'commit-author-name' => kind_of(String),

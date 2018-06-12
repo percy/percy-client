@@ -6,6 +6,8 @@ module Percy
           Percy::Client::Environment.pull_request_number
         commit_data = options[:commit_data] || Percy::Client::Environment.commit
         target_branch = options[:target_branch] || Percy::Client::Environment.target_branch
+        target_commit_sha = options[:target_commit_sha] \
+          || Percy::Client::Environment.target_commit_sha
         resources = options[:resources]
         parallel_nonce = options[:parallel_nonce] || Percy::Client::Environment.parallel_nonce
         parallel_total_shards = options[:parallel_total_shards] \
@@ -26,6 +28,7 @@ module Percy
             'attributes' => {
               'branch' => commit_data[:branch],
               'target-branch' => target_branch,
+              'target-commit-sha' => target_commit_sha,
               'commit-sha' => commit_data[:sha],
               'commit-committed-at' => commit_data[:committed_at],
               'commit-author-name' => commit_data[:author_name],
