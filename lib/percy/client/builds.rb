@@ -13,8 +13,9 @@ module Percy
         parallel_total_shards = options[:parallel_total_shards] \
           || Percy::Client::Environment.parallel_total_shards
 
-        # Only pass parallelism data if it all exists.
-        in_parallel_environment = parallel_nonce &&  parallel_total_shards
+        # Only pass parallelism data if it all exists and there is more than 1, or exactly -1 shard.
+        in_parallel_environment = parallel_nonce && \
+          parallel_total_shards && parallel_total_shards > 1 || parallel_total_shards == -1
 
         unless in_parallel_environment
           parallel_nonce = nil
