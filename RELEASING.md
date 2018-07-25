@@ -11,6 +11,10 @@ bundle exec rake build
 gem push pkg/percy-client-1.XX.XX.gem
 ```
 
+_The gem cli will prompt you for email and password. Find the
+rubygems.org credentials for apps+rubygems@percy.io in the Engineering
+vault._
+
 * Announce the new release,
    making sure to say "thank you" to the contributors
    who helped shape this version!
