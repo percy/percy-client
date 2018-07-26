@@ -1,14 +1,15 @@
 RSpec.describe Percy::Client::Connection do
   let(:user_agent) do
     "Percy/#{api_version} #{client_info} percy-client/#{Percy::Client::VERSION} "\
-    "(#{environment_info}; ruby/#{ruby_version}; #{ci_name})"
+    "(#{environment_info}; ruby/#{ruby_version}; #{ci_name}/#{ci_version})"
   end
   let(:content_type) { 'application/vnd.api+json' }
   let(:api_version) { 'v1' }
   let(:ruby_version) { '2.2.6p396' }
   let(:client_info) { 'percy-capybara/3.1.0' }
   let(:environment_info) { 'Rails/4.2.1' }
-  let(:ci_name) { 'buildkite' }
+  let(:ci_name) { :gitlab }
+  let(:ci_version) { '8.14.3-ee' }
   let(:uri) { "#{Percy.config.api_url}/test" }
 
   shared_examples_for 'a connection that sets headers with HTTP method' do |http_method|
@@ -24,6 +25,7 @@ RSpec.describe Percy::Client::Connection do
       expect(Percy.client).to receive(:environment_info).and_return(environment_info)
 
       expect(Percy::Client::Environment).to receive(:current_ci).and_return(ci_name)
+      expect(Percy::Client::Environment).to receive(:ci_version).and_return(ci_version)
 
       expect(response).to eq('foo' => true)
     end
