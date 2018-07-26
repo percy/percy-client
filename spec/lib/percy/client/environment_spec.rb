@@ -263,6 +263,7 @@ RSpec.describe Percy::Client::Environment do
 
     it 'has the correct properties' do
       expect(Percy::Client::Environment.current_ci).to eq(:jenkins)
+      expect(Percy::Client::Environment.ci_version).to eq(nil)
       expect(Percy::Client::Environment.branch).to eq('jenkins-source-branch')
       expect(Percy::Client::Environment._commit_sha).to eq('jenkins-actual-commit')
       expect(Percy::Client::Environment.pull_request_number).to eq('256')
@@ -286,6 +287,7 @@ RSpec.describe Percy::Client::Environment do
 
     it 'has the correct properties' do
       expect(Percy::Client::Environment.current_ci).to eq(:travis)
+      expect(Percy::Client::Environment.ci_version).to eq(nil)
       expect(Percy::Client::Environment.branch).to eq('travis-branch')
       expect(Percy::Client::Environment._commit_sha).to eq('travis-commit-sha')
       expect(Percy::Client::Environment.pull_request_number).to be_nil
@@ -333,6 +335,7 @@ RSpec.describe Percy::Client::Environment do
 
     it 'has the correct properties' do
       expect(Percy::Client::Environment.current_ci).to eq(:circle)
+      expect(Percy::Client::Environment.ci_version).to eq(nil)
       expect(Percy::Client::Environment.branch).to eq('circle-branch')
       expect(Percy::Client::Environment._commit_sha).to eq('circle-commit-sha')
       expect(Percy::Client::Environment.pull_request_number).to eq('123')
@@ -365,6 +368,7 @@ RSpec.describe Percy::Client::Environment do
 
     it 'has the correct properties' do
       expect(Percy::Client::Environment.current_ci).to eq(:codeship)
+      expect(Percy::Client::Environment.ci_version).to eq(nil)
       expect(Percy::Client::Environment.branch).to eq('codeship-branch')
       expect(Percy::Client::Environment._commit_sha).to eq('codeship-commit-sha')
       expect(Percy::Client::Environment.pull_request_number).to be_nil
@@ -395,6 +399,7 @@ RSpec.describe Percy::Client::Environment do
 
     it 'has the correct properties' do
       expect(Percy::Client::Environment.current_ci).to eq(:drone)
+      expect(Percy::Client::Environment.ci_version).to eq(nil)
       expect(Percy::Client::Environment.branch).to eq('drone-branch')
       expect(Percy::Client::Environment._commit_sha).to eq('drone-commit-sha')
       expect(Percy::Client::Environment.pull_request_number).to eq('123')
@@ -416,6 +421,7 @@ RSpec.describe Percy::Client::Environment do
 
     it 'has the correct properties' do
       expect(Percy::Client::Environment.current_ci).to eq(:semaphore)
+      expect(Percy::Client::Environment.ci_version).to eq(nil)
       expect(Percy::Client::Environment.branch).to eq('semaphore-branch')
       expect(Percy::Client::Environment._commit_sha).to eq('semaphore-commit-sha')
       expect(Percy::Client::Environment.pull_request_number).to eq('123')
@@ -450,6 +456,7 @@ RSpec.describe Percy::Client::Environment do
 
     it 'has the correct properties' do
       expect(Percy::Client::Environment.current_ci).to eq(:buildkite)
+      expect(Percy::Client::Environment.ci_version).to eq(nil)
       expect(Percy::Client::Environment.branch).to eq('buildkite-branch')
       expect(Percy::Client::Environment._commit_sha).to eq('buildkite-commit-sha')
       expect(Percy::Client::Environment.pull_request_number).to be_nil
@@ -489,14 +496,16 @@ RSpec.describe Percy::Client::Environment do
 
   context 'when in Gitlab CI' do
     before(:each) do
-      ENV['GITLAB_CI'] = 'yes'
+      ENV['GITLAB_CI'] = 'true'
       ENV['CI_COMMIT_SHA'] = 'gitlab-commit-sha'
       ENV['CI_COMMIT_REF_NAME'] = 'gitlab-branch'
       ENV['CI_JOB_ID'] = 'gitlab-build-id'
+      ENV['CI_SERVER_VERSION'] = '8.14.3-ee'
     end
 
     it 'has the correct properties' do
       expect(Percy::Client::Environment.current_ci).to eq(:gitlab)
+      expect(Percy::Client::Environment.ci_version).to eq('8.14.3-ee')
       expect(Percy::Client::Environment.branch).to eq('gitlab-branch')
       expect(Percy::Client::Environment._commit_sha).to eq('gitlab-commit-sha')
       expect(Percy::Client::Environment.pull_request_number).to be_nil

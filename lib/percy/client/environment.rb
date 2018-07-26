@@ -23,7 +23,16 @@ module Percy
         return :drone if ENV['DRONE'] == 'true'
         return :semaphore if ENV['SEMAPHORE'] == 'true'
         return :buildkite if ENV['BUILDKITE'] == 'true'
-        return :gitlab if ENV['GITLAB_CI']
+        return :gitlab if ENV['GITLAB_CI'] == 'true'
+      end
+
+      def self.ci_version
+        return unless current_ci == :gitlab
+        ENV['CI_SERVER_VERSION']
+      end
+
+      def self.ci_info
+        [current_ci, ci_version].compact.join('/')
       end
 
       # @return [Hash] All commit data from the current commit. Might be empty if commit data could

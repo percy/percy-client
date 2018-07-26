@@ -127,7 +127,7 @@ module Percy
           environment = [
             environment_info,
             "ruby/#{_ruby_version}",
-            Percy::Client::Environment.current_ci,
+            Percy::Client::Environment.ci_info,
           ].compact.join('; ')
 
           "#{client} (#{environment})"
