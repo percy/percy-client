@@ -72,9 +72,9 @@ RSpec.describe Percy::Client::Environment do
 
     # Unset Gitlab CI vars.
     ENV['GITLAB_CI'] = nil
-    ENV['CI_BUILD_REF'] = nil
-    ENV['CI_BUILD_REF_NAME'] = nil
-    ENV['CI_BUILD_ID'] = nil
+    ENV['CI_COMMIT_REF'] = nil
+    ENV['CI_COMMIT_REF_NAME'] = nil
+    ENV['CI_JOB_ID'] = nil
   end
 
   before(:each) do
@@ -490,9 +490,9 @@ RSpec.describe Percy::Client::Environment do
   context 'when in Gitlab CI' do
     before(:each) do
       ENV['GITLAB_CI'] = 'yes'
-      ENV['CI_BUILD_REF'] = 'gitlab-commit-sha'
-      ENV['CI_BUILD_REF_NAME'] = 'gitlab-branch'
-      ENV['CI_BUILD_ID'] = 'gitlab-build-id'
+      ENV['CI_COMMIT_SHA'] = 'gitlab-commit-sha'
+      ENV['CI_COMMIT_REF_NAME'] = 'gitlab-branch'
+      ENV['CI_JOB_ID'] = 'gitlab-build-id'
     end
 
     it 'has the correct properties' do

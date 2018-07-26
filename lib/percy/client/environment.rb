@@ -89,7 +89,7 @@ module Percy
           return if ENV['BUILDKITE_COMMIT'] == 'HEAD'
           ENV['BUILDKITE_COMMIT']
         when :gitlab
-          ENV['CI_BUILD_REF']
+          ENV['CI_COMMIT_SHA']
         end
       end
 
@@ -133,7 +133,7 @@ module Percy
         when :buildkite
           ENV['BUILDKITE_BRANCH']
         when :gitlab
-          ENV['CI_BUILD_REF_NAME']
+          ENV['CI_COMMIT_REF_NAME']
         else
           _raw_branch_output
         end
@@ -233,7 +233,7 @@ module Percy
         when :buildkite
           ENV['BUILDKITE_BUILD_ID']
         when :gitlab
-          ENV['CI_BUILD_ID']
+          ENV['CI_JOB_ID']
         end
       end
 
