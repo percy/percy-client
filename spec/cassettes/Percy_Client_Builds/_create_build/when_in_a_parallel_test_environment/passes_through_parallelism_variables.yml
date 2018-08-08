@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: post
-    uri: http://localhost:3000/api/v1/repos/fotinakis/percy-examples/builds/
+    uri: http://localhost:3000/api/v1/projects/fotinakis/percy-examples/builds/
     body:
       encoding: UTF-8
       string: '{"data":{"type":"builds","attributes":{"commit-sha":"fc4d2c2e6b55d995a005dba2d071e2f2fca5e04b","commit-branch":"master","commit-committed-at":"2015-06-09
