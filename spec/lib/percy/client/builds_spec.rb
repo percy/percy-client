@@ -8,7 +8,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
       expect_any_instance_of(Percy::Client).to \
         receive(:post)
         .with(
-          /\/api\/v1\/repos\/fotinakis\/percy-examples\/builds\//,
+          /\/api\/v1\/projects\/fotinakis\/percy-examples\/builds\//,
           'data' => {
             'type' => 'builds',
             'attributes' => {
@@ -82,7 +82,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
         expect_any_instance_of(Percy::Client).to \
           receive(:post)
           .with(
-            /\/api\/v1\/repos\/fotinakis\/percy-examples\/builds\//,
+            /\/api\/v1\/projects\/fotinakis\/percy-examples\/builds\//,
             'data' => {
               'type' => 'builds',
               'attributes' => {
