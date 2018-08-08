@@ -1,7 +1,7 @@
 module Percy
   class Client
     module Builds
-      def create_build(project, options = {})
+      def create_build(project = nil, options = {})
         pull_request_number = options[:pull_request_number] ||
           Percy::Client::Environment.pull_request_number
         commit_data = options[:commit_data] || Percy::Client::Environment.commit
@@ -60,7 +60,12 @@ module Percy
           data['data'].merge!(relationships_data)
         end
 
-        build_data = post("#{config.api_url}/projects/#{project}/builds/", data)
+        build_data = if project
+          post("#{config.api_url}/projects/#{project}/builds/", data)
+        else
+          post("#{config.api_url}/builds/", data)
+        end
+
         Percy.logger.debug { "Build #{build_data['data']['id']} created" }
 
         parallelism_msg = if parallel_total_shards
