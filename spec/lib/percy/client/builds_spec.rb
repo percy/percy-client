@@ -41,7 +41,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
       expect(build['data']['relationships']['missing-resources']['data']).to_not be
     end
 
-    it 'creates a build with a token' do
+    it 'creates a build with only a token' do
       # Whitebox test to check POST data.
       expect_any_instance_of(Percy::Client).to \
         receive(:post)
@@ -68,6 +68,15 @@ RSpec.describe Percy::Client::Builds, :vcr do
         ).and_call_original
 
       build = Percy.create_build()
+      expect(build).to be
+      expect(build['data']).to be
+      expect(build['data']['id']).to be
+      expect(build['data']['type']).to eq('builds')
+      expect(build['data']['attributes']['state']).to eq('pending')
+      expect(build['data']['attributes']['is-pull-request']).to be_falsy
+      expect(build['data']['attributes']['pull-request-number']).to be_nil
+      expect(build['data']['relationships']['missing-resources']).to be
+      expect(build['data']['relationships']['missing-resources']['data']).to_not be
     end
 
     it 'accepts optional resources' do
