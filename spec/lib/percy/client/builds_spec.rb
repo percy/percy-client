@@ -41,6 +41,35 @@ RSpec.describe Percy::Client::Builds, :vcr do
       expect(build['data']['relationships']['missing-resources']['data']).to_not be
     end
 
+    it 'creates a build with a token' do
+      # Whitebox test to check POST data.
+      expect_any_instance_of(Percy::Client).to \
+        receive(:post)
+        .with(
+          /\/api\/v1\/builds\//,
+          'data' => {
+            'type' => 'builds',
+            'attributes' => {
+              'branch' => kind_of(String),
+              'target-branch' => nil,
+              'target-commit-sha' => nil,
+              'commit-sha' => kind_of(String),
+              'commit-committed-at' => kind_of(String),
+              'commit-author-name' => kind_of(String),
+              'commit-author-email' => kind_of(String),
+              'commit-committer-name' => kind_of(String),
+              'commit-committer-email' => kind_of(String),
+              'commit-message' => kind_of(String),
+              'pull-request-number' => anything,
+              'parallel-nonce' => nil,
+              'parallel-total-shards' => nil,
+            },
+          },
+        ).and_call_original
+
+      build = Percy.create_build()
+    end
+
     it 'accepts optional resources' do
       resources = []
       resources << Percy::Client::Resource.new('/css/test.css', sha: sha)
