@@ -68,6 +68,11 @@ module Percy
 
         Percy.logger.debug { "Build #{build_data['data']['id']} created" }
 
+        if project
+          _deprecation('Using an ORGANIZATION/PROJECT slug to create a build is ' \
+            'no longer necessary. Only a project token is needed to create a build.',)
+        end
+
         parallelism_msg = if parallel_total_shards
           "#{parallel_total_shards} shards detected (nonce: #{parallel_nonce.inspect})"
         else
@@ -80,6 +85,10 @@ module Percy
 
       def finalize_build(build_id)
         post("#{config.api_url}/builds/#{build_id}/finalize", {})
+      end
+
+      private def _deprecation(message)
+        warn "[DEPRECATION] #{message}"
       end
     end
   end
