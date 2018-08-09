@@ -67,7 +67,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
           },
         ).and_call_original
 
-      build = Percy.create_build()
+      build = Percy.create_build
       expect(build).to be
       expect(build['data']).to be
       expect(build['data']['id']).to be

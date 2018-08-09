@@ -69,7 +69,7 @@ module Percy
         Percy.logger.debug { "Build #{build_data['data']['id']} created" }
 
         if project
-          _deprecation('Using an ORGANIZATION/PROJECT slug to create a build is ' \
+          show_deprecation('Using an ORGANIZATION/PROJECT slug to create a build is ' \
             'no longer necessary. Only a project token is needed to create a build.',)
         end
 
@@ -87,7 +87,7 @@ module Percy
         post("#{config.api_url}/builds/#{build_id}/finalize", {})
       end
 
-      private def _deprecation(message)
+      private def show_deprecation(message)
         warn "[DEPRECATION] #{message}"
       end
     end
