@@ -14,7 +14,7 @@ RSpec.describe Percy::Config do
     expect(config.access_token).to be_nil
     expect(config.api_url).to eq(ENV['PERCY_API'])
     expect(config.debug).to eq(false)
-    expect(config.repo).to eq('percy/percy-client')
+    expect(config.repo).to be_nil
     expect(config.default_widths).to eq([])
   end
 end
