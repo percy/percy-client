@@ -42,7 +42,7 @@ module Percy
     end
 
     def repo
-      @repo ||= Percy::Client::Environment.repo
+      @repo ||= ENV['PERCY_PROJECT']
     end
 
     # List of default widths sent for every snapshot, unless overridden on a per-snapshot basis.
