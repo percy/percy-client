@@ -170,34 +170,6 @@ module Percy
       end
       class << self; private :_raw_branch_output; end
 
-      def self.repo
-        return ENV['PERCY_PROJECT'] if ENV['PERCY_PROJECT']
-        return ENV['PERCY_REPO_SLUG'] if ENV['PERCY_REPO_SLUG'] # Deprecated.
-
-        case current_ci
-        when :travis
-          ENV['TRAVIS_REPO_SLUG']
-        when :circle
-          "#{ENV['CIRCLE_PROJECT_USERNAME']}/#{ENV['CIRCLE_PROJECT_REPONAME']}"
-        when :semaphore
-          ENV['SEMAPHORE_REPO_SLUG']
-        else
-          origin_url = _get_origin_url.strip
-          if origin_url == ''
-            raise Percy::Client::Environment::RepoNotFoundError,
-              'No local git repository found. ' \
-              'You can manually set PERCY_PROJECT to fix this. See https://percy.io/docs'
-          end
-          match = origin_url.match(Regexp.new('[:/]([^/]+\/[^/]+?)(\.git)?\Z'))
-          unless match
-            raise Percy::Client::Environment::RepoNotFoundError,
-              "Could not determine repository name from URL: #{origin_url.inspect}\n" \
-              'You can manually set PERCY_PROJECT to fix this. See https://percy.io/docs'
-          end
-          match[1]
-        end
-      end
-
       def self.pull_request_number
         return ENV['PERCY_PULL_REQUEST'] if ENV['PERCY_PULL_REQUEST']
 

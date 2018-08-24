@@ -7,7 +7,7 @@ module Percy
     # @!attribute debug
     #   @return [Boolean] Whether or not to enable debug logging.
     # @!attribute repo
-    #   @return [String] Git repo name.
+    #   @return [String] PERCY_PROJECT slug.
     # @!attribute default_widths
     #   @return [Array] List of default widths for snapshot rendering unless overridden.
 
@@ -42,7 +42,7 @@ module Percy
     end
 
     def repo
-      @repo ||= ENV['PERCY_PROJECT']
+      @repo ||= ENV['PERCY_PROJECT'] || ENV['PERCY_REPO_SLUG']
     end
 
     # List of default widths sent for every snapshot, unless overridden on a per-snapshot basis.
