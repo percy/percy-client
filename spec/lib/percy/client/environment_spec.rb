@@ -7,7 +7,6 @@ RSpec.describe Percy::Client::Environment do
     ENV['PERCY_TARGET_BRANCH'] = nil
     ENV['PERCY_PULL_REQUEST'] = nil
     ENV['PERCY_PROJECT'] = nil
-    ENV['PERCY_REPO_SLUG'] = nil # Deprecated.
     ENV['PERCY_PARALLEL_NONCE'] = nil
     ENV['PERCY_PARALLEL_TOTAL'] = nil
 
@@ -18,7 +17,6 @@ RSpec.describe Percy::Client::Environment do
     ENV['TRAVIS_BRANCH'] = nil
     ENV['TRAVIS_PULL_REQUEST'] = nil
     ENV['TRAVIS_PULL_REQUEST_BRANCH'] = nil
-    ENV['TRAVIS_REPO_SLUG'] = nil
     ENV['CI_NODE_TOTAL'] = nil
 
     # Unset Jenkins vars.
@@ -32,8 +30,6 @@ RSpec.describe Percy::Client::Environment do
     ENV['CIRCLECI'] = nil
     ENV['CIRCLE_SHA1'] = nil
     ENV['CIRCLE_BRANCH'] = nil
-    ENV['CIRCLE_PROJECT_USERNAME'] = nil
-    ENV['CIRCLE_PROJECT_REPONAME'] = nil
     ENV['CIRCLE_BUILD_NUM'] = nil
     ENV['CI_PULL_REQUESTS'] = nil
 
@@ -57,7 +53,6 @@ RSpec.describe Percy::Client::Environment do
     ENV['SEMAPHORE'] = nil
     ENV['REVISION'] = nil
     ENV['BRANCH_NAME'] = nil
-    ENV['SEMAPHORE_REPO_SLUG'] = nil
     ENV['SEMAPHORE_BRANCH_ID'] = nil
     ENV['SEMAPHORE_BUILD_NUMBER'] = nil
     ENV['SEMAPHORE_CURRENT_THREAD'] = nil
@@ -85,7 +80,6 @@ RSpec.describe Percy::Client::Environment do
       'TRAVIS_BRANCH' => ENV['TRAVIS_BRANCH'],
       'TRAVIS_PULL_REQUEST' => ENV['TRAVIS_PULL_REQUEST'],
       'TRAVIS_PULL_REQUEST_BRANCH' => ENV['TRAVIS_PULL_REQUEST_BRANCH'],
-      'TRAVIS_REPO_SLUG' => ENV['TRAVIS_REPO_SLUG'],
     }
     clear_env_vars
   end
@@ -98,7 +92,6 @@ RSpec.describe Percy::Client::Environment do
     ENV['TRAVIS_BRANCH'] = @original_env['TRAVIS_BRANCH']
     ENV['TRAVIS_PULL_REQUEST'] = @original_env['TRAVIS_PULL_REQUEST']
     ENV['TRAVIS_PULL_REQUEST_BRANCH'] = @original_env['TRAVIS_PULL_REQUEST_BRANCH']
-    ENV['TRAVIS_REPO_SLUG'] = @original_env['TRAVIS_REPO_SLUG']
   end
 
   context 'with no known CI environment' do
@@ -170,57 +163,6 @@ RSpec.describe Percy::Client::Environment do
       end
     end
 
-    describe '#repo' do
-      it 'returns the current local repo name' do
-        expect(Percy::Client::Environment.repo).to eq('percy/percy-client')
-      end
-
-      it 'can be overridden with PERCY_PROJECT' do
-        ENV['PERCY_PROJECT'] = 'percy/slug'
-        expect(Percy::Client::Environment.repo).to eq('percy/slug')
-      end
-
-      it 'can be overridden with PERCY_REPO_SLUG (deprecated)' do
-        ENV['PERCY_REPO_SLUG'] = 'percy/slug'
-        expect(Percy::Client::Environment.repo).to eq('percy/slug')
-      end
-
-      it 'handles git ssh urls' do
-        expect(Percy::Client::Environment).to receive(:_get_origin_url)
-          .once.and_return('git@github.com:org-name/repo-name.git')
-        expect(Percy::Client::Environment.repo).to eq('org-name/repo-name')
-
-        expect(Percy::Client::Environment).to receive(:_get_origin_url)
-          .once.and_return('git@github.com:org-name/repo-name.org.git')
-        expect(Percy::Client::Environment.repo).to eq('org-name/repo-name.org')
-
-        expect(Percy::Client::Environment).to receive(:_get_origin_url)
-          .once.and_return('git@custom-local-hostname:org-name/repo-name.org')
-        expect(Percy::Client::Environment.repo).to eq('org-name/repo-name.org')
-      end
-
-      it 'handles git https urls' do
-        expect(Percy::Client::Environment).to receive(:_get_origin_url)
-          .once.and_return('https://github.com/org-name/repo-name.git')
-        expect(Percy::Client::Environment.repo).to eq('org-name/repo-name')
-
-        expect(Percy::Client::Environment).to receive(:_get_origin_url)
-          .once.and_return('https://github.com/org-name/repo-name.org.git')
-        expect(Percy::Client::Environment.repo).to eq('org-name/repo-name.org')
-
-        expect(Percy::Client::Environment).to receive(:_get_origin_url)
-          .once.and_return("https://github.com/org-name/repo-name.org\n")
-        expect(Percy::Client::Environment.repo).to eq('org-name/repo-name.org')
-      end
-
-      it 'errors if unable to parse local repo name' do
-        expect(Percy::Client::Environment).to receive(:_get_origin_url).once.and_return('foo')
-        expect { Percy::Client::Environment.repo }.to raise_error(
-          Percy::Client::Environment::RepoNotFoundError,
-        )
-      end
-    end
-
     describe '#parallel_nonce' do
       it 'returns nil' do
         expect(Percy::Client::Environment.parallel_nonce).to be_nil
@@ -267,7 +209,6 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.branch).to eq('jenkins-source-branch')
       expect(Percy::Client::Environment._commit_sha).to eq('jenkins-actual-commit')
       expect(Percy::Client::Environment.pull_request_number).to eq('256')
-      expect(Percy::Client::Environment.repo).to eq('percy/percy-client')
       expect(Percy::Client::Environment.parallel_nonce).to eq('111')
       expect(Percy::Client::Environment.parallel_total_shards).to eq(nil)
     end
@@ -279,7 +220,6 @@ RSpec.describe Percy::Client::Environment do
       ENV['TRAVIS_BUILD_NUMBER'] = 'build-number'
       ENV['TRAVIS_PULL_REQUEST'] = 'false'
       ENV['TRAVIS_PULL_REQUEST_BRANCH'] = ''
-      ENV['TRAVIS_REPO_SLUG'] = 'travis/repo-slug'
       ENV['TRAVIS_COMMIT'] = 'travis-commit-sha'
       ENV['TRAVIS_BRANCH'] = 'travis-branch'
       ENV['CI_NODE_TOTAL'] = ''
@@ -291,7 +231,6 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.branch).to eq('travis-branch')
       expect(Percy::Client::Environment._commit_sha).to eq('travis-commit-sha')
       expect(Percy::Client::Environment.pull_request_number).to be_nil
-      expect(Percy::Client::Environment.repo).to eq('travis/repo-slug')
       expect(Percy::Client::Environment.parallel_nonce).to eq('build-number')
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
@@ -326,8 +265,6 @@ RSpec.describe Percy::Client::Environment do
       ENV['CIRCLECI'] = 'true'
       ENV['CIRCLE_BRANCH'] = 'circle-branch'
       ENV['CIRCLE_SHA1'] = 'circle-commit-sha'
-      ENV['CIRCLE_PROJECT_USERNAME'] = 'circle'
-      ENV['CIRCLE_PROJECT_REPONAME'] = 'repo-name'
       ENV['CIRCLE_BUILD_NUM'] = 'build-number'
       ENV['CIRCLE_NODE_TOTAL'] = ''
       ENV['CI_PULL_REQUESTS'] = 'https://github.com/owner/repo-name/pull/123'
@@ -339,7 +276,6 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.branch).to eq('circle-branch')
       expect(Percy::Client::Environment._commit_sha).to eq('circle-commit-sha')
       expect(Percy::Client::Environment.pull_request_number).to eq('123')
-      expect(Percy::Client::Environment.repo).to eq('circle/repo-name')
       expect(Percy::Client::Environment.parallel_nonce).to eq('build-number')
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
@@ -372,7 +308,6 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.branch).to eq('codeship-branch')
       expect(Percy::Client::Environment._commit_sha).to eq('codeship-commit-sha')
       expect(Percy::Client::Environment.pull_request_number).to be_nil
-      expect(Percy::Client::Environment.repo).to eq('percy/percy-client')
       expect(Percy::Client::Environment.parallel_nonce).to eq('codeship-build-number')
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
@@ -403,7 +338,6 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.branch).to eq('drone-branch')
       expect(Percy::Client::Environment._commit_sha).to eq('drone-commit-sha')
       expect(Percy::Client::Environment.pull_request_number).to eq('123')
-      expect(Percy::Client::Environment.repo).to eq('percy/percy-client')
     end
   end
 
@@ -412,7 +346,6 @@ RSpec.describe Percy::Client::Environment do
       ENV['SEMAPHORE'] = 'true'
       ENV['BRANCH_NAME'] = 'semaphore-branch'
       ENV['REVISION'] = 'semaphore-commit-sha'
-      ENV['SEMAPHORE_REPO_SLUG'] = 'repo-owner/repo-name'
       ENV['SEMAPHORE_BRANCH_ID'] = 'semaphore-branch-id'
       ENV['SEMAPHORE_BUILD_NUMBER'] = 'semaphore-build-number'
       ENV['SEMAPHORE_THREAD_COUNT'] = ''
@@ -425,7 +358,6 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.branch).to eq('semaphore-branch')
       expect(Percy::Client::Environment._commit_sha).to eq('semaphore-commit-sha')
       expect(Percy::Client::Environment.pull_request_number).to eq('123')
-      expect(Percy::Client::Environment.repo).to eq('repo-owner/repo-name')
       expected_nonce = 'semaphore-branch-id/semaphore-build-number'
       expect(Percy::Client::Environment.parallel_nonce).to eq(expected_nonce)
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
@@ -460,7 +392,6 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.branch).to eq('buildkite-branch')
       expect(Percy::Client::Environment._commit_sha).to eq('buildkite-commit-sha')
       expect(Percy::Client::Environment.pull_request_number).to be_nil
-      expect(Percy::Client::Environment.repo).to eq('percy/percy-client') # From git, not env.
       expect(Percy::Client::Environment.parallel_nonce).to eq('buildkite-build-id')
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
@@ -511,8 +442,6 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.pull_request_number).to be_nil
       expect(Percy::Client::Environment.parallel_nonce).to eq('gitlab-build-id')
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
-      # TODO: repo is deprecated, remove this:
-      expect(Percy::Client::Environment.repo).to eq('percy/percy-client') # From git, not env.
     end
   end
 
