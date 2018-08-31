@@ -1,7 +1,7 @@
 module Percy
   class Client
     module Builds
-      def create_build(project = nil, options = {})
+      def create_build(options = {})
         pull_request_number = options[:pull_request_number] ||
           Percy::Client::Environment.pull_request_number
         commit_data = options[:commit_data] || Percy::Client::Environment.commit
@@ -60,18 +60,9 @@ module Percy
           data['data'].merge!(relationships_data)
         end
 
-        build_data = if project
-          post("#{config.api_url}/projects/#{project}/builds/", data)
-        else
-          post("#{config.api_url}/builds/", data)
-        end
+        build_data = post("#{config.api_url}/builds/", data)
 
         Percy.logger.debug { "Build #{build_data['data']['id']} created" }
-
-        if project
-          show_deprecation('Using an ORGANIZATION/PROJECT slug to create a build is ' \
-            'no longer necessary. Only a project token is needed to create a build.',)
-        end
 
         parallelism_msg = if parallel_total_shards
           "#{parallel_total_shards} shards detected (nonce: #{parallel_nonce.inspect})"
@@ -85,10 +76,6 @@ module Percy
 
       def finalize_build(build_id)
         post("#{config.api_url}/builds/#{build_id}/finalize", {})
-      end
-
-      private def show_deprecation(message)
-        warn "[DEPRECATION] #{message}"
       end
     end
   end
