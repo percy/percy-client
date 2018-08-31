@@ -1,20 +1,17 @@
 module Percy
   class Config
     # @!attribute [w] access_token
-    #   @return [String] Percy repo access token.
+    #   @return [String] Percy project access token.
     # @!attribute api_url
     #   @return [String] Base URL for API requests. Default: https://percy.io/api/v1/
     # @!attribute debug
     #   @return [Boolean] Whether or not to enable debug logging.
-    # @!attribute repo
-    #   @return [String] PERCY_PROJECT slug.
     # @!attribute default_widths
     #   @return [Array] List of default widths for snapshot rendering unless overridden.
 
     attr_writer :access_token
     attr_writer :api_url
     attr_writer :debug
-    attr_writer :repo
     attr_writer :default_widths
 
     # List of configurable keys for {Percy::Client}
@@ -24,7 +21,6 @@ module Percy
         :access_token,
         :api_url,
         :debug,
-        :repo,
         :default_widths,
       ]
     end
@@ -39,10 +35,6 @@ module Percy
 
     def debug
       @debug ||= ENV['PERCY_DEBUG'] == '1'
-    end
-
-    def repo
-      @repo ||= ENV['PERCY_PROJECT'] || ENV['PERCY_REPO_SLUG']
     end
 
     # List of default widths sent for every snapshot, unless overridden on a per-snapshot basis.
