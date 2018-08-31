@@ -8,7 +8,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
       expect_any_instance_of(Percy::Client).to \
         receive(:post)
         .with(
-          /\/api\/v1\/projects\/fotinakis\/percy-examples\/builds\//,
+          /\/api\/v1\/builds\//,
           'data' => {
             'type' => 'builds',
             'attributes' => {
@@ -29,7 +29,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
           },
         ).and_call_original
 
-      build = Percy.create_build('fotinakis/percy-examples')
+      build = Percy.create_build()
       expect(build).to be
       expect(build['data']).to be
       expect(build['data']['id']).to be
@@ -83,7 +83,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
       resources = []
       resources << Percy::Client::Resource.new('/css/test.css', sha: sha)
 
-      build = Percy.create_build('fotinakis/percy-examples', resources: resources)
+      build = Percy.create_build(resources: resources)
       expect(build).to be
       expect(build['data']).to be
       expect(build['data']['id']).to be
@@ -120,7 +120,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
         expect_any_instance_of(Percy::Client).to \
           receive(:post)
           .with(
-            /\/api\/v1\/projects\/fotinakis\/percy-examples\/builds\//,
+            /\/api\/v1\/builds\//,
             'data' => {
               'type' => 'builds',
               'attributes' => {
@@ -141,14 +141,13 @@ RSpec.describe Percy::Client::Builds, :vcr do
             },
           )
 
-        Percy.create_build('fotinakis/percy-examples')
+        Percy.create_build()
       end
     end
 
     context 'when in a parallel test environment' do
       it 'passes through parallelism variables' do
         build = Percy.create_build(
-          'fotinakis/percy-examples',
           parallel_nonce: 'nonce',
           parallel_total_shards: 2,
         )
@@ -160,7 +159,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
 
   describe '#finalize_build' do
     it 'finalizes a build' do
-      build = Percy.create_build('fotinakis/percy-examples')
+      build = Percy.create_build()
       result = Percy.finalize_build(build['data']['id'])
       expect(result).to eq('success' => true)
     end

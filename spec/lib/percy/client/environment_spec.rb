@@ -6,7 +6,6 @@ RSpec.describe Percy::Client::Environment do
     ENV['PERCY_TARGET_COMMIT'] = nil
     ENV['PERCY_TARGET_BRANCH'] = nil
     ENV['PERCY_PULL_REQUEST'] = nil
-    ENV['PERCY_PROJECT'] = nil
     ENV['PERCY_PARALLEL_NONCE'] = nil
     ENV['PERCY_PARALLEL_TOTAL'] = nil
 
