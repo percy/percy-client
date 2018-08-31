@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: post
-    uri: http://localhost:3000/api/v1/repos/fotinakis/percy-examples/builds/
+    uri: http://localhost:3000/api/v1/builds/
     body:
       encoding: UTF-8
       string: '{"data":{"type":"builds","attributes":{"commit-sha":"fc4d2c2e6b55d995a005dba2d071e2f2fca5e04b","commit-branch":"master","commit-committed-at":"2015-06-09
@@ -58,7 +58,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"data":{"id":"25","type":"builds","attributes":{"build-number":25,"state":"pending","is-pull-request":false,"pull-request-number":0,"pull-request-title":null,"approved-at":null,"created-at":"2015-06-11T00:20:36.192Z","updated-at":"2015-06-11T00:20:36.192Z"},"links":{"self":"/api/v1/builds/25"},"relationships":{"commit":{"links":{"self":"/api/v1/builds/25/relationships/commit","related":"/api/v1/builds/25/commit"},"data":{"type":"commits","id":"2"}},"repo":{"links":{"self":"/api/v1/builds/25/relationships/repo","related":"/api/v1/builds/25/repo"}},"base-build":{"links":{"self":"/api/v1/builds/25/relationships/base-build","related":"/api/v1/builds/25/base-build"},"data":{"type":"builds","id":"22"}},"approved-by":{"links":{"self":"/api/v1/builds/25/relationships/approved-by","related":"/api/v1/builds/25/approved-by"}},"snapshots":{"links":{"self":"/api/v1/builds/25/relationships/snapshots","related":"/api/v1/builds/25/snapshots"}},"comparisons":{"links":{"self":"/api/v1/builds/25/relationships/comparisons","related":"/api/v1/builds/25/comparisons"}},"missing-resources":{"links":{"self":"/api/v1/builds/25/relationships/missing-resources","related":"/api/v1/builds/25/missing-resources"}}},"meta":{"finalize-link":"/api/v1/builds/25/finalize","approve-link":"/api/v1/builds/25/approve"}},"included":[{"id":"2","type":"commits","attributes":{"sha":"fc4d2c2e6b55d995a005dba2d071e2f2fca5e04b","branch":"master","message":"Fix
         test environment issue.","committed-at":"2015-06-09 23:22:31 -0700","author-name":"<COMMIT_AUTHOR_NAME>","committer-name":"<COMMIT_AUTHOR_NAME>","created-at":"2015-06-11T00:15:24.000Z","updated-at":"2015-06-11T00:15:24.000Z"},"links":{"self":"/api/v1/commits/2"}},{"id":"22","type":"builds","attributes":{"build-number":22,"state":"finished","is-pull-request":false,"pull-request-number":0,"pull-request-title":null,"approved-at":null,"created-at":"2015-06-11T00:17:46.000Z","updated-at":"2015-06-11T00:17:46.000Z"},"links":{"self":"/api/v1/builds/22"},"relationships":{"commit":{"links":{"self":"/api/v1/builds/22/relationships/commit","related":"/api/v1/builds/22/commit"},"data":{"type":"commits","id":"2"}},"repo":{"links":{"self":"/api/v1/builds/22/relationships/repo","related":"/api/v1/builds/22/repo"}},"base-build":{"links":{"self":"/api/v1/builds/22/relationships/base-build","related":"/api/v1/builds/22/base-build"}},"approved-by":{"links":{"self":"/api/v1/builds/22/relationships/approved-by","related":"/api/v1/builds/22/approved-by"}},"snapshots":{"links":{"self":"/api/v1/builds/22/relationships/snapshots","related":"/api/v1/builds/22/snapshots"}},"comparisons":{"links":{"self":"/api/v1/builds/22/relationships/comparisons","related":"/api/v1/builds/22/comparisons"}},"missing-resources":{"links":{"self":"/api/v1/builds/22/relationships/missing-resources","related":"/api/v1/builds/22/missing-resources"}}},"meta":{"finalize-link":"/api/v1/builds/22/finalize","approve-link":"/api/v1/builds/22/approve"}}]}'
-    http_version: 
+    http_version:
   recorded_at: Thu, 11 Jun 2015 00:20:36 GMT
 - request:
     method: post
@@ -115,7 +115,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"data":{"id":"1108","type":"snapshots","attributes":{"name":"homepage","created-at":"2015-06-11T00:20:36.248Z","updated-at":"2015-06-11T00:20:36.248Z","finished-processing-at":null},"links":{"self":"/api/v1/snapshots/1108"},"relationships":{"build":{"links":{"self":"/api/v1/snapshots/1108/relationships/build","related":"/api/v1/snapshots/1108/build"}},"screenshots":{"links":{"self":"/api/v1/snapshots/1108/relationships/screenshots","related":"/api/v1/snapshots/1108/screenshots"}},"missing-resources":{"links":{"self":"/api/v1/snapshots/1108/relationships/missing-resources","related":"/api/v1/snapshots/1108/missing-resources"},"data":[{"type":"resources","id":"0ae24db123b4b8b506d27ccd61fb20de2d29e71ca6c2737dee6078db0f716602"}]}}},"included":[{"id":"0ae24db123b4b8b506d27ccd61fb20de2d29e71ca6c2737dee6078db0f716602","type":"resources","attributes":{},"links":{"self":"/api/v1/resources/0ae24db123b4b8b506d27ccd61fb20de2d29e71ca6c2737dee6078db0f716602"}}]}'
-    http_version: 
+    http_version:
   recorded_at: Thu, 11 Jun 2015 00:20:36 GMT
 - request:
     method: post
@@ -172,7 +172,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"success":true}'
-    http_version: 
+    http_version:
   recorded_at: Thu, 11 Jun 2015 00:20:37 GMT
 - request:
     method: post
@@ -231,6 +231,6 @@ http_interactions:
       string: '{"errors":[{"status":"conflict","detail":"Upload failed, resource with
         SHA-256 ''0ae24db123b4b8b506d27ccd61fb20de2d29e71ca6c2737dee6078db0f716602''
         already exists."}]}'
-    http_version: 
+    http_version:
   recorded_at: Thu, 11 Jun 2015 00:20:37 GMT
 recorded_with: VCR 2.9.3

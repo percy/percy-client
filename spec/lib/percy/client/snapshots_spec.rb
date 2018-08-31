@@ -4,7 +4,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
 
   describe '#create_snapshot' do
     it 'creates a snapshot' do
-      build = Percy.create_build('fotinakis/percy-examples')
+      build = Percy.create_build()
       resources = []
       resources << Percy::Client::Resource.new('/foo/test.html', sha: sha, is_root: true)
       resources << Percy::Client::Resource.new('/css/test.css', sha: sha)
@@ -64,7 +64,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
       expect(snapshot['data']['relationships']['missing-resources']).to be
     end
     it 'passes through certain arguments' do
-      build = Percy.create_build('fotinakis/percy-examples')
+      build = Percy.create_build()
       resources = []
       resources << Percy::Client::Resource.new('/foo/test.html', sha: sha, is_root: true)
       resources << Percy::Client::Resource.new('/css/test.css', sha: sha)
@@ -125,7 +125,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
       expect(snapshot['data']['relationships']['missing-resources']).to be
     end
     it 'fails if no resources are given' do
-      build = Percy.create_build('fotinakis/percy-examples')
+      build = Percy.create_build()
       expect do
         Percy.create_snapshot(build['data']['id'], [])
       end.to raise_error(Percy::Client::HttpError)
@@ -133,7 +133,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
   end
   describe '#finalize_snapshot' do
     it 'finalizes a snapshot' do
-      build = Percy.create_build('fotinakis/percy-examples')
+      build = Percy.create_build()
       resources = []
       resources << Percy::Client::Resource.new('/foo/test.html', sha: sha, is_root: true)
       resources << Percy::Client::Resource.new('/css/test.css', sha: sha)

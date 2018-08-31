@@ -7,7 +7,7 @@ RSpec.describe Percy::Client::Resources, :vcr do
 
   describe '#upload_resource' do
     it 'returns true with success' do
-      build = Percy.create_build('fotinakis/percy-examples')
+      build = Percy.create_build()
       resources = [Percy::Client::Resource.new('/foo/test.html', sha: sha, is_root: true)]
       Percy.create_snapshot(build['data']['id'], resources, name: 'homepage')
 
