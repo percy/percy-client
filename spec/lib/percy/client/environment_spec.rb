@@ -30,6 +30,7 @@ RSpec.describe Percy::Client::Environment do
     ENV['CIRCLE_SHA1'] = nil
     ENV['CIRCLE_BRANCH'] = nil
     ENV['CIRCLE_BUILD_NUM'] = nil
+    ENV['CIRCLE_WORKFLOW_ID'] = nil
     ENV['CI_PULL_REQUESTS'] = nil
 
     # Unset Codeship vars.
@@ -277,6 +278,16 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.pull_request_number).to eq('123')
       expect(Percy::Client::Environment.parallel_nonce).to eq('build-number')
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
+    end
+
+    context 'in Circle 2.0' do
+      before(:each) do
+        ENV['CIRCLE_WORKFLOW_ID'] = 'circle-workflow-id'
+      end
+
+      it 'has the correct properties' do
+        expect(Percy::Client::Environment.parallel_nonce).to eq('circle-workflow-id')
+      end
     end
 
     context 'with a parallel build' do

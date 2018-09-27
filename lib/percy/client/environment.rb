@@ -204,7 +204,7 @@ module Percy
         when :travis
           ENV['TRAVIS_BUILD_NUMBER']
         when :circle
-          ENV['CIRCLE_BUILD_NUM']
+          ENV['CIRCLE_WORKFLOW_ID'] || ENV['CIRCLE_BUILD_NUM']
         when :jenkins
           ENV['BUILD_NUMBER']
         when :codeship
