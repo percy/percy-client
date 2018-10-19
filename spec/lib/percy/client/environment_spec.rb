@@ -30,7 +30,7 @@ RSpec.describe Percy::Client::Environment do
     ENV['CIRCLE_SHA1'] = nil
     ENV['CIRCLE_BRANCH'] = nil
     ENV['CIRCLE_BUILD_NUM'] = nil
-    ENV['CIRCLE_WORKFLOW_ID'] = nil
+    ENV['CIRCLE_WORKFLOW_WORKSPACE_ID'] = nil
     ENV['CI_PULL_REQUESTS'] = nil
 
     # Unset Codeship vars.
@@ -282,11 +282,11 @@ RSpec.describe Percy::Client::Environment do
 
     context 'in Circle 2.0' do
       before(:each) do
-        ENV['CIRCLE_WORKFLOW_ID'] = 'circle-workflow-id'
+        ENV['CIRCLE_WORKFLOW_WORKSPACE_ID'] = 'circle-workflow-workspace-id'
       end
 
       it 'has the correct properties' do
-        expect(Percy::Client::Environment.parallel_nonce).to eq('circle-workflow-id')
+        expect(Percy::Client::Environment.parallel_nonce).to eq('circle-workflow-workspace-id')
       end
     end
 
