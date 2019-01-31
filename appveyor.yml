@@ -1,5 +1,3 @@
-version: 1.0.{build}-{branch}
-
 environment:
   matrix:
     - RUBY_VERSION: 25
@@ -8,12 +6,10 @@ environment:
     - RUBY_VERSION: 22
     - RUBY_VERSION: 21
 
-cache:
-  - vendor/bundle
-
 # Install scripts. (runs after repo cloning)
 install:
   - set PATH=C:\Ruby%RUBY_VERSION%\bin;%PATH%
+  - gem install bundler
   - bundle install
 
 before_test:
