@@ -12,6 +12,8 @@ RSpec.describe Percy::Client::Connection do
   let(:ci_version) { '8.14.3-ee' }
   let(:uri) { "#{Percy.config.api_url}/test" }
 
+  SERVER_ERROR_CODES = ((500..504).to_a + (520..530).to_a).freeze
+
   shared_examples_for 'a connection that sets headers with HTTP method' do |http_method|
     it 'sets headers' do
       stub_request(http_method, uri)
@@ -51,12 +53,14 @@ RSpec.describe Percy::Client::Connection do
       expect { response }.to raise_error(Percy::Client::ConnectionFailed)
     end
 
-    it 'retries on 502 errors' do
-      stub_request(:get, uri)
-        .to_return(body: {foo: true}.to_json, status: 502)
-        .then.to_return(body: {foo: true}.to_json, status: 200)
+    it 'retries on 5XX errors' do
+      SERVER_ERROR_CODES.each do |error_code|
+        stub_request(:get, uri)
+          .to_return(body: {foo: true}.to_json, status: error_code)
+          .then.to_return(body: {foo: true}.to_json, status: 200)
 
-      expect(response).to eq('foo' => true)
+        expect(response).to eq('foo' => true)
+      end
     end
 
     it 'raises error after 3 retries' do
@@ -124,6 +128,9 @@ RSpec.describe Percy::Client::Connection do
       '500' => Percy::Client::InternalServerError,
       '502' => Percy::Client::BadGatewayError,
       '503' => Percy::Client::ServiceUnavailableError,
+      '504' => Percy::Client::GatewayTimeoutError,
+      '520' => Percy::Client::CloudflareError,
+      '530' => Percy::Client::CloudflareError,
     }
 
     http_errors.each do |http_status, error_class|
@@ -131,11 +138,13 @@ RSpec.describe Percy::Client::Connection do
     end
 
     it 'retries on server errors' do
-      stub_request(:post, uri)
-        .to_return(body: {foo: true}.to_json, status: 500)
-        .then.to_return(body: {foo: true}.to_json, status: 200)
+      SERVER_ERROR_CODES.each do |error_code|
+        stub_request(:post, uri)
+          .to_return(body: {foo: true}.to_json, status: 500)
+          .then.to_return(body: {foo: true}.to_json, status: 200)
 
-      expect(response).to eq('foo' => true)
+        expect(response).to eq('foo' => true)
+      end
     end
 
     it 'raises error after 3 retries' do

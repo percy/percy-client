@@ -65,6 +65,12 @@ module Percy
     # 503
     class ServiceUnavailableError < ServerError; end
 
+    # 504
+    class GatewayTimeoutError < ServerError; end
+
+    # 520..530.
+    class CloudflareError < ServerError; end
+
     attr_reader :config, :client_info, :environment_info
 
     def initialize(options = {})

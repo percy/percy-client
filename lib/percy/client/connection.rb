@@ -30,6 +30,10 @@ module Percy
             error_class = Percy::Client::BadGatewayError
           when 503
             error_class = Percy::Client::ServiceUnavailableError
+          when 504
+            error_class = Percy::Client::GatewayTimeoutError
+          when 520..530
+            error_class = Percy::Client::CloudflareError
           when CLIENT_ERROR_STATUS_RANGE # Catchall.
             error_class = Percy::Client::HttpError
           end
@@ -70,9 +74,9 @@ module Percy
           raise Percy::Client::TimeoutError
         rescue Faraday::ConnectionFailed
           raise Percy::Client::ConnectionFailed
-        rescue Percy::Client::HttpError => e
-          # Retry on 502 errors.
-          if e.status == 502 && (retries -= 1) >= 0
+        rescue Percy::Client::ServerError => e
+          # Retry on 5XX errors.
+          if (retries -= 1) >= 0
             sleep(rand(1..3))
             retry
           end
@@ -98,6 +102,7 @@ module Percy
         rescue Faraday::ConnectionFailed
           raise Percy::Client::ConnectionFailed
         rescue Percy::Client::ServerError => e
+          # Retry on 5XX errors.
           if (retries -= 1) >= 0
             sleep(rand(1..3))
             retry

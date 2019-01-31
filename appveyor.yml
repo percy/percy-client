@@ -3,12 +3,11 @@ environment:
     - RUBY_VERSION: 25
     - RUBY_VERSION: 24
     - RUBY_VERSION: 23
-    - RUBY_VERSION: 22
-    - RUBY_VERSION: 21
 
 # Install scripts. (runs after repo cloning)
 install:
   - set PATH=C:\Ruby%RUBY_VERSION%\bin;%PATH%
+  - gem install bundler
   - bundle install
 
 before_test:
