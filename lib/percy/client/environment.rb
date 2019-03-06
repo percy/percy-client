@@ -208,7 +208,7 @@ module Percy
         when :jenkins
           ENV['BUILD_NUMBER']
         when :codeship
-          ENV['CI_BUILD_NUMBER']
+          ENV['CI_BUILD_NUMBER'] || ENV['CI_BUILD_ID']
         when :semaphore
           "#{ENV['SEMAPHORE_BRANCH_ID']}/#{ENV['SEMAPHORE_BUILD_NUMBER']}"
         when :buildkite
