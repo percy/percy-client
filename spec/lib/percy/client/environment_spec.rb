@@ -39,6 +39,7 @@ RSpec.describe Percy::Client::Environment do
     ENV['CI_PULL_REQUEST'] = nil
     ENV['CI_COMMIT_ID'] = nil
     ENV['CI_BUILD_NUMBER'] = nil
+    ENV['CI_BUILD_ID'] = nil
     ENV['CI_NODE_TOTAL'] = nil
 
     # Unset Drone vars.
@@ -307,6 +308,7 @@ RSpec.describe Percy::Client::Environment do
       ENV['CI_NAME'] = 'codeship'
       ENV['CI_BRANCH'] = 'codeship-branch'
       ENV['CI_BUILD_NUMBER'] = 'codeship-build-number'
+      ENV['CI_BUILD_ID'] = 'codeship-build-id'
       ENV['CI_PULL_REQUEST'] = 'false' # This is always false on Codeship, unfortunately.
       ENV['CI_COMMIT_ID'] = 'codeship-commit-sha'
       ENV['CI_NODE_TOTAL'] = ''
@@ -330,6 +332,11 @@ RSpec.describe Percy::Client::Environment do
       it 'has the correct properties' do
         expect(Percy::Client::Environment.parallel_nonce).to eq('codeship-build-number')
         expect(Percy::Client::Environment.parallel_total_shards).to eq(3)
+      end
+
+      it 'falls back from CI_BUILD_NUMBER to CI_BUILD_ID for CodeShip Pro' do
+        ENV['CI_BUILD_NUMBER'] = nil
+        expect(Percy::Client::Environment.parallel_nonce).to eq('codeship-build-id')
       end
     end
   end
