@@ -30,7 +30,7 @@ RSpec.describe Percy::Client::Environment do
     ENV['CIRCLE_SHA1'] = nil
     ENV['CIRCLE_BRANCH'] = nil
     ENV['CIRCLE_BUILD_NUM'] = nil
-    ENV['CIRCLE_WORKFLOW_WORKSPACE_ID'] = nil
+    ENV['CIRCLE_WORKFLOW_ID'] = nil
     ENV['CI_PULL_REQUESTS'] = nil
 
     # Unset Codeship vars.
