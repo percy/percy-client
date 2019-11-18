@@ -283,7 +283,7 @@ RSpec.describe Percy::Client::Environment do
 
     context 'in Circle 2.0' do
       before(:each) do
-        ENV['CIRCLE_WORKFLOW_WORKSPACE_ID'] = 'circle-workflow-workspace-id'
+        ENV['CIRCLE_WORKFLOW_ID'] = 'circle-workflow-workspace-id'
       end
 
       it 'has the correct properties' do
