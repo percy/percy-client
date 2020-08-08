@@ -8,6 +8,7 @@ module Percy
         end
 
         widths = options[:widths] || config.default_widths
+        stacktrace = options[:stacktrace] || caller.reject { |line| line.start_with? File.expand_path("../../..", __FILE__) }
         data = {
           'data' => {
             'type' => 'snapshots',
@@ -16,6 +17,7 @@ module Percy
               'enable-javascript' => options[:enable_javascript],
               'minimum-height' => options[:minimum_height],
               'widths' => widths,
+              'stacktrace' => stacktrace,
             },
             'relationships' => {
               'resources' => {

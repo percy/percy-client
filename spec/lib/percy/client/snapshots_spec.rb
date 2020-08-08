@@ -21,6 +21,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
               'enable-javascript' => true,
               'minimum-height' => nil,
               'widths' => Percy.config.default_widths,
+              'stacktrace' => start_with(start_with(__FILE__ + ":")),
             },
             'relationships' => {
               'resources' => {
@@ -81,6 +82,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
               'enable-javascript' => nil,
               'minimum-height' => 700,
               'widths' => [320, 1280],
+              'stacktrace' => ['somewhere_else.rb:32'],
             },
             'relationships' => {
               'resources' => {
@@ -116,6 +118,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
         name: 'homepage',
         widths: [320, 1280],
         minimum_height: 700,
+        stacktrace: ['somewhere_else.rb:32'],
       )
 
       expect(snapshot['data']).to be
