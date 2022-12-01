@@ -14,6 +14,7 @@ module Percy
             'attributes' => {
               'name' => options[:name],
               'enable-javascript' => options[:enable_javascript],
+              'enable-plain-rcw' => options[:enable_plain_rcw],
               'minimum-height' => options[:minimum_height],
               'widths' => widths,
             },
