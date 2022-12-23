@@ -8,7 +8,7 @@
 
 ```bash
 bundle exec rake build
-gem push pkg/percy-client-1.XX.XX.gem
+gem push pkg/percy-client-2.XX.XX.gem
 ```
 
 _The gem cli will prompt you for email and password. Find the
