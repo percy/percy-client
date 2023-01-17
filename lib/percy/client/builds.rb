@@ -9,6 +9,7 @@ module Percy
         target_commit_sha = options[:target_commit_sha] \
           || Percy::Client::Environment.target_commit_sha
         resources = options[:resources]
+        disable_transformations = options[:disable_transformations]
         parallel_nonce = options[:parallel_nonce] || Percy::Client::Environment.parallel_nonce
         parallel_total_shards = options[:parallel_total_shards] \
           || Percy::Client::Environment.parallel_total_shards
@@ -39,6 +40,7 @@ module Percy
               'pull-request-number' => pull_request_number,
               'parallel-nonce' => parallel_nonce,
               'parallel-total-shards' => parallel_total_shards,
+              'disable-transformations' => disable_transformations,
             },
           },
         }
