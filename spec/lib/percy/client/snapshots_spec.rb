@@ -19,6 +19,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
             'attributes' => {
               'name' => 'homepage',
               'enable-javascript' => true,
+              'scope' => 'body',
               'minimum-height' => nil,
               'widths' => Percy.config.default_widths,
             },
@@ -55,6 +56,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
         resources,
         name: 'homepage',
         enable_javascript: true,
+        scope_selector: 'body',
       )
 
       expect(snapshot['data']).to be
@@ -79,6 +81,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
             'attributes' => {
               'name' => 'homepage',
               'enable-javascript' => nil,
+              'scope' => nil,
               'minimum-height' => 700,
               'widths' => [320, 1280],
             },
