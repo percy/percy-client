@@ -31,6 +31,7 @@ RSpec.describe Percy::Client::Resource do
         'resource-url' => '/foo.html',
         'mimetype' => nil,
         'is-root' => nil,
+        'for-widths' => [nil],
       },
     )
   end
@@ -49,6 +50,7 @@ RSpec.describe Percy::Client::Resource do
         'resource-url' => '/foo%20new.html',
         'mimetype' => 'text/html',
         'is-root' => true,
+        'for-widths' => [nil],
       },
     )
   end
