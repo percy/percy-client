@@ -33,6 +33,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
                       'resource-url' => '/foo/test.html',
                       'mimetype' => nil,
                       'is-root' => true,
+                      'for-widths' => [nil],
                     },
                   },
                   {
@@ -42,6 +43,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
                       'resource-url' => '/css/test.css',
                       'mimetype' => nil,
                       'is-root' => nil,
+                      'for-widths' => [nil],
                     },
                   },
                 ],
@@ -95,6 +97,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
                       'resource-url' => '/foo/test.html',
                       'mimetype' => nil,
                       'is-root' => true,
+                      'for-widths' => [nil],
                     },
                   },
                   {
@@ -104,6 +107,7 @@ RSpec.describe Percy::Client::Snapshots, :vcr do
                       'resource-url' => '/css/test.css',
                       'mimetype' => nil,
                       'is-root' => nil,
+                      'for-widths' => [nil],
                     },
                   },
                 ],
