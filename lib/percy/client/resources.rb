@@ -41,7 +41,7 @@ module Percy
             'resource-url' => Addressable::URI.escape(resource_url),
             'mimetype' => mimetype,
             'is-root' => is_root,
-            'for-widths' => [root_for_width],
+            'for-widths' => root_for_width ? [root_for_width] : nil,
           },
         }
       end
