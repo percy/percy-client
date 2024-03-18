@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'faraday', '0.17.3'
-  spec.add_dependency 'excon'
+  spec.add_dependency 'excon', '0.105.0'
   spec.add_dependency 'addressable'
 
   spec.add_development_dependency 'bundler', '~> 2.0'
