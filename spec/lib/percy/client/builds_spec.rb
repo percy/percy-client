@@ -30,7 +30,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
           },
         ).and_call_original
 
-      build = Percy.create_build()
+      build = Percy.create_build
       expect(build).to be
       expect(build['data']).to be
       expect(build['data']['id']).to be
@@ -105,7 +105,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
             },
           )
 
-        Percy.create_build()
+        Percy.create_build
       end
     end
 
@@ -123,7 +123,7 @@ RSpec.describe Percy::Client::Builds, :vcr do
 
   describe '#finalize_build' do
     it 'finalizes a build' do
-      build = Percy.create_build()
+      build = Percy.create_build
       result = Percy.finalize_build(build['data']['id'])
       expect(result).to eq('success' => true)
     end

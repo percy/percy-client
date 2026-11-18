@@ -12,7 +12,9 @@ RSpec.describe Percy::Client::Connection do
   let(:ci_version) { '8.14.3-ee' }
   let(:uri) { "#{Percy.config.api_url}/test" }
 
-  SERVER_ERROR_CODES = ((500..504).to_a + (520..530).to_a).freeze
+  # Statuses mapped to a Percy::Client::ServerError subclass, which are the ones retried.
+  # 501 is deliberately absent: it maps to the generic HttpError and is not retried.
+  SERVER_ERROR_CODES = ([500, 502, 503, 504] + (520..530).to_a).freeze
 
   shared_examples_for 'a connection that sets headers with HTTP method' do |http_method|
     it 'sets headers' do
@@ -30,6 +32,32 @@ RSpec.describe Percy::Client::Connection do
       expect(Percy::Client::Environment).to receive(:ci_version).and_return(ci_version)
 
       expect(response).to eq('foo' => true)
+    end
+  end
+
+  describe '#connection' do
+    # Guard against a silent fallback to Net::HTTP (e.g. Faraday 2 without faraday-excon).
+    it 'uses the excon adapter' do
+      builder = Percy.client.connection.builder
+      adapter_class =
+        if Gem::Version.new(Faraday::VERSION) >= Gem::Version.new('1')
+          builder.adapter.klass
+        else
+          builder.handlers.last.klass
+        end
+
+      expect(adapter_class).to eq(Faraday::Adapter::Excon)
+    end
+
+    it 'sends the token auth header when an access token is configured' do
+      config = Percy::Config.new
+      config.access_token = 'abc123'
+      client = Percy::Client.new(config: config)
+      stub_request(:get, uri)
+        .with(headers: {'Authorization' => 'Token token="abc123"'})
+        .to_return(body: {foo: true}.to_json)
+
+      expect(client.get(uri)).to eq('foo' => true)
     end
   end
 
@@ -54,13 +82,23 @@ RSpec.describe Percy::Client::Connection do
     end
 
     it 'retries on 5XX errors' do
+      allow(Percy.client).to receive(:sleep)
+
+      # Call the client directly: `response` is memoized and would only request once.
       SERVER_ERROR_CODES.each do |error_code|
         stub_request(:get, uri)
           .to_return(body: {foo: true}.to_json, status: error_code)
           .then.to_return(body: {foo: true}.to_json, status: 200)
 
-        expect(response).to eq('foo' => true)
+        expect(Percy.client.get(uri)).to eq('foo' => true)
       end
+    end
+
+    it 'does not retry on 501' do
+      stub = stub_request(:get, uri).to_return(body: {foo: true}.to_json, status: 501)
+
+      expect { response }.to raise_error(Percy::Client::HttpError)
+      expect(stub).to have_been_requested.once
     end
 
     it 'raises error after 3 retries' do
@@ -138,12 +176,15 @@ RSpec.describe Percy::Client::Connection do
     end
 
     it 'retries on server errors' do
+      allow(Percy.client).to receive(:sleep)
+
+      # Call the client directly: `response` is memoized and would only request once.
       SERVER_ERROR_CODES.each do |error_code|
         stub_request(:post, uri)
-          .to_return(body: {foo: true}.to_json, status: 500)
+          .to_return(body: {foo: true}.to_json, status: error_code)
           .then.to_return(body: {foo: true}.to_json, status: 200)
 
-        expect(response).to eq('foo' => true)
+        expect(Percy.client.post(uri, {})).to eq('foo' => true)
       end
     end
 

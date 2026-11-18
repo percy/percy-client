@@ -1,17 +1,21 @@
 RSpec.describe Percy do
   before(:each) { Percy.reset }
+
   after(:each) { Percy.reset }
+
   describe '#config' do
     it 'returns a config object' do
       expect(Percy.config.api_url).to eq('http://localhost:3000/api/v1')
     end
   end
+
   describe '#client' do
     it 'returns a Percy::Client that is passed the global config object by default' do
       config = Percy.config
       expect(Percy.client.config).to eq(config)
     end
   end
+
   describe '#logger' do
     it 'returns a memoized logger instance' do
       logger = Percy.logger
@@ -23,6 +27,7 @@ RSpec.describe Percy do
       Percy.logger.debug('Test logging that SHOULD be output')
     end
   end
+
   describe '#reset' do
     it 'clears certain instance variables' do
       old_config = Percy.client.config
