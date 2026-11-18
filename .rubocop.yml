@@ -7,4 +7,11 @@ RSpec/InstanceVariable:
     - spec/lib/percy/client/environment_spec.rb
 
 AllCops:
-  TargetRubyVersion: 2.2
+  # Highest version RuboCop 0.58 (pinned by percy-style 0.5) knows; gem supports Ruby >= 2.6.
+  TargetRubyVersion: 2.5
+  # percy-style's Include replaces RuboCop's defaults with Rakefile-only, which silently
+  # skipped every .rb file; lint the whole gem explicitly.
+  Include:
+    - '**/*.rb'
+    - 'Rakefile'
+    - 'Gemfile'

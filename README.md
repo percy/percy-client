@@ -4,3 +4,23 @@
 [![Gem Version](https://badge.fury.io/rb/percy-client.svg)](http://badge.fury.io/rb/percy-client)
 
 ### Docs here: [https://percy.io/docs/api/ruby-client](https://percy.io/docs/api/ruby-client)
+
+## Compatibility
+
+| Dependency | Supported |
+|------------|-----------|
+| Ruby       | >= 2.6 (tested on 2.6 and 3.4) |
+| Faraday    | >= 0.15.4, < 3 (0.x, 1.x, 2.x) |
+| Excon      | >= 0.105.0, < 2 |
+
+Requests always go through the excon adapter. On Faraday 2 it comes from the
+`faraday-excon` gem, which percy-client depends on. Faraday versions older than
+0.17.3 do not load on Ruby 3, so Ruby 3.x apps need Faraday >= 0.17.3.
+
+**Faraday 2 needs `faraday-excon` >= 2.0.** percy-client allows `faraday-excon` 1.x so that
+Faraday 0.x apps still resolve, but 1.x does not work with Faraday 2. On Faraday 2,
+`require 'percy'` raises a `LoadError` if faraday-excon 1.x is installed. Fix it by changing any
+explicit `faraday-excon` pin in your Gemfile to `'>= 2.0'` and running
+`bundle update faraday-excon`.
+
+See [CHANGELOG.md](CHANGELOG.md) for release notes.

@@ -1,0 +1,65 @@
+name: Test
+
+on:
+  pull_request:
+    branches: ["master", "main"]
+  push:
+    branches: ["master", "main"]
+
+permissions:
+  contents: read
+
+jobs:
+  rspec:
+    name: rspec (ruby ${{ matrix.ruby }}, faraday ${{ matrix.faraday }})
+    runs-on: ubuntu-latest
+    # Official Ruby images: identical to the local Docker matrix, and they still ship Ruby 2.6/2.7.
+    container:
+      image: ruby:${{ matrix.ruby }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Current prod: Ruby 2.6 with faraday 0.15.4; 2.8.1 is the newest faraday on Ruby 2.6.
+          - { ruby: "2.6", faraday: "0.15.4" }
+          - { ruby: "2.6", faraday: "2.8.1" }
+          # faraday < 0.17.3 does not load on Ruby >= 3.0, so 0.17.3 is the 0.x floor there.
+          - { ruby: "2.7", faraday: "0.17.3" }
+          - { ruby: "2.7", faraday: "~> 2.0" }
+          - { ruby: "3.0", faraday: "0.17.3" }
+          - { ruby: "3.0", faraday: "~> 2.0" }
+          - { ruby: "3.3", faraday: "~> 1.10" }
+          - { ruby: "3.3", faraday: "~> 2.0" }
+          # Target prod: Ruby 3.4.
+          - { ruby: "3.4", faraday: "0.17.3" }
+          - { ruby: "3.4", faraday: "~> 1.10" }
+          - { ruby: "3.4", faraday: "~> 2.0" }
+    env:
+      FARADAY_VERSION: ${{ matrix.faraday }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          # Later steps only read local git data; don't leave the token in .git/config.
+          persist-credentials: false
+      # Specs read commit data from git; the container user differs from the checkout owner.
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      # The images' bundled Bundler is too old on Ruby < 3; 2.4.22 is the last for Ruby 2.6/2.7.
+      - run: if ruby -e 'exit(RUBY_VERSION < "3")'; then gem install bundler -v 2.4.22; fi
+      - run: bundle install --jobs 4
+      - name: Resolved versions
+        run: bundle exec ruby -e 'puts %w[faraday faraday-excon excon webmock vcr].map { |g| "#{g}=#{Gem.loaded_specs[g]&.version}" }.join(" ")'
+      - run: bundle exec rspec
+
+  rubocop:
+    # percy-style pins RuboCop 0.58, which only runs on Ruby 2.x (the Gemfile adds it there only).
+    runs-on: ubuntu-latest
+    container:
+      image: ruby:2.6
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - run: gem install bundler -v 2.4.22
+      - run: bundle install --jobs 4
+      - run: bundle exec rubocop -D

@@ -12,7 +12,9 @@ RSpec.describe Percy::Client::Connection do
   let(:ci_version) { '8.14.3-ee' }
   let(:uri) { "#{Percy.config.api_url}/test" }
 
-  SERVER_ERROR_CODES = ((500..504).to_a + (520..530).to_a).freeze
+  # Statuses mapped to a Percy::Client::ServerError subclass, which are the ones retried.
+  # 501 is deliberately absent: it maps to the generic HttpError and is not retried.
+  SERVER_ERROR_CODES = ([500, 502, 503, 504] + (520..530).to_a).freeze
 
   shared_examples_for 'a connection that sets headers with HTTP method' do |http_method|
     it 'sets headers' do
@@ -30,6 +32,73 @@ RSpec.describe Percy::Client::Connection do
       expect(Percy::Client::Environment).to receive(:ci_version).and_return(ci_version)
 
       expect(response).to eq('foo' => true)
+    end
+  end
+
+  describe '#connection' do
+    # Guard against a silent fallback to Net::HTTP (e.g. Faraday 2 without faraday-excon).
+    it 'uses the excon adapter' do
+      builder = Percy.client.connection.builder
+      adapter_class =
+        if Gem::Version.new(Faraday::VERSION) >= Gem::Version.new('1')
+          builder.adapter.klass
+        else
+          builder.handlers.last.klass
+        end
+
+      expect(adapter_class).to eq(Faraday::Adapter::Excon)
+    end
+
+    def client_with_token(token)
+      config = Percy::Config.new
+      config.access_token = token
+      Percy::Client.new(config: config)
+    end
+
+    it 'sends the token auth header when an access token is configured' do
+      stub_request(:get, uri)
+        .with(headers: {'Authorization' => 'Token token="abc123"'})
+        .to_return(body: {foo: true}.to_json)
+
+      expect(client_with_token('abc123').get(uri)).to eq('foo' => true)
+    end
+
+    # Same escaping as Faraday 0.15's :token_auth middleware (String#inspect).
+    it 'backslash-escapes quotes in the token' do
+      stub_request(:get, uri)
+        .with(headers: {'Authorization' => 'Token token="a\\"b"'})
+        .to_return(body: {foo: true}.to_json)
+
+      expect(client_with_token('a"b').get(uri)).to eq('foo' => true)
+    end
+  end
+
+  describe '.load_excon_adapter!' do
+    # percy-style enforces the explicit class over described_class.
+    let(:connection) { Percy::Client::Connection }
+    let(:activation_error) do
+      "can't activate faraday-excon (>= 2.0), already activated faraday-excon-1.1.0"
+    end
+
+    it 'does nothing on Faraday < 2, which has its own excon adapter' do
+      expect(connection).to_not receive(:gem)
+      expect(connection).to_not receive(:require)
+      expect(connection.load_excon_adapter!(faraday_version: '0.15.4')).to eq(false)
+    end
+
+    it 'rejects faraday-excon 1.x on Faraday 2 with an actionable error' do
+      expect(connection).to receive(:gem).with('faraday-excon', '>= 2.0')
+        .and_raise(Gem::LoadError, activation_error)
+      expect(connection).to_not receive(:require)
+      expect do
+        connection.load_excon_adapter!(faraday_version: '2.8.1')
+      end.to raise_error(LoadError, /needs faraday-excon >= 2\.0 .*-1\.1\.0.*bundle update/)
+    end
+
+    it 'activates and loads faraday-excon 2.x on Faraday 2' do
+      expect(connection).to receive(:gem).with('faraday-excon', '>= 2.0').ordered
+      expect(connection).to receive(:require).with('faraday/excon').ordered.and_return(true)
+      connection.load_excon_adapter!(faraday_version: '2.8.1')
     end
   end
 
@@ -54,13 +123,28 @@ RSpec.describe Percy::Client::Connection do
     end
 
     it 'retries on 5XX errors' do
+      allow(Percy.client).to receive(:sleep)
+
+      # Call the client directly: `response` is memoized and would only request once.
       SERVER_ERROR_CODES.each do |error_code|
-        stub_request(:get, uri)
+        # Fresh stubs and request history, so the count below covers this code only.
+        WebMock.reset!
+        stub = stub_request(:get, uri)
           .to_return(body: {foo: true}.to_json, status: error_code)
           .then.to_return(body: {foo: true}.to_json, status: 200)
 
-        expect(response).to eq('foo' => true)
+        expect(Percy.client.get(uri)).to eq('foo' => true)
+        # One failed attempt plus one retry; both bodies match, so the count proves the retry.
+        expect(stub).to have_been_requested.twice
       end
+    end
+
+    it 'does not retry on 501' do
+      stub = stub_request(:get, uri).to_return(body: {foo: true}.to_json, status: 501)
+
+      # Exactly HttpError: a ServerError subclass would mean 501 had become retryable.
+      expect { response }.to raise_error(an_instance_of(Percy::Client::HttpError))
+      expect(stub).to have_been_requested.once
     end
 
     it 'raises error after 3 retries' do
@@ -138,12 +222,19 @@ RSpec.describe Percy::Client::Connection do
     end
 
     it 'retries on server errors' do
+      allow(Percy.client).to receive(:sleep)
+
+      # Call the client directly: `response` is memoized and would only request once.
       SERVER_ERROR_CODES.each do |error_code|
-        stub_request(:post, uri)
-          .to_return(body: {foo: true}.to_json, status: 500)
+        # Fresh stubs and request history, so the count below covers this code only.
+        WebMock.reset!
+        stub = stub_request(:post, uri)
+          .to_return(body: {foo: true}.to_json, status: error_code)
           .then.to_return(body: {foo: true}.to_json, status: 200)
 
-        expect(response).to eq('foo' => true)
+        expect(Percy.client.post(uri, {})).to eq('foo' => true)
+        # One failed attempt plus one retry; both bodies match, so the count proves the retry.
+        expect(stub).to have_been_requested.twice
       end
     end
 
