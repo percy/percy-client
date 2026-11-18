@@ -62,7 +62,8 @@ module Percy
 
       def inspect
         content_msg = content.nil? ? '' : "content.length: #{content.length}"
-        "<Resource #{sha} #{resource_url} root_for_width:#{root_for_width} is_root:#{!!is_root} #{mimetype} #{content_msg}>"
+        "<Resource #{sha} #{resource_url} root_for_width:#{root_for_width} " \
+          "is_root:#{!!is_root} #{mimetype} #{content_msg}>"
       end
       alias to_s inspect
     end

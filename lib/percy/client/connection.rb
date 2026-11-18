@@ -144,7 +144,7 @@ module Percy
       end
 
       def _user_agent
-        @_user_agent ||= begin
+        @_user_agent ||= begin # rubocop:disable Naming/MemoizedInstanceVariableName
           client = [
             "Percy/#{_api_version}",
             client_info,
