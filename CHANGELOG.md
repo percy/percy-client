@@ -6,7 +6,8 @@ Ruby 3.4 and Faraday 2 support, backward compatible with Ruby 2.6 and Faraday 0.
 The public API (`Percy::Client`, `Percy::Config`, `PERCY_*` env vars) is unchanged.
 
 - Support Ruby >= 2.6, including 3.4 (`required_ruby_version >= 2.6`).
-- Relax `faraday` from `= 0.15.4` to `>= 0.15.4, < 3`.
+- Relax `faraday` from `= 0.15.4` to `>= 0.15.4, < 3`. On Ruby 3.x use Faraday >= 0.17.3, because
+  older Faraday versions themselves fail to load there.
 - Relax `excon` from `= 0.105.0` to `>= 0.105.0, < 2`.
 - Add `faraday-excon` (`>= 1.1, < 3`). It provides the excon adapter on Faraday 2 and is only
   loaded there.

@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = '>= 2.6'
 
-  # Faraday 0.15.4 through 2.x is supported (Faraday < 0.17.4 itself does not load on Ruby 3).
+  # Faraday 0.15.4 through 2.x is supported (Faraday < 0.17.3 itself does not load on Ruby 3).
   # faraday-excon provides the excon adapter on Faraday 2; it is only required there.
   spec.add_dependency 'faraday', '>= 0.15.4', '< 3'
   spec.add_dependency 'faraday-excon', '>= 1.1', '< 3'

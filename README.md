@@ -15,6 +15,6 @@
 
 Requests always go through the excon adapter. On Faraday 2 it comes from the
 `faraday-excon` gem, which percy-client depends on. Faraday versions older than
-0.17.4 do not load on Ruby 3, so Ruby 3.x apps need Faraday >= 1.0.
+0.17.3 do not load on Ruby 3, so Ruby 3.x apps need Faraday >= 0.17.3.
 
 See [CHANGELOG.md](CHANGELOG.md) for release notes.
