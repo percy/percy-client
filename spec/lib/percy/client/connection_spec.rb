@@ -61,6 +61,30 @@ RSpec.describe Percy::Client::Connection do
     end
   end
 
+  describe '.load_excon_adapter!' do
+    it 'does nothing on Faraday < 2, which has its own excon adapter' do
+      expect(described_class).not_to receive(:gem)
+      expect(described_class).not_to receive(:require)
+      expect(described_class.load_excon_adapter!(faraday_version: '0.15.4')).to eq(false)
+    end
+
+    it 'rejects faraday-excon 1.x on Faraday 2 with an actionable error' do
+      expect(described_class).to receive(:gem).with('faraday-excon', '>= 2.0')
+        .and_raise(Gem::LoadError, "can't activate faraday-excon (>= 2.0), already activated " \
+          'faraday-excon-1.1.0')
+      expect(described_class).not_to receive(:require)
+      expect do
+        described_class.load_excon_adapter!(faraday_version: '2.8.1')
+      end.to raise_error(LoadError, /needs faraday-excon >= 2\.0 .*-1\.1\.0.*bundle update/)
+    end
+
+    it 'activates and loads faraday-excon 2.x on Faraday 2' do
+      expect(described_class).to receive(:gem).with('faraday-excon', '>= 2.0').ordered
+      expect(described_class).to receive(:require).with('faraday/excon').ordered.and_return(true)
+      described_class.load_excon_adapter!(faraday_version: '2.8.1')
+    end
+  end
+
   describe '#get' do
     subject(:response) { Percy.client.get(uri) }
 

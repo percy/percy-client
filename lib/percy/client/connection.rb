@@ -2,20 +2,33 @@ require 'openssl'
 require 'uri'
 require 'faraday'
 
-# Faraday 2.x ships adapters as separate gems, so load the excon adapter from faraday-excon.
-# Only on Faraday >= 2: Faraday 0.x has a built-in excon adapter that faraday-excon 1.x would
-# replace, and Faraday 1.x loads faraday-excon itself.
-if Gem::Version.new(Faraday::VERSION) >= Gem::Version.new('2')
-  begin
-    require 'faraday/excon'
-  rescue LoadError
-    nil
-  end
-end
-
 module Percy
   class Client
     module Connection
+      # Faraday 2.x ships adapters as separate gems, so load the excon adapter from faraday-excon.
+      # Only on Faraday >= 2: Faraday 0.x has a built-in excon adapter that faraday-excon 1.x would
+      # replace, and Faraday 1.x loads faraday-excon itself.
+      #
+      # faraday-excon 1.x declares no faraday dependency but only works with Faraday < 2, and a
+      # gemspec cannot tie the faraday-excon range to the installed faraday (Faraday 0.x installs
+      # need faraday-excon < 2 to resolve). So on Faraday 2, faraday-excon >= 2.0 is activated
+      # explicitly before requiring it. Kernel#gem (and Bundler's override of it) raises
+      # Gem::LoadError when only 1.x is available or locked, which is turned into an actionable
+      # error instead of a NoMethodError from inside faraday-excon 1.x's adapter.
+      def self.load_excon_adapter!(faraday_version: Faraday::VERSION)
+        return false if Gem::Version.new(faraday_version) < Gem::Version.new('2')
+
+        begin
+          gem 'faraday-excon', '>= 2.0'
+        rescue Gem::LoadError => e
+          raise LoadError,
+            "percy-client: Faraday #{faraday_version} needs faraday-excon >= 2.0 " \
+            "(#{e.message}). Run `bundle update faraday-excon`."
+        end
+
+        require 'faraday/excon'
+      end
+
       # Inherits from Faraday::Middleware (present in Faraday 0.x, 1.x and 2.x) and defines #call
       # itself, because Faraday::Response::Middleware was removed in Faraday 2.
       class NiceErrorMiddleware < Faraday::Middleware
@@ -73,7 +86,9 @@ module Percy
         base_url = "#{parsed_uri.scheme}://#{parsed_uri.host}:#{parsed_uri.port}"
 
         @connection = Faraday.new(url: base_url) do |faraday|
-          # Same header that Faraday's :token_auth middleware (removed in Faraday 2) produced.
+          # Faraday 2 removed the :token_auth middleware, and its replacement (:authorization) does
+          # not exist in Faraday 0.15. Setting the header directly works on 0.15 through 2.x and
+          # sends exactly what :token_auth sent.
           if config.access_token
             faraday.headers['Authorization'] = %(Token token="#{config.access_token}")
           end
@@ -144,6 +159,8 @@ module Percy
       end
 
       def _user_agent
+        # rubocop 0.58 (from percy-style) does not accept a leading-underscore method memoizing
+        # into @_user_agent; renaming would break _reset_user_agent, so keep the name as on master.
         @_user_agent ||= begin # rubocop:disable Naming/MemoizedInstanceVariableName
           client = [
             "Percy/#{_api_version}",
@@ -172,6 +189,8 @@ module Percy
       def _ruby_version
         "#{RUBY_VERSION}p#{RUBY_PATCHLEVEL}"
       end
+
+      load_excon_adapter!
     end
   end
 end
