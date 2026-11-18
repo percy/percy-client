@@ -236,7 +236,7 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
 
-    context ' with a pull request build' do
+    context 'with a pull request build' do
       before(:each) do
         ENV['TRAVIS_PULL_REQUEST'] = '256'
         ENV['TRAVIS_PULL_REQUEST_BRANCH'] = 'travis-pr-branch'
@@ -281,7 +281,7 @@ RSpec.describe Percy::Client::Environment do
       expect(Percy::Client::Environment.parallel_total_shards).to be_nil
     end
 
-    context 'in Circle 2.0' do
+    context 'with Circle 2.0' do
       before(:each) do
         ENV['CIRCLE_WORKFLOW_ID'] = 'circle-workflow-workspace-id'
       end
@@ -417,6 +417,7 @@ RSpec.describe Percy::Client::Environment do
       before(:each) do
         ENV['BUILDKITE_PARALLEL_JOB_COUNT'] = '3'
       end
+
       it 'has the correct properties' do
         expect(Percy::Client::Environment.parallel_nonce).to eq('buildkite-build-id')
         expect(Percy::Client::Environment.parallel_total_shards).to eq(3)
@@ -427,6 +428,7 @@ RSpec.describe Percy::Client::Environment do
       before(:each) do
         ENV['BUILDKITE_PULL_REQUEST'] = '123'
       end
+
       it 'has the correct properties' do
         expect(Percy::Client::Environment.pull_request_number).to eq('123')
       end
@@ -436,6 +438,7 @@ RSpec.describe Percy::Client::Environment do
       before(:each) do
         ENV['BUILDKITE_COMMIT'] = 'HEAD'
       end
+
       it 'has the correct properties' do
         expect(Percy::Client::Environment._commit_sha).to be_nil
       end
