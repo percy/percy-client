@@ -2,11 +2,30 @@ require 'openssl'
 require 'uri'
 require 'faraday'
 
+# Faraday 2.x ships adapters as separate gems, so load the excon adapter from faraday-excon.
+# Only on Faraday >= 2: Faraday 0.x has a built-in excon adapter that faraday-excon 1.x would
+# replace, and Faraday 1.x loads faraday-excon itself.
+if Gem::Version.new(Faraday::VERSION) >= Gem::Version.new('2')
+  begin
+    require 'faraday/excon'
+  rescue LoadError
+    nil
+  end
+end
+
 module Percy
   class Client
     module Connection
-      class NiceErrorMiddleware < Faraday::Response::Middleware
+      # Inherits from Faraday::Middleware (present in Faraday 0.x, 1.x and 2.x) and defines #call
+      # itself, because Faraday::Response::Middleware was removed in Faraday 2.
+      class NiceErrorMiddleware < Faraday::Middleware
         CLIENT_ERROR_STATUS_RANGE = 400...600
+
+        def call(request_env)
+          @app.call(request_env).on_complete do |response_env|
+            on_complete(response_env)
+          end
+        end
 
         def on_complete(env)
           error_class = nil
@@ -54,7 +73,10 @@ module Percy
         base_url = "#{parsed_uri.scheme}://#{parsed_uri.host}:#{parsed_uri.port}"
 
         @connection = Faraday.new(url: base_url) do |faraday|
-          faraday.request :token_auth, config.access_token if config.access_token
+          # Same header that Faraday's :token_auth middleware (removed in Faraday 2) produced.
+          if config.access_token
+            faraday.headers['Authorization'] = %(Token token="#{config.access_token}")
+          end
           faraday.use Percy::Client::Connection::NiceErrorMiddleware
           faraday.adapter :excon
         end

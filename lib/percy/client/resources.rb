@@ -1,4 +1,3 @@
-require 'base64'
 require 'digest'
 require 'addressable/uri'
 
@@ -71,12 +70,14 @@ module Percy
     module Resources
       def upload_resource(build_id, content)
         sha = Digest::SHA256.hexdigest(content)
+        # pack('m0') == Base64.strict_encode64, without needing the base64 gem (not a default
+        # gem since Ruby 3.4).
         data = {
           'data' => {
             'type' => 'resources',
             'id' => sha,
             'attributes' => {
-              'base64-content' => Base64.strict_encode64(content),
+              'base64-content' => [content].pack('m0'),
             },
           },
         }
