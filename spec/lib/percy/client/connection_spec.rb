@@ -127,11 +127,15 @@ RSpec.describe Percy::Client::Connection do
 
       # Call the client directly: `response` is memoized and would only request once.
       SERVER_ERROR_CODES.each do |error_code|
-        stub_request(:get, uri)
+        # Fresh stubs and request history, so the count below covers this code only.
+        WebMock.reset!
+        stub = stub_request(:get, uri)
           .to_return(body: {foo: true}.to_json, status: error_code)
           .then.to_return(body: {foo: true}.to_json, status: 200)
 
         expect(Percy.client.get(uri)).to eq('foo' => true)
+        # One failed attempt plus one retry; both bodies match, so the count proves the retry.
+        expect(stub).to have_been_requested.twice
       end
     end
 
@@ -222,11 +226,15 @@ RSpec.describe Percy::Client::Connection do
 
       # Call the client directly: `response` is memoized and would only request once.
       SERVER_ERROR_CODES.each do |error_code|
-        stub_request(:post, uri)
+        # Fresh stubs and request history, so the count below covers this code only.
+        WebMock.reset!
+        stub = stub_request(:post, uri)
           .to_return(body: {foo: true}.to_json, status: error_code)
           .then.to_return(body: {foo: true}.to_json, status: 200)
 
         expect(Percy.client.post(uri, {})).to eq('foo' => true)
+        # One failed attempt plus one retry; both bodies match, so the count proves the retry.
+        expect(stub).to have_been_requested.twice
       end
     end
 
