@@ -23,7 +23,8 @@ module Percy
         rescue Gem::LoadError => e
           raise LoadError,
             "percy-client: Faraday #{faraday_version} needs faraday-excon >= 2.0 " \
-            "(#{e.message}). Run `bundle update faraday-excon`."
+            "(#{e.message}). Change any faraday-excon pin in your Gemfile to '>= 2.0', then " \
+            'run `bundle update faraday-excon`.'
         end
 
         require 'faraday/excon'
@@ -88,9 +89,9 @@ module Percy
         @connection = Faraday.new(url: base_url) do |faraday|
           # Faraday 2 removed the :token_auth middleware, and its replacement (:authorization) does
           # not exist in Faraday 0.15. Setting the header directly works on 0.15 through 2.x and
-          # sends exactly what :token_auth sent.
+          # sends exactly what :token_auth sent, including its String#inspect quoting/escaping.
           if config.access_token
-            faraday.headers['Authorization'] = %(Token token="#{config.access_token}")
+            faraday.headers['Authorization'] = "Token token=#{config.access_token.to_s.inspect}"
           end
           faraday.use Percy::Client::Connection::NiceErrorMiddleware
           faraday.adapter :excon

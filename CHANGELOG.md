@@ -10,13 +10,16 @@ The public API (`Percy::Client`, `Percy::Config`, `PERCY_*` env vars) is unchang
   older Faraday versions themselves fail to load there.
 - Relax `excon` from `= 0.105.0` to `>= 0.105.0, < 2`.
 - Add `faraday-excon` (`>= 1.1, < 3`). It provides the excon adapter on Faraday 2 and is only
-  loaded there.
+  loaded there. **Faraday 2 needs faraday-excon >= 2.0.** If faraday-excon 1.x is installed,
+  `require 'percy'` raises a `LoadError` that says how to fix it. Apps on Faraday 2 should change
+  any explicit `faraday-excon` pin in their Gemfile to `'>= 2.0'`.
 - Add `logger` as a runtime dependency (it stops being a default gem in Ruby 3.5).
 - Constrain `addressable` to `~> 2.3`.
 - `NiceErrorMiddleware` now inherits from `Faraday::Middleware`, because
   `Faraday::Response::Middleware` was removed in Faraday 2. Errors raised are unchanged.
 - Set the `Authorization: Token token="..."` header directly instead of using Faraday's
-  `:token_auth` middleware, which was removed in Faraday 2. The header value is unchanged.
+  `:token_auth` middleware, which was removed in Faraday 2. The header value is unchanged,
+  including `:token_auth`'s `String#inspect` escaping.
 - Base64-encode resource content with `pack('m0')`, so the `base64` gem is no longer needed. It
   is not a default gem in Ruby 3.4.
 - Dev dependencies: rake `>= 12.3, < 14`. `percy-style` moved to the Gemfile and is only
