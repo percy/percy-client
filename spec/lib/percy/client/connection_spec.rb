@@ -49,15 +49,27 @@ RSpec.describe Percy::Client::Connection do
       expect(adapter_class).to eq(Faraday::Adapter::Excon)
     end
 
-    it 'sends the token auth header when an access token is configured' do
+    def client_with_token(token)
       config = Percy::Config.new
-      config.access_token = 'abc123'
-      client = Percy::Client.new(config: config)
+      config.access_token = token
+      Percy::Client.new(config: config)
+    end
+
+    it 'sends the token auth header when an access token is configured' do
       stub_request(:get, uri)
         .with(headers: {'Authorization' => 'Token token="abc123"'})
         .to_return(body: {foo: true}.to_json)
 
-      expect(client.get(uri)).to eq('foo' => true)
+      expect(client_with_token('abc123').get(uri)).to eq('foo' => true)
+    end
+
+    # Same escaping as Faraday 0.15's :token_auth middleware (String#inspect).
+    it 'backslash-escapes quotes in the token' do
+      stub_request(:get, uri)
+        .with(headers: {'Authorization' => 'Token token="a\\"b"'})
+        .to_return(body: {foo: true}.to_json)
+
+      expect(client_with_token('a"b').get(uri)).to eq('foo' => true)
     end
   end
 
@@ -126,7 +138,8 @@ RSpec.describe Percy::Client::Connection do
     it 'does not retry on 501' do
       stub = stub_request(:get, uri).to_return(body: {foo: true}.to_json, status: 501)
 
-      expect { response }.to raise_error(Percy::Client::HttpError)
+      # Exactly HttpError: a ServerError subclass would mean 501 had become retryable.
+      expect { response }.to raise_error(an_instance_of(Percy::Client::HttpError))
       expect(stub).to have_been_requested.once
     end
 
