@@ -6,8 +6,8 @@ module Percy
   class Client
     module Connection
       # Faraday 2.x ships adapters as separate gems, so load the excon adapter from faraday-excon.
-      # Only on Faraday >= 2: Faraday 0.x has a built-in excon adapter that faraday-excon 1.x would
-      # replace, and Faraday 1.x loads faraday-excon itself.
+      # Only on Faraday >= 2: Faraday 0.x-1.3 have a built-in excon adapter that faraday-excon 1.x
+      # would replace, and Faraday 1.4+ (1.x) loads faraday-excon itself.
       #
       # faraday-excon 1.x declares no faraday dependency but only works with Faraday < 2, and a
       # gemspec cannot tie the faraday-excon range to the installed faraday (Faraday 0.x installs

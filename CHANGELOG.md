@@ -9,9 +9,10 @@ The public API (`Percy::Client`, `Percy::Config`, `PERCY_*` env vars) is unchang
 - Relax `faraday` from `= 0.15.4` to `>= 0.15.4, < 3`. On Ruby 3.x use Faraday >= 0.17.3, because
   older Faraday versions themselves fail to load there.
 - Relax `excon` from `= 0.105.0` to `>= 0.105.0, < 2`.
-- Add `faraday-excon` (`>= 1.1, < 3`). It provides the excon adapter on Faraday 1.x and 2.x.
-  percy-client loads it explicitly only on Faraday 2; Faraday 1.x loads `faraday/excon` itself,
-  and Faraday 0.x uses its built-in adapter. **Faraday 2 needs faraday-excon >= 2.0.** If faraday-excon 1.x is installed,
+- Add `faraday-excon` (`>= 1.1, < 3`). percy-client loads it explicitly only on Faraday 2.
+  Faraday 0.x through 1.3 use their built-in excon adapter, and Faraday 1.4 and later 1.x
+  versions depend on faraday-excon and load `faraday/excon` themselves.
+  **Faraday 2 needs faraday-excon >= 2.0.** If faraday-excon 1.x is installed,
   `require 'percy'` raises a `LoadError` that says how to fix it. Apps on Faraday 2 should change
   any explicit `faraday-excon` pin in their Gemfile to `'>= 2.0'`.
 - Add `logger` as a runtime dependency (it stops being a default gem in Ruby 3.5).
