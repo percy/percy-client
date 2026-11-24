@@ -9,8 +9,6 @@ on:
     branches: ["master", "main"]
   schedule:
     - cron: '0 6 * * *'
-  # Allow a full scan to be started by hand from the Actions tab.
-  workflow_dispatch:
 
 
 permissions:
