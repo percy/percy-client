@@ -1,3 +1,5 @@
+require 'tmpdir'
+
 RSpec.describe Percy::Client::Environment do
   def clear_env_vars
     # Unset Percy vars.
@@ -515,6 +517,80 @@ RSpec.describe Percy::Client::Environment do
 
         commit = Percy::Client::Environment.commit
         expect(commit[:author_name]).to eq('Spêcìal Ñàme')
+      end
+
+      it 'falls back to HEAD when the env commit SHA looks like a git option' do
+        ENV['PERCY_COMMIT'] = '--output=/tmp/percy-client-pwned'
+        head_sha = Percy::Client::Environment._raw_commit_output('HEAD')[/COMMIT_SHA:(.*)/, 1]
+
+        commit = Percy::Client::Environment.commit
+        expect(commit[:sha]).to eq('--output=/tmp/percy-client-pwned')
+        expect(commit[:message]).to_not be_nil
+        expect(Percy::Client::Environment._git_commit_output).to include("COMMIT_SHA:#{head_sha}")
+      end
+    end
+
+    describe '#_raw_commit_output' do
+      it 'returns git show output for a valid revision' do
+        output = Percy::Client::Environment._raw_commit_output('HEAD')
+        expect(output).to match(/\ACOMMIT_SHA:\h{40}$/)
+        expect(output).to include('COMMIT_MESSAGE:')
+      end
+
+      it 'calls git with an argument list and no shell, discarding stderr' do
+        status = instance_double(Process::Status, success?: true)
+        expect(Open3).to receive(:capture2)
+          .with('git', 'show', '--quiet', 'abc123', /\A--format=COMMIT_SHA:%H%n/, err: File::NULL)
+          .and_return(["COMMIT_SHA:abc123\n", status])
+
+        expect(Percy::Client::Environment._raw_commit_output('abc123')).to eq('COMMIT_SHA:abc123')
+      end
+
+      it 'does not run shell metacharacters in the SHA' do
+        Dir.mktmpdir do |dir|
+          marker = File.join(dir, 'pwned')
+          output = Percy::Client::Environment._raw_commit_output("HEAD; touch #{marker}")
+          expect(output).to be_nil
+          expect(File.exist?(marker)).to eq(false)
+        end
+      end
+
+      ['-p', '--output=/tmp/percy-client-pwned', '-'].each do |sha|
+        it "rejects #{sha.inspect} without running git" do
+          expect(Open3).to_not receive(:capture2)
+          expect(Percy::Client::Environment._raw_commit_output(sha)).to be_nil
+        end
+      end
+
+      it 'returns nil for an empty or nil SHA without running git' do
+        expect(Open3).to_not receive(:capture2)
+        expect(Percy::Client::Environment._raw_commit_output('')).to be_nil
+        expect(Percy::Client::Environment._raw_commit_output(nil)).to be_nil
+      end
+
+      it 'returns nil when git exits non-zero' do
+        expect(Percy::Client::Environment._raw_commit_output('0' * 40)).to be_nil
+      end
+
+      it 'returns nil when git is not installed' do
+        expect(Open3).to receive(:capture2).and_raise(Errno::ENOENT)
+        expect(Percy::Client::Environment._raw_commit_output('HEAD')).to be_nil
+      end
+    end
+
+    describe '#branch from the local repo' do
+      it 'returns nil and warns when git is not installed' do
+        expect(Open3).to receive(:capture2).and_raise(Errno::ENOENT)
+        expect(STDERR).to receive(:puts).with(/no branch detected/)
+        expect(Percy::Client::Environment.branch).to be_nil
+      end
+
+      it 'calls git rev-parse with an argument list' do
+        status = instance_double(Process::Status, success?: true)
+        expect(Open3).to receive(:capture2)
+          .with('git', 'rev-parse', '--abbrev-ref', 'HEAD', err: File::NULL)
+          .and_return(["some-branch\n", status])
+        expect(Percy::Client::Environment.branch).to eq('some-branch')
       end
     end
   end
