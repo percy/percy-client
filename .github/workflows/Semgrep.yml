@@ -2,8 +2,7 @@
 name: Semgrep
 
 on:
-  # Scan changed files in PRs (diff-aware scanning):
-  # The branches below must be a subset of the branches above
+  # Scan changed files in PRs (diff-aware scanning).
   pull_request:
     branches: ["master", "main"]
   push:
@@ -21,8 +20,8 @@ jobs:
     permissions:
       contents: read  # for actions/checkout to fetch code
       security-events: write  # for github/codeql-action/upload-sarif to upload SARIF results
-    name: semgrep/ci 
-    # If you are self-hosting, change the following `runs-on` value: 
+    name: semgrep/ci
+    # If you are self-hosting, change the following `runs-on` value:
     runs-on: ubuntu-latest
 
     container:
@@ -34,14 +33,22 @@ jobs:
     steps:
       # Fetch project source with GitHub Actions Checkout.
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+        with:
+          # Diff-aware PR scans need the merge base with the target branch.
+          fetch-depth: 0
+      # The container runs as root but the workspace belongs to the runner user, so git
+      # (used by "semgrep ci" for diff-aware scans) refuses it unless it is marked safe.
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       # Run the "semgrep ci" command on the command line of the docker image.
       - run: semgrep ci --sarif --output=semgrep.sarif
         env:
-            # Add the rules that Semgrep uses by setting the SEMGREP_RULES environment variable. 
+            # Add the rules that Semgrep uses by setting the SEMGREP_RULES environment variable.
             SEMGREP_RULES: p/default # more at semgrep.dev/explore
 
       - name: Upload SARIF file for GitHub Advanced Security Dashboard
         uses: github/codeql-action/upload-sarif@6c089f53dd51dc3fc7e599c3cb5356453a52ca9e # v2.20.0
         with:
           sarif_file: semgrep.sarif
+        # Also runs on fork PRs: GitHub accepts SARIF uploads from their read-only token
+        # in public repositories, so no extra permissions are needed.
         if: always()

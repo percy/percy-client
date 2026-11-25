@@ -1,3 +1,5 @@
+require 'open3'
+
 module Percy
   class Client
     module Environment
@@ -104,15 +106,26 @@ module Percy
 
       # @private
       def self._raw_commit_output(commit_sha)
+        # The SHA can come from env vars such as PERCY_COMMIT. Refuse anything git could read
+        # as an option (e.g. "--output=/some/file"); it is never a valid revision anyway.
+        commit_sha = commit_sha.to_s
+        return if commit_sha.empty? || commit_sha.start_with?('-')
+
         format = GIT_FORMAT_LINES.join('%n') # "git show" format uses %n for newlines.
-        output = if Gem.win_platform?
-          `git show --quiet #{commit_sha} --format="#{format}" 2> NUL`.strip
-        else
-          `git show --quiet #{commit_sha} --format="#{format}" 2> /dev/null`.strip
-        end
-        return if $CHILD_STATUS.to_i != 0
-        output
+        output = _git_output('show', '--quiet', commit_sha, "--format=#{format}")
+        output && output.strip
       end
+
+      # Runs git with an argument list (no shell), discarding stderr.
+      # @private
+      # @return [String, nil] stdout, or nil if git exits non-zero or cannot be run.
+      def self._git_output(*args)
+        stdout, status = Open3.capture2('git', *args, err: File::NULL)
+        stdout if status.success?
+      rescue SystemCallError
+        nil
+      end
+      class << self; private :_git_output; end
 
       def self.target_commit_sha
         return ENV['PERCY_TARGET_COMMIT'] if ENV['PERCY_TARGET_COMMIT']
@@ -161,12 +174,9 @@ module Percy
 
       # @private
       def self._raw_branch_output
-        # Discover from local git repo branch name.
-        if Gem.win_platform?
-          `git rev-parse --abbrev-ref HEAD 2> NUL`.strip
-        else
-          `git rev-parse --abbrev-ref HEAD 2> /dev/null`.strip
-        end
+        # Discover from local git repo branch name. Empty string (not nil) when git fails, so
+        # that #branch can warn about not being in a git repo.
+        (_git_output('rev-parse', '--abbrev-ref', 'HEAD') || '').strip
       end
       class << self; private :_raw_branch_output; end
 
@@ -238,7 +248,7 @@ module Percy
 
       # @private
       def self._get_origin_url
-        `git config --get remote.origin.url`
+        _git_output('config', '--get', 'remote.origin.url') || ''
       end
       class << self; private :_get_origin_url; end
     end
